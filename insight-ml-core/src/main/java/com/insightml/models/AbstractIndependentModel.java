@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2016 Stefan Henß
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.insightml.models;
+
+import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.ISamples;
+import com.insightml.utils.Arrays;
+import com.insightml.utils.Check;
+import com.insightml.utils.jobs.ParallelFor;
+
+public abstract class AbstractIndependentModel<I extends ISample, E> extends AbstractModel<I, E> {
+
+    private static final long serialVersionUID = -4539226467144740757L;
+
+    protected AbstractIndependentModel() {
+    }
+
+    public AbstractIndependentModel(final String[] features) {
+        super(features);
+    }
+
+    @Override
+    public final E[] apply(final ISamples<I, ?> instances) {
+        final CharSequence[] ref = features();
+        final String[] names = instances.featureNames();
+        final int[] featuresFilter = new int[ref == null ? names.length : ref.length];
+
+        if (ref == null) {
+            for (int i = 0; i < names.length; ++i) {
+                featuresFilter[i] = i;
+            }
+        } else {
+            for (int i = 0; i < ref.length; ++i) {
+                int idx = -1;
+                for (int j = 0; j < names.length; ++j) {
+                    if (ref[i].equals(names[j])) {
+                        idx = j;
+                        break;
+                    }
+                }
+                featuresFilter[i] = idx;
+            }
+        }
+
+        return Arrays.of(new ParallelFor<E>() {
+            @Override
+            protected E exec(final int i) {
+                return Check.notNull(predict(i, instances, featuresFilter));
+            }
+        }.run(0, instances.size(), 1));
+    }
+
+    protected abstract E predict(final int instance, final ISamples<I, ?> instances,
+            int[] featuresFilter);
+
+}
