@@ -135,8 +135,8 @@ public final class Check {
 		return collection;
 	}
 
-	public static <T> void equals(final T obj1, final T obj2) {
-		equals(obj1, obj2, null);
+	public static void equals(final int obj1, final int obj2, final Object origin) {
+		equals((Integer) obj1, (Integer) obj2, origin);
 	}
 
 	public static <T> void equals(final T obj1, final T obj2, final Object origin) {

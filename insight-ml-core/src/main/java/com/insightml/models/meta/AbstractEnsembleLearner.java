@@ -15,20 +15,15 @@
  */
 package com.insightml.models.meta;
 
-import java.util.Map.Entry;
 import java.util.Random;
 
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.decorators.SamplesMapping;
-import com.insightml.math.types.SumMap;
-import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractLearner;
-import com.insightml.models.AbstractModel;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerInput;
-import com.insightml.models.trees.TreeModel;
 import com.insightml.utils.Utils;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
@@ -67,51 +62,6 @@ public abstract class AbstractEnsembleLearner<S extends ISample, E, O> extends A
 			labels[i] = Utils.toDouble(expected[idx]) - preds[idx];
 		}
 		return new Pair<>(sample, labels);
-	}
-
-	protected abstract static class AbstractEnsembleModel<I extends ISample, E> extends AbstractModel<I, E> {
-
-		private static final long serialVersionUID = 8994738708748217269L;
-
-		private IModel<I, E>[] models;
-		private double[] weights;
-
-		AbstractEnsembleModel() {
-		}
-
-		AbstractEnsembleModel(final IModel<I, E>[] models, final double[] weights) {
-			super(null);
-			this.models = models;
-			this.weights = weights;
-		}
-
-		final IModel<I, E>[] getModels() {
-			return models;
-		}
-
-		final double[] getWeights() {
-			return weights;
-		}
-
-		@Override
-		public SumMap<String> featureImportance() {
-			final SumMapBuilder<String> builder = SumMap.builder(false);
-			for (int i = 0; i < models.length; ++i) {
-				if (models[i] instanceof TreeModel) {
-					for (final Entry<String, Double> imp : ((TreeModel) models[i]).featureImportance()) {
-						builder.increment(imp.getKey(), weights[i] * imp.getValue());
-					}
-				}
-			}
-			return builder.build(0);
-		}
-
-		@Override
-		public final void close() {
-			for (final IModel<?, ?> model : models) {
-				model.close();
-			}
-		}
 	}
 
 }

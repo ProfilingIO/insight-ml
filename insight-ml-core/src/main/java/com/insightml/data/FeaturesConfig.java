@@ -24,31 +24,29 @@ import com.insightml.data.samples.ISample;
 import com.insightml.math.Normalization;
 import com.insightml.utils.types.AbstractModule;
 
-public abstract class FeaturesConfig<I extends ISample, P> extends AbstractModule implements
-Serializable {
+public abstract class FeaturesConfig<I extends ISample, P> extends AbstractModule implements Serializable {
 
-    private static final long serialVersionUID = -5411101736646501986L;
+	private static final long serialVersionUID = -5411101736646501986L;
 
-    private final Normalization normalization;
-    private final Function<P, P> postProcessor;
+	private final Normalization normalization;
+	private final Function<P, P> postProcessor;
 
-    public FeaturesConfig(final Normalization normalization, final Function<P, P> postProcessor) {
-        this.normalization = normalization;
-        this.postProcessor = postProcessor;
-    }
+	public FeaturesConfig(final Normalization normalization, final Function<P, P> postProcessor) {
+		this.normalization = normalization;
+		this.postProcessor = postProcessor;
+	}
 
-    public abstract IFeatureProvider<I> newFeatureProvider(final Iterable<I> training,
-            final Iterable<I>... rest);
+	public abstract IFeatureProvider<I> newFeatureProvider(final Iterable<I> training, final Iterable<I>[] rest);
 
-    public abstract IFeatureFilter newFeatureFilter(final Iterable<I> training,
-            final IFeatureProvider<I> provider, final Integer labelIndex);
+	public abstract IFeatureFilter newFeatureFilter(final Iterable<I> training, final IFeatureProvider<I> provider,
+			final Integer labelIndex);
 
-    public final Normalization getNormalization() {
-        return normalization;
-    }
+	public final Normalization getNormalization() {
+		return normalization;
+	}
 
-    public final Function<P, P> getPostProcessor() {
-        return postProcessor;
-    }
+	public final Function<P, P> getPostProcessor() {
+		return postProcessor;
+	}
 
 }

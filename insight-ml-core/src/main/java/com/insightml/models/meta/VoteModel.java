@@ -20,7 +20,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.models.IModel;
-import com.insightml.models.meta.AbstractEnsembleLearner.AbstractEnsembleModel;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;

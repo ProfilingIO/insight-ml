@@ -18,7 +18,6 @@ package com.insightml.evaluation.functions;
 import com.google.common.base.MoreObjects;
 
 public final class RMSE extends MSE {
-
 	private static final long serialVersionUID = -4611891533888902754L;
 
 	@Override

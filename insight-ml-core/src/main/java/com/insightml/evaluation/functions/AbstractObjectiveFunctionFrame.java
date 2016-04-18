@@ -24,11 +24,11 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.models.Predictions;
 
 public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjectiveFunction<E, P> {
-
 	private static final long serialVersionUID = -7212322445994504764L;
 
 	@Override
-	public DescriptiveStatistics acrossLabels(final List<? extends Predictions<? extends E, ? extends P>>[] predictions) {
+	public DescriptiveStatistics acrossLabels(
+			final List<? extends Predictions<? extends E, ? extends P>>[] predictions) {
 		double sum = 0;
 		double weightSum = 0;
 		for (final List<? extends Predictions<? extends E, ? extends P>> predz : predictions) {

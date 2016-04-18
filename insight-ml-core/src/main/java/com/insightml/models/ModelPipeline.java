@@ -31,7 +31,6 @@ import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.types.Parameter;
 
 public class ModelPipeline<I extends ISample, P> extends AbstractConfigurable implements Serializable {
-
 	private static final long serialVersionUID = 5471706800666990790L;
 
 	private IModel<I, P> model;

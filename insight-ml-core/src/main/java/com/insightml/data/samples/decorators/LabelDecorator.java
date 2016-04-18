@@ -26,7 +26,7 @@ public final class LabelDecorator<S extends ISample, E> extends AbstractDecorato
 
 	public LabelDecorator(final ISamples<S, E> orig, final E[] expected, final int labelIndex) {
 		super(orig);
-		Check.equals(size(), expected.length);
+		Check.equals(size(), expected.length, "size");
 		this.expected = expected;
 		this.label = labelIndex;
 		for (final E element : expected) {
@@ -46,7 +46,7 @@ public final class LabelDecorator<S extends ISample, E> extends AbstractDecorato
 
 	@Override
 	public E[] expected(final int labelIndex) {
-		Check.equals(labelIndex, label);
+		Check.equals(labelIndex, label, "index");
 		return expected;
 	}
 

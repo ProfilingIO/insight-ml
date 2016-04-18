@@ -25,70 +25,69 @@ import com.insightml.utils.jobs.IClient;
 import com.insightml.utils.jobs.IJobBatch;
 import com.insightml.utils.types.AbstractClass;
 
-public final class SimulationSetup<I extends ISample, E, P> extends AbstractClass implements
-ISimulationSetup<I, E, P> {
+public final class SimulationSetup<I extends ISample, E, P> extends AbstractClass implements ISimulationSetup<I, E, P> {
 
-    private final String datasetName;
-    private final FeaturesConfig<I, P> config;
-    private final Integer labelIndex;
-    private final ILearnerPipeline<I, P>[] learner;
-    private final IObjectiveFunction<? super E, ? super P>[] objectives;
-    private final boolean report;
-    private final IClient client;
+	private final String datasetName;
+	private final FeaturesConfig<I, P> config;
+	private final Integer labelIndex;
+	private final ILearnerPipeline<I, P>[] learner;
+	private final IObjectiveFunction<? super E, ? super P>[] objectives;
+	private final boolean report;
+	private final IClient client;
 
-    public SimulationSetup(final String datasetName, final FeaturesConfig<I, P> config,
-            final Integer labelIndex, final ILearnerPipeline<I, P>[] learner, final IClient client,
-            final boolean report, final IObjectiveFunction<? super E, ? super P>... objectives) {
-        this.datasetName = datasetName;
-        this.config = config;
-        this.labelIndex = labelIndex;
-        this.learner = learner;
-        this.objectives = Check.size(objectives, 1, 14);
-        this.report = report;
-        this.client = Check.notNull(client);
-    }
+	public SimulationSetup(final String datasetName, final FeaturesConfig<I, P> config, final Integer labelIndex,
+			final ILearnerPipeline<I, P>[] learner, final IClient client, final boolean report,
+			final IObjectiveFunction<? super E, ? super P>[] objectives) {
+		this.datasetName = datasetName;
+		this.config = config;
+		this.labelIndex = labelIndex;
+		this.learner = learner;
+		this.objectives = Check.size(objectives, 1, 14);
+		this.report = report;
+		this.client = Check.notNull(client);
+	}
 
-    public IJobBatch<Predictions<E, P>[]> createBatch() {
-        return client.newBatch();
-    }
+	public IJobBatch<Predictions<E, P>[]> createBatch() {
+		return client.newBatch();
+	}
 
-    @Override
-    public String getDatasetName() {
-        return Check.notNull(datasetName);
-    }
+	@Override
+	public String getDatasetName() {
+		return Check.notNull(datasetName);
+	}
 
-    @Override
-    public FeaturesConfig<I, P> getConfig() {
-        return config;
-    }
+	@Override
+	public FeaturesConfig<I, P> getConfig() {
+		return config;
+	}
 
-    public Integer getLabelIndex() {
-        return labelIndex;
-    }
+	public Integer getLabelIndex() {
+		return labelIndex;
+	}
 
-    @Override
-    public ILearnerPipeline<I, P>[] getLearner() {
-        return learner;
-    }
+	@Override
+	public ILearnerPipeline<I, P>[] getLearner() {
+		return learner;
+	}
 
-    @Override
-    public IObjectiveFunction<? super E, ? super P>[] getObjectives() {
-        return objectives;
-    }
+	@Override
+	public IObjectiveFunction<? super E, ? super P>[] getObjectives() {
+		return objectives;
+	}
 
-    @Override
-    public PERFORMANCE_SELECTOR getCriteria() {
-        return PERFORMANCE_SELECTOR.MEAN;
-    }
+	@Override
+	public PERFORMANCE_SELECTOR getCriteria() {
+		return PERFORMANCE_SELECTOR.MEAN;
+	}
 
-    @Override
-    public boolean doReport() {
-        return report;
-    }
+	@Override
+	public boolean doReport() {
+		return report;
+	}
 
-    @Override
-    public boolean doDump() {
-        return false && report;
-    }
+	@Override
+	public boolean doDump() {
+		return false && report;
+	}
 
 }

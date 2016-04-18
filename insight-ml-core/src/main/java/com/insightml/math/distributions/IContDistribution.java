@@ -15,22 +15,24 @@
  */
 package com.insightml.math.distributions;
 
+import java.io.Serializable;
+
 import com.insightml.math.types.Interval;
 
-public interface IContDistribution extends IDistribution {
+public interface IContDistribution extends Serializable {
 
-    double maxLikelihood();
+	double maxLikelihood();
 
-    double expectedValue();
+	double expectedValue();
 
-    double standardDeviation();
+	double standardDeviation();
 
-    Interval confidenceInterval(double factorStddev);
+	Interval confidenceInterval(double factorStddev);
 
-    double probability(double d);
+	double probability(double d);
 
-    double logLikelihood(double d);
+	double logLikelihood(double d);
 
-    String toStringInterval(int precision);
+	String toStringInterval(int precision);
 
 }

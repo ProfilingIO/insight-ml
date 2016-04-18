@@ -26,13 +26,12 @@ import com.insightml.utils.Check;
 import com.insightml.utils.types.DoublePair;
 
 public class AggregateFeatureProvider<I extends ISample> extends AbstractFeatureProvider<I> {
-
-	private final IFeatureProvider<I>[] providers;
+	private final List<IFeatureProvider<I>> providers;
 
 	public AggregateFeatureProvider(final String name, final double defaultValue,
-			final IFeatureProvider<? super I>... providers) {
+			final List<IFeatureProvider<I>> providers) {
 		super(name, defaultValue);
-		this.providers = (IFeatureProvider<I>[]) Check.size(providers, 1, 99);
+		this.providers = Check.size(providers, 1, 99);
 	}
 
 	@Override

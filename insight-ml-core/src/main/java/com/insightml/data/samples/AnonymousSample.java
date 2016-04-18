@@ -29,7 +29,7 @@ public class AnonymousSample implements ISample, Cloneable {
 	private final String[] featureNames;
 
 	public AnonymousSample(final int id, final Object[] label, final double[] features, final String[] featureNames) {
-		Check.equals(features.length, featureNames.length);
+		Check.equals(features.length, featureNames.length, "features");
 		this.id = id;
 		labels = label;
 		this.features = features;

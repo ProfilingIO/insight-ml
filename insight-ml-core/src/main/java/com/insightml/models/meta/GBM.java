@@ -29,7 +29,7 @@ import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerInput;
-import com.insightml.models.general.ConstantBaseline.ConstantModel;
+import com.insightml.models.general.ConstantModel;
 import com.insightml.models.regression.SimpleRegression;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Arrays;

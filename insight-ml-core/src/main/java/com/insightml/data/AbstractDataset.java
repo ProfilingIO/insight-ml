@@ -15,7 +15,7 @@
  */
 package com.insightml.data;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.insightml.data.samples.ISample;
@@ -48,13 +48,13 @@ public abstract class AbstractDataset<I extends ISample, E, P> extends AbstractM
 
 	@Override
 	public final PreprocessingPipeline<I, E> pipeline(final Iterable<I> training, final Integer labelIndex,
-			final Iterable<I>... instances) {
+			final Iterable<I>[] instances) {
 		return PreprocessingPipeline.create(getFeaturesConfig(null), training, labelIndex, instances);
 	}
 
 	@Override
 	public String getReport() {
-		final List<Pair<String, String>> fields = new LinkedList<>();
+		final List<Pair<String, String>> fields = new ArrayList<>(2);
 		fields.add(new Pair<>("Name", getName()));
 		fields.add(new Pair<>("Description", getDescription()));
 		return fields.toString();
@@ -63,5 +63,4 @@ public abstract class AbstractDataset<I extends ISample, E, P> extends AbstractM
 	@Override
 	public void close() {
 	}
-
 }

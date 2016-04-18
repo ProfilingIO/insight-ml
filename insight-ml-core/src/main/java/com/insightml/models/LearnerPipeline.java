@@ -35,8 +35,8 @@ import com.insightml.utils.Pair;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.types.DoublePair;
 
-public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModule implements Serializable,
-		ILearnerPipeline<S, O> {
+public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModule
+		implements Serializable, ILearnerPipeline<S, O> {
 
 	private static final long serialVersionUID = 8008644928002890346L;
 
@@ -74,12 +74,10 @@ public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModu
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data,
-				unlabled,
-				config,
+		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data, unlabled, config,
 				labelIndex);
-		return new ModelPipeline<>(modelAndPipe.getFirst(), modelAndPipe.getSecond(), config == null ? null
-				: config.getPostProcessor(), labelIndex);
+		return new ModelPipeline<>(modelAndPipe.getFirst(), modelAndPipe.getSecond(),
+				config == null ? null : config.getPostProcessor(), labelIndex);
 	}
 
 	private Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe(final Iterable<S> data,
@@ -98,8 +96,8 @@ public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModu
 			if (selection != null) {
 				final DoublePair<Set<String>> result = selection.run(train, origConfig, learner);
 				if (result != null) {
-					config = new SimpleFeatureConfig<>(origConfig.newFeatureProvider(null), new ManualSelectionFilter(
-							result.getKey(), true), null);
+					config = new SimpleFeatureConfig<>(origConfig.newFeatureProvider(null, new Iterable[0]),
+							new ManualSelectionFilter(result.getKey(), true), null);
 				}
 			}
 			if (config == null) {

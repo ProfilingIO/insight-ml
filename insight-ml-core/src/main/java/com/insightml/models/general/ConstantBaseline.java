@@ -15,61 +15,25 @@
  */
 package com.insightml.models.general;
 
-import com.google.common.base.Objects;
 import com.insightml.data.samples.ISample;
-import com.insightml.data.samples.ISamples;
 import com.insightml.models.AbstractLearner;
-import com.insightml.models.AbstractModel;
 import com.insightml.models.LearnerInput;
-import com.insightml.utils.Arrays;
 
 public final class ConstantBaseline<E> extends AbstractLearner<ISample, Object, E> {
+	private final E constant;
 
-    private final E constant;
+	public ConstantBaseline(final E constant) {
+		super(null);
+		this.constant = constant;
+	}
 
-    public ConstantBaseline(final E constant) {
-        super(null);
-        this.constant = constant;
-    }
+	@Override
+	public ConstantModel<E> run(final LearnerInput<? extends ISample, ? extends Object, ?> input) {
+		return new ConstantModel<>(constant);
+	}
 
-    @Override
-    public ConstantModel<E> run(final LearnerInput<? extends ISample, ? extends Object, ?> input) {
-        return new ConstantModel<>(constant);
-    }
-
-    @Override
-    public String getName() {
-        return "Const{" + constant + "}";
-    }
-
-    public static final class ConstantModel<E> extends AbstractModel<ISample, E> {
-
-        private static final long serialVersionUID = 3872171524371116676L;
-
-        private E constant;
-
-        ConstantModel() {
-        }
-
-        public ConstantModel(final E constant) {
-            super(null);
-            this.constant = constant;
-        }
-
-        @Override
-        public E[] apply(final ISamples<ISample, ?> input) {
-            return Arrays.fill(input.size(), constant);
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            return constant.equals(((ConstantModel<?>) obj).constant);
-        }
-
-        @Override
-        public String getName() {
-            return Objects.toStringHelper(this).addValue(constant).toString();
-        }
-    }
-
+	@Override
+	public String getName() {
+		return "Const{" + constant + "}";
+	}
 }

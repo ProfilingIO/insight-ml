@@ -30,7 +30,6 @@ import com.insightml.utils.Pair;
 import com.insightml.utils.jobs.ParallelFor;
 
 public class Bagging<I extends ISample> extends AbstractEnsembleLearner<I, Object, Double> {
-
 	private final VoteStrategy strategy;
 
 	public Bagging(final IArguments arguments, final ILearner<I, ? extends Object, Double>... learner) {
@@ -66,8 +65,8 @@ public class Bagging<I extends ISample> extends AbstractEnsembleLearner<I, Objec
 			protected Object exec(final int i) {
 				final Random random = new Random((long) Math.pow(i + 2, 2));
 				final Pair<ISamples<I, Object>, ISamples<I, Object>> sub = instances.sample(instancesSample, random);
-				models[i] = learner[i % learner.length].run(new LearnerInput(sub.getFirst()
-						.sampleFeatures(featureSample, random), null, labelIndex));
+				models[i] = learner[i % learner.length]
+						.run(new LearnerInput(sub.getFirst().sampleFeatures(featureSample, random), null, labelIndex));
 				weights[i] = 1;
 				return 1;
 			}

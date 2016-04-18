@@ -23,33 +23,30 @@ import com.insightml.data.samples.ISample;
 import com.insightml.utils.Check;
 
 public final class SimpleFeatureConfig<I extends ISample, P> extends FeaturesConfig<I, P> {
+	private static final long serialVersionUID = -9027051549538426023L;
 
-    private static final long serialVersionUID = -9027051549538426023L;
+	private final IFeatureProvider<I> provider;
+	private IFeatureFilter filter;
 
-    private final IFeatureProvider<I> provider;
-    private IFeatureFilter filter;
+	public SimpleFeatureConfig(final IFeatureProvider<I> provider, final Function<P, P> postProcessor) {
+		this(provider, new IgnoreFeatureFilter(), postProcessor);
+	}
 
-    public SimpleFeatureConfig(final IFeatureProvider<I> provider,
-            final Function<P, P> postProcessor) {
-        this(provider, new IgnoreFeatureFilter(), postProcessor);
-    }
+	public SimpleFeatureConfig(final IFeatureProvider<I> provider, final IFeatureFilter filter,
+			final Function<P, P> postProcessor) {
+		super(null, postProcessor);
+		this.provider = provider;
+		this.filter = Check.notNull(filter);
+	}
 
-    public SimpleFeatureConfig(final IFeatureProvider<I> provider, final IFeatureFilter filter,
-            final Function<P, P> postProcessor) {
-        super(null, postProcessor);
-        this.provider = provider;
-        this.filter = Check.notNull(filter);
-    }
+	@Override
+	public IFeatureProvider<I> newFeatureProvider(final Iterable<I> training, final Iterable<I>[] rest) {
+		return provider;
+	}
 
-    @Override
-    public IFeatureProvider<I> newFeatureProvider(final Iterable<I> training,
-            final Iterable<I>... rest) {
-        return provider;
-    }
-
-    @Override
-    public IFeatureFilter newFeatureFilter(final Iterable<I> training,
-            final IFeatureProvider<I> prov, final Integer labelIndex) {
-        return filter;
-    }
+	@Override
+	public IFeatureFilter newFeatureFilter(final Iterable<I> training, final IFeatureProvider<I> prov,
+			final Integer labelIndex) {
+		return filter;
+	}
 }

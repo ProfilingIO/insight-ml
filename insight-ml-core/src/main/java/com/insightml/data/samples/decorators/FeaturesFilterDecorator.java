@@ -29,7 +29,7 @@ public final class FeaturesFilterDecorator<S extends ISample, E> extends Abstrac
 
 	public FeaturesFilterDecorator(final ISamples<S, E> orig, final boolean[] filter) {
 		super(orig);
-		Check.equals(orig.numFeatures(), filter.length);
+		Check.equals(orig.numFeatures(), filter.length, "features");
 		this.filter = filter;
 		this.map = new int[Vectors.sum(filter)];
 		for (int i = 0, j = -1; i < filter.length; ++i) {

@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.math.distributions;
+package com.insightml.utils.io;
 
-import java.io.Serializable;
+import java.io.File;
 
-public interface IDistribution extends Serializable {
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.insightml.utils.io.CsvParser;
+
+@Ignore
+public final class CsvParserTest {
+
+    @Test
+    public void test() {
+        for (final String[] row : new CsvParser<>(',', 7).iterator(new File("../data/test.csv"))) {
+            Assert.assertTrue(row.length > 0);
+        }
+    }
 
 }

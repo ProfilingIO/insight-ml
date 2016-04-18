@@ -21,23 +21,22 @@ import com.insightml.utils.ui.reports.IReporter;
 
 public interface IDataset<S extends ISample, E, O> extends IReporter {
 
-    String getName();
+	String getName();
 
-    String getDescription();
+	String getDescription();
 
-    Iterable<S> loadAll();
+	Iterable<S> loadAll();
 
-    Iterable<S> loadTraining(Integer labelIndex);
+	Iterable<S> loadTraining(Integer labelIndex);
 
-    Iterable<S> loadValidation();
+	Iterable<S> loadValidation();
 
-    Iterable<S> loadTest(Integer labelIndex);
+	Iterable<S> loadTest(Integer labelIndex);
 
-    IPreprocessingPipeline<S, E> pipeline(Iterable<S> training, Integer labelIndex,
-            Iterable<S>... instances);
+	IPreprocessingPipeline<S, E> pipeline(Iterable<S> training, Integer labelIndex, Iterable<S>[] instances);
 
-    FeaturesConfig<S, O> getFeaturesConfig(IArguments arguments);
+	FeaturesConfig<S, O> getFeaturesConfig(IArguments arguments);
 
-    void close();
+	void close();
 
 }

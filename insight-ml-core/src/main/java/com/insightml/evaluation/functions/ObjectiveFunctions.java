@@ -17,13 +17,13 @@ package com.insightml.evaluation.functions;
 
 public class ObjectiveFunctions {
 
-    public static final IObjectiveFunction[] METRICS_NOMIAL = new IObjectiveFunction[] {
-        new Accuracy(0.5), new RMSE(), new RMSLE(), };
+	public static final IObjectiveFunction[] METRICS_NOMIAL = new IObjectiveFunction[] { new Accuracy(0.5), new RMSE(),
+			new RMSLE(), };
 
-    public static final IObjectiveFunction[] METRICS_BINARY = new IObjectiveFunction[] {
-        new Accuracy(0.5), new RMSE(), new Gini(false), };
+	public static final IObjectiveFunction[] METRICS_BINARY = new IObjectiveFunction[] { new Accuracy(0.5), new RMSE(),
+			new Gini(false), };
 
-    public final static IObjectiveFunction[] METRICS_NUMERIC = new IObjectiveFunction[] {
-        new RMSE(), new RMSLE(), new MeanAbsoluteError(-99999999, 9999999), new MedianError(), };
+	public final static IObjectiveFunction[] METRICS_NUMERIC = new IObjectiveFunction[] { new RMSE(), new RMSLE(),
+			new MeanAbsoluteError(-99999999, 9999999), new MedianError(), };
 
 }

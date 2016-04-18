@@ -15,6 +15,7 @@
  */
 package com.insightml.data;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,73 +33,72 @@ import com.insightml.utils.Pair;
 import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.types.collections.ArrayIterator;
 
-public final class AnonymousFeaturesConfig<S extends AnonymousSample, O> extends
-        FeaturesConfig<S, O> {
+public final class AnonymousFeaturesConfig<S extends AnonymousSample, O> extends FeaturesConfig<S, O> {
 
-    private static final long serialVersionUID = -8466353461597201244L;
+	private static final long serialVersionUID = -8466353461597201244L;
 
-    private final IFeatureProvider<S> provider;
-    private final boolean useDivFeaturesProvider;
-    private IFeatureFilter filter;
+	private final IFeatureProvider<S> provider;
+	private final boolean useDivFeaturesProvider;
+	private IFeatureFilter filter;
 
-    public AnonymousFeaturesConfig(final String[] features, final double defaultValue,
-            final boolean useDivFeaturesProvider) {
-        super(null, null);
-        this.provider = provider(new ArrayIterator<>(features), defaultValue);
-        this.useDivFeaturesProvider = useDivFeaturesProvider;
-    }
+	public AnonymousFeaturesConfig(final String[] features, final double defaultValue,
+			final boolean useDivFeaturesProvider) {
+		super(null, null);
+		this.provider = provider(new ArrayIterator<>(features), defaultValue);
+		this.useDivFeaturesProvider = useDivFeaturesProvider;
+	}
 
-    public AnonymousFeaturesConfig(final Iterable<S> examples, final double defaultValue,
-            final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
-        super(null, null);
-        this.provider = fromExamples(examples, defaultValue);
-        this.useDivFeaturesProvider = useDivFeaturesProvider;
-        this.filter = Check.notNull(filter);
-    }
+	public AnonymousFeaturesConfig(final Iterable<S> examples, final double defaultValue,
+			final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
+		super(null, null);
+		this.provider = fromExamples(examples, defaultValue);
+		this.useDivFeaturesProvider = useDivFeaturesProvider;
+		this.filter = Check.notNull(filter);
+	}
 
-    @Override
-    public IFeatureProvider<S> newFeatureProvider(final Iterable<S> training,
-            final Iterable<S>[] rest) {
-        return provider;
-    }
+	@Override
+	public IFeatureProvider<S> newFeatureProvider(final Iterable<S> training, final Iterable<S>[] rest) {
+		return provider;
+	}
 
-    @Override
-    public IFeatureFilter newFeatureFilter(final Iterable<S> training,
-            final IFeatureProvider<S> prov, final Integer labelIndex) {
-        return filter;
-    }
+	@Override
+	public IFeatureFilter newFeatureFilter(final Iterable<S> training, final IFeatureProvider<S> prov,
+			final Integer labelIndex) {
+		return filter;
+	}
 
-    private IFeatureProvider<S> fromExamples(final Iterable<S> examples, final double defaultValue) {
-        final Set<String> names = new LinkedHashSet<>();
-        for (final S example : examples) {
-            for (final DoublePair<String> feat : example.loadFeatures()) {
-                names.add(feat.getKey());
-            }
-        }
-        return provider(names, defaultValue);
-    }
+	private IFeatureProvider<S> fromExamples(final Iterable<S> examples, final double defaultValue) {
+		final Set<String> names = new LinkedHashSet<>();
+		for (final S example : examples) {
+			for (final DoublePair<String> feat : example.loadFeatures()) {
+				names.add(feat.getKey());
+			}
+		}
+		return provider(names, defaultValue);
+	}
 
-    private IFeatureProvider<S> provider(final Iterable<String> names, final double defaultValue) {
-        final List<Pair<String, String>> features = new LinkedList<>();
-        for (final CharSequence feat : names) {
-            features.add(new Pair<>(feat.toString(), ""));
-        }
-        final IFeatureProvider<S> prov = new GeneralFeatureProvider<S>("features", defaultValue) {
-            @Override
-            protected List<Pair<String, String>> getFeatures() {
-                return features;
-            }
+	private IFeatureProvider<S> provider(final Iterable<String> names, final double defaultValue) {
+		final List<Pair<String, String>> features = new LinkedList<>();
+		for (final CharSequence feat : names) {
+			features.add(new Pair<>(feat.toString(), ""));
+		}
+		final IFeatureProvider<S> prov = new GeneralFeatureProvider<S>("features", defaultValue) {
+			@Override
+			protected List<Pair<String, String>> getFeatures() {
+				return features;
+			}
 
-            @Override
-            public Features features(final S instance, final boolean isTraining) {
-                return ((AnonymousSample) instance).loadFeatures();
-            }
-        };
-        if (useDivFeaturesProvider) {
-            return new AggregateFeatureProvider<>("features", defaultValue, prov,
-                    new DivFeaturesProvider<>(prov, defaultValue));
-        }
-        return new AggregateFeatureProvider<>("features", defaultValue, prov);
-    }
+			@Override
+			public Features features(final S instance, final boolean isTraining) {
+				return ((AnonymousSample) instance).loadFeatures();
+			}
+		};
+		final List<IFeatureProvider<S>> providers = new ArrayList<>(2);
+		providers.add(prov);
+		if (useDivFeaturesProvider) {
+			providers.add(new DivFeaturesProvider<>(prov, defaultValue));
+		}
+		return new AggregateFeatureProvider<>("features", defaultValue, providers);
+	}
 
 }

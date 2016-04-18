@@ -18,7 +18,6 @@ package com.insightml.evaluation.functions;
 import com.insightml.data.samples.ISample;
 
 public final class RMSLE extends AbstractObjectiveFunctionFrame<Object, Object> {
-
 	private static final long serialVersionUID = -6151302549655675505L;
 
 	@Override
