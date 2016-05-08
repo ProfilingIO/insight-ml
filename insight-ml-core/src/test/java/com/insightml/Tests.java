@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.junit.Assert;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.samples.ISample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
 import com.insightml.evaluation.simulation.CrossValidation;
@@ -57,7 +57,7 @@ public final class Tests {
 				"cvr", "false", "epochs", "10", "rank", "RANKBOOST", "score", "P");
 	}
 
-	public static <I extends AnonymousSample, E extends Serializable> double testLearner2(final ILearner learner,
+	public static <I extends SimpleSample, E extends Serializable> double testLearner2(final ILearner learner,
 			final TestData testData, final IObjectiveFunction<? super I, ? super E> objective, final Double expected) {
 		IDataset instances;
 		switch (testData) {
@@ -73,12 +73,12 @@ public final class Tests {
 		return testLearner(new LearnerPipeline<>(learner, 1.0), instances, objective, expected);
 	}
 
-	public static <I extends AnonymousSample, E extends Serializable> double testLearner(final ILearner learner,
+	public static <I extends SimpleSample, E extends Serializable> double testLearner(final ILearner learner,
 			final IDataset instances, final IObjectiveFunction<? super I, ? super E> objective, final Double expected) {
 		return testLearner(new LearnerPipeline<>(learner, 1.0), instances, objective, expected);
 	}
 
-	public static <I extends AnonymousSample, E extends Serializable> double testLearner(final LearnerPipeline learner,
+	public static <I extends SimpleSample, E extends Serializable> double testLearner(final LearnerPipeline learner,
 			final IDataset instances, final IObjectiveFunction<? super I, ? super E> objective, final Double expected) {
 		final double result = cv(instances, learner, new IObjectiveFunction[] { objective }).getNormalizedResult();
 		if (expected != null) {

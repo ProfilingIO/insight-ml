@@ -18,7 +18,7 @@ package com.insightml.models.trees;
 import org.junit.Test;
 
 import com.insightml.TestDatasets;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.models.ModelBenchmark;
 import com.insightml.models.meta.GBRT;
@@ -30,7 +30,7 @@ public final class RegTreeLearnerTest {
 
 	@Test
 	public void test() {
-		final ModelBenchmark<AnonymousSample, Double> benchmark = new ModelBenchmark<>(TestDatasets.createNumeric(),
+		final ModelBenchmark<SimpleSample, Double> benchmark = new ModelBenchmark<>(TestDatasets.createNumeric(),
 				new RMSE());
 		benchmark.addLearner(new OLS(), -0.75341);
 		benchmark.addLearner(new RegTree(7, 12), -0.72892);

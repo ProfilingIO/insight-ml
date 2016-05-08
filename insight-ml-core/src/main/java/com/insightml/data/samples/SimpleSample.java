@@ -19,8 +19,7 @@ import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Check;
 
-public class AnonymousSample implements ISample, Cloneable {
-
+public class SimpleSample implements ISample, Cloneable {
 	private static final long serialVersionUID = 4596410329818803518L;
 
 	private final int id;
@@ -28,7 +27,7 @@ public class AnonymousSample implements ISample, Cloneable {
 	private final double[] features;
 	private final String[] featureNames;
 
-	public AnonymousSample(final int id, final Object[] label, final double[] features, final String[] featureNames) {
+	public SimpleSample(final int id, final Object[] label, final double[] features, final String[] featureNames) {
 		Check.equals(features.length, featureNames.length, "features");
 		this.id = id;
 		labels = label;

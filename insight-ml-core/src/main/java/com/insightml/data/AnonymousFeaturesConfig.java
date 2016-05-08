@@ -28,13 +28,13 @@ import com.insightml.data.features.DivFeaturesProvider;
 import com.insightml.data.features.GeneralFeatureProvider;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.models.Features;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.types.collections.ArrayIterator;
 
-public final class AnonymousFeaturesConfig<S extends AnonymousSample, O> extends FeaturesConfig<S, O> {
+public final class AnonymousFeaturesConfig<S extends SimpleSample, O> extends FeaturesConfig<S, O> {
 
 	private static final long serialVersionUID = -8466353461597201244L;
 
@@ -91,7 +91,7 @@ public final class AnonymousFeaturesConfig<S extends AnonymousSample, O> extends
 
 			@Override
 			public Features features(final S instance, final boolean isTraining) {
-				return ((AnonymousSample) instance).loadFeatures();
+				return ((SimpleSample) instance).loadFeatures();
 			}
 		};
 		final List<IFeatureProvider<S>> providers = new ArrayList<>(2);

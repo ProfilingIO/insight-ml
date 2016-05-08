@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.insightml.data.SimpleDataset;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 
-public class TestInstance extends AnonymousSample {
+public class TestInstance extends SimpleSample {
 
     private static final long serialVersionUID = -4381058641738370505L;
 

@@ -22,7 +22,7 @@ import java.util.Random;
 
 import com.insightml.data.IDataset;
 import com.insightml.data.SimpleDataset;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.utils.AnonymousSamplesReader;
 import com.insightml.evaluation.functions.IObjectiveFunction;
 import com.insightml.evaluation.functions.ObjectiveFunctions;
@@ -40,23 +40,23 @@ public final class TestDatasets {
 		return instances;
 	}
 
-	public static SimpleDataset<AnonymousSample, Double, Double> createNumeric() {
+	public static SimpleDataset<SimpleSample, Double, Double> createNumeric() {
 		return createNumeric("data/winequality-white.csv.gz", ';', 12, 11);
 	}
 
-	public static SimpleDataset<AnonymousSample, Double, Double> numericCommunities() {
+	public static SimpleDataset<SimpleSample, Double, Double> numericCommunities() {
 		return createNumeric("../data/communities.data", ';', 102, 101);
 	}
 
-	public static SimpleDataset<AnonymousSample, Double, Double> createNumeric(final String file, final char split,
+	public static SimpleDataset<SimpleSample, Double, Double> createNumeric(final String file, final char split,
 			final int numColumns, final int labelIndex) {
 		return SimpleDataset
-				.create(new AnonymousSamplesReader<>(null, labelIndex, split, numColumns, false, AnonymousSample.class)
+				.create(new AnonymousSamplesReader<>(null, labelIndex, split, numColumns, false, SimpleSample.class)
 						.run(new File(file)));
 	}
 
-	public static SimpleDataset<AnonymousSample, Double, ?> createNumeric(final int numSamples, final int numFeatures) {
-		final List<AnonymousSample> list = new LinkedList<>();
+	public static SimpleDataset<SimpleSample, Double, ?> createNumeric(final int numSamples, final int numFeatures) {
+		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		final String[] names = new String[numFeatures];
 		for (int j = 0; j < numFeatures; ++j) {
@@ -73,8 +73,8 @@ public final class TestDatasets {
 		return SimpleDataset.create(list);
 	}
 
-	public static SimpleDataset<AnonymousSample, Double, Double> createNominal() {
-		final List<AnonymousSample> list = new LinkedList<>();
+	public static SimpleDataset<SimpleSample, Double, Double> createNominal() {
+		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		for (int i = 0; i < 400; ++i) {
 			final int random = rnd.nextInt(3);
@@ -85,8 +85,8 @@ public final class TestDatasets {
 		return SimpleDataset.create(list);
 	}
 
-	public static SimpleDataset<AnonymousSample, Double, Double> createBoolean() {
-		final List<AnonymousSample> list = new LinkedList<>();
+	public static SimpleDataset<SimpleSample, Double, Double> createBoolean() {
+		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		for (int i = 0; i < 2000; ++i) {
 			final double random = rnd.nextDouble();
@@ -95,12 +95,12 @@ public final class TestDatasets {
 		return SimpleDataset.create(list);
 	}
 
-	private static AnonymousSample createInstance(final Object[] label, final double offset, final Random random) {
+	private static SimpleSample createInstance(final Object[] label, final double offset, final Random random) {
 		return createInstance(label, offset + 7 + random.nextDouble(), offset + 3 + random.nextDouble(),
 				offset + 5 + random.nextDouble(), offset + 1 + random.nextDouble(), offset + 9 + random.nextDouble());
 	}
 
-	private static AnonymousSample createInstance(final Object[] label, final double... f) {
+	private static SimpleSample createInstance(final Object[] label, final double... f) {
 		final String[] names = new String[5];
 		for (int i = 0; i < 5; ++i) {
 			names[i] = "f" + (i + 1);

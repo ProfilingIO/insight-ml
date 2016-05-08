@@ -19,14 +19,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.io.AbstractImporter;
 import com.insightml.utils.types.collections.DoubleArray;
 import com.insightml.utils.types.collections.IList;
 
-public final class AnonymousSamplesReader<S extends AnonymousSample> extends
+public final class AnonymousSamplesReader<S extends SimpleSample> extends
         AbstractImporter<S, Double> {
 
     private int id;

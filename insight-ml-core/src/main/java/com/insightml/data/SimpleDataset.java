@@ -16,7 +16,7 @@
 package com.insightml.data;
 
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.samples.ISample;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
@@ -33,7 +33,7 @@ public final class SimpleDataset<I extends ISample, E, O> extends AbstractDatase
         this.config = config;
     }
 
-    public static <S extends AnonymousSample, E, O> SimpleDataset<S, E, O> create(
+    public static <S extends SimpleSample, E, O> SimpleDataset<S, E, O> create(
             final Iterable<S> instances) {
         return new SimpleDataset("SimpleDataset", instances, new AnonymousFeaturesConfig<>(
                 instances, -9999999.0, false, new IgnoreFeatureFilter()));

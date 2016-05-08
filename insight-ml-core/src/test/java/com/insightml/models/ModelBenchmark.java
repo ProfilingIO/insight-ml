@@ -21,11 +21,11 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.Tests;
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
 import com.insightml.utils.types.collections.PairList;
 
-public final class ModelBenchmark<I extends AnonymousSample, E extends Serializable> {
+public final class ModelBenchmark<I extends SimpleSample, E extends Serializable> {
 
 	private final IDataset instances;
 	private final IObjectiveFunction objective;

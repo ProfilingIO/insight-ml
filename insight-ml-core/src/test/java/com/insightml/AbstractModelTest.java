@@ -22,7 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.AnonymousSample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.samples.ISample;
 import com.insightml.evaluation.functions.Accuracy;
 import com.insightml.evaluation.functions.IObjectiveFunction;
@@ -49,8 +49,8 @@ public abstract class AbstractModelTest {
 	}
 
 	private static void test(final Pair<? extends ILearner, Double> tuple,
-			final IDataset<AnonymousSample, Double, ?> instances,
-			final IObjectiveFunction<? super AnonymousSample, ? super Serializable> objective) {
+			final IDataset<SimpleSample, Double, ?> instances,
+			final IObjectiveFunction<? super SimpleSample, ? super Serializable> objective) {
 		if (tuple != null) {
 			final double expected = tuple.getSecond();
 			Assert.assertTrue(expected + " > -0.82", expected > -0.82);

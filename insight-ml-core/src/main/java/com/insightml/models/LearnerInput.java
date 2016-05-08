@@ -24,7 +24,6 @@ import com.insightml.data.samples.Samples;
 import com.insightml.utils.types.Proxy;
 
 public final class LearnerInput<S extends ISample, E, O> {
-
 	private final Supplier<ISamples<S, E>> train;
 	public final ISamples<S, E> valid;
 	public final int labelIndex;
@@ -32,12 +31,7 @@ public final class LearnerInput<S extends ISample, E, O> {
 	public final FeaturesConfig<S, O> config;
 
 	public LearnerInput(final ISamples<S, E> train, final ISamples<S, E> valid, final int labelIndex) {
-		this.train = new Supplier<ISamples<S, E>>() {
-			@Override
-			public ISamples<S, E> get() {
-				return train;
-			}
-		};
+		this.train = () -> train;
 		this.valid = valid;
 		this.labelIndex = labelIndex;
 		this.config = null;

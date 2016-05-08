@@ -26,9 +26,14 @@ public final class RandomForest extends Bagging<ISample> {
 		super(arguments, GBRT.getLearner(arguments));
 	}
 
-	public RandomForest(final int bags, final int minDepth, final int maxDepth, final int minObs, final double isample,
+	public RandomForest(final int trees, final int depth, final int minObs, final double isample, final double fsample,
+			final VoteStrategy strategy) {
+		this(trees, depth, depth, minObs, isample, fsample, strategy);
+	}
+
+	public RandomForest(final int trees, final int minDepth, final int maxDepth, final int minObs, final double isample,
 			final double fsample, final VoteStrategy strategy) {
-		super(bags, isample, fsample, strategy, GBRT.getLearner(minDepth, maxDepth, minObs));
+		super(trees, isample, fsample, strategy, GBRT.getLearner(minDepth, maxDepth, minObs));
 	}
 
 	@Override
