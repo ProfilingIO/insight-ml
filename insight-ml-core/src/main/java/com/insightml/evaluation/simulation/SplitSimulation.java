@@ -19,9 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
 import com.insightml.utils.Utils;
-import com.insightml.utils.Pair;
 import com.insightml.utils.io.IDatabase;
 
 public final class SplitSimulation<I extends ISample> extends AbstractSimulation<I> {

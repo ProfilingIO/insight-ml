@@ -20,9 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.ISamples;
-import com.insightml.utils.Pair;
 
 final class Gini extends AbstractIndependentLabelsObjectiveFunction<Object, Object> {
 

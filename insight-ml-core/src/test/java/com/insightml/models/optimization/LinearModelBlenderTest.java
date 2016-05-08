@@ -15,6 +15,7 @@
  */
 package com.insightml.models.optimization;
 
+import org.apache.commons.math3.util.Pair;
 import org.junit.Ignore;
 
 import com.insightml.AbstractModelTest;
@@ -23,9 +24,7 @@ import com.insightml.evaluation.functions.LogLoss;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.math.distributions.IDiscreteDistribution;
 import com.insightml.models.ILearner;
-import com.insightml.models.optimization.LinearModelBlender;
 import com.insightml.models.regression.OLS;
-import com.insightml.utils.Pair;
 
 @Ignore
 public final class LinearModelBlenderTest extends AbstractModelTest {

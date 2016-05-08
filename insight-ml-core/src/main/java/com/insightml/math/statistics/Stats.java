@@ -68,6 +68,9 @@ public final class Stats extends AbstractClass implements IStats {
 
 	/**
 	 * Unsynchronized. Only call directly when sure about it!
+	 *
+	 * @param othr
+	 *            Another stats object to add to the current stats.
 	 */
 	public void add(final IStats othr) {
 		final Stats other = (Stats) othr;
@@ -192,8 +195,7 @@ public final class Stats extends AbstractClass implements IStats {
 		if (getN() == 1) {
 			return "{" + formatter.format(getSum()) + "," + formatter.format(getWeightedSum()) + "}";
 		}
-		return getN()
-				+ (getN() > 0 ? ", " + formatter.format(getSum()) + ", " + formatter.format(getMean()) + " ["
-						+ formatter.format(getMin()) + ", " + formatter.format(getMax()) + "]" : "");
+		return getN() + (getN() > 0 ? ", " + formatter.format(getSum()) + ", " + formatter.format(getMean()) + " ["
+				+ formatter.format(getMin()) + ", " + formatter.format(getMax()) + "]" : "");
 	}
 }

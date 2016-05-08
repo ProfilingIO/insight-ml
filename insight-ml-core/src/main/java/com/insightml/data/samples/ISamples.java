@@ -17,40 +17,40 @@ package com.insightml.data.samples;
 
 import java.util.Random;
 
-import com.insightml.utils.Pair;
+import org.apache.commons.math3.util.Pair;
 
 public interface ISamples<S extends ISample, E> extends Iterable<S> {
 
-    S get(int i);
+	S get(int i);
 
-    int getId(int i);
+	int getId(int i);
 
-    int size();
+	int size();
 
-    int numLabels();
+	int numLabels();
 
-    E[] expected(int labelIndex);
+	E[] expected(int labelIndex);
 
-    double[] weights(int labelIndex);
+	double[] weights(int labelIndex);
 
-    int numFeatures();
+	int numFeatures();
 
-    String[] featureNames();
+	String[] featureNames();
 
-    double[][] features();
+	double[][] features();
 
-    int[][] orderedIndexes();
+	int[][] orderedIndexes();
 
-    ISamples<S, E> subset(int[] indexes);
+	ISamples<S, E> subset(int[] indexes);
 
-    ISamples<S, E> subset(int from, int to);
+	ISamples<S, E> subset(int from, int to);
 
-    Pair<ISamples<S, E>, ISamples<S, E>> sample(double ratio, Random random);
+	Pair<ISamples<S, E>, ISamples<S, E>> sample(double ratio, Random random);
 
-    ISamples<S, E> filterFeatures(boolean[] keep);
+	ISamples<S, E> filterFeatures(boolean[] keep);
 
-    ISamples<S, E> sampleFeatures(double ratio, Random random);
+	ISamples<S, E> sampleFeatures(double ratio, Random random);
 
-    ISamples<S, E> randomize(Random random);
+	ISamples<S, E> randomize(Random random);
 
 }

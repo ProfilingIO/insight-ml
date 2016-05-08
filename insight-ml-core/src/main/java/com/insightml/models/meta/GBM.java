@@ -18,6 +18,7 @@ package com.insightml.models.meta;
 import java.util.Random;
 
 import org.apache.commons.math3.exception.ConvergenceException;
+import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
@@ -33,9 +34,8 @@ import com.insightml.models.general.ConstantModel;
 import com.insightml.models.regression.SimpleRegression;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Arrays;
-import com.insightml.utils.Utils;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.Pair;
+import com.insightml.utils.Utils;
 import com.insightml.utils.types.collections.PairList;
 
 public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
@@ -85,8 +85,8 @@ public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
 				continue;
 			}
 			try {
-				final IModel<ISample, Double> fit = learner[i % learner.length].run(new LearnerInput(subset, null,
-						labelIndex));
+				final IModel<ISample, Double> fit = learner[i % learner.length]
+						.run(new LearnerInput(subset, null, labelIndex));
 				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, i + 1, labelIndex);
 				steps.add(fit, shrinkage * update.getFirst());
 				preds = update.getSecond();
@@ -104,9 +104,8 @@ public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
 			optim[i] = 1;
 		}
 		final double result = findGamma(exp, weights, preds, optim, 0.0000000001, labelIndex);
-		logger.info("[0] "
-				+ objective.label(Arrays.cast(updatePredictions(preds, optim, result)), exp, weights, null, labelIndex)
-				.getMean());
+		logger.info("[0] " + objective
+				.label(Arrays.cast(updatePredictions(preds, optim, result)), exp, weights, null, labelIndex).getMean());
 		return new ConstantModel<>(result);
 	}
 
@@ -120,34 +119,20 @@ public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
 	private Pair<Double, double[]> fitGamma(final IModel<ISample, Double> fit, final double[] preds,
 			final ISamples<ISample, Object> instances, final int it, final int labelIndex) {
 		final double[] optim = Arrays.cast(fit.apply(instances));
-		final double gamma = findGamma(instances.expected(labelIndex),
-				instances.weights(labelIndex),
-				preds,
-				optim,
-				0.000000001,
-				labelIndex);
+		final double gamma = findGamma(instances.expected(labelIndex), instances.weights(labelIndex), preds, optim,
+				0.000000001, labelIndex);
 		final double[] update = updatePredictions(preds, optim, gamma * argument("shrink"));
 		if (it % 100 == 0) {
-			logger.info("["
-					+ it
-					+ "] "
-					+ objective.label(Arrays.cast(update),
-							instances.expected(labelIndex),
-							instances.weights(labelIndex),
-							instances,
-							labelIndex).getMean());
+			logger.info("[" + it + "] " + objective.label(Arrays.cast(update), instances.expected(labelIndex),
+					instances.weights(labelIndex), instances, labelIndex).getMean());
 		}
 		return new Pair<>(gamma, update);
 	}
 
 	private double findGamma(final Object[] exp, final double[] weights, final double[] preds, final double[] optim,
 			final double prec, final int labelIndex) {
-		return true ? fitSquares(exp, weights, preds, optim) : fitObjective(exp,
-				weights,
-				preds,
-				optim,
-				prec,
-				labelIndex);
+		return true ? fitSquares(exp, weights, preds, optim)
+				: fitObjective(exp, weights, preds, optim, prec, labelIndex);
 	}
 
 	private static double fitSquares(final Object[] expected, final double[] weights, final double[] preds,
@@ -164,11 +149,9 @@ public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
 		return new AbstractOptimizable(10000, prec, -9999, 9999) {
 			@Override
 			public double value(final double[] point) {
-				return objective.normalize(objective.label(Arrays.cast(updatePredictions(preds, optim, point[0])),
-						exp,
-						weights,
-						null,
-						labelIndex).getMean());
+				return objective.normalize(objective
+						.label(Arrays.cast(updatePredictions(preds, optim, point[0])), exp, weights, null, labelIndex)
+						.getMean());
 			}
 		}.max().getFirst()[0];
 	}

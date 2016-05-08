@@ -18,6 +18,7 @@ package com.insightml.evaluation.simulation;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,6 @@ import com.insightml.models.ILearnerPipeline;
 import com.insightml.models.ModelPipeline;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Check;
-import com.insightml.utils.Pair;
 import com.insightml.utils.io.IDatabase;
 import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;

@@ -19,22 +19,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.insightml.utils.Pair;
+import org.apache.commons.math3.util.Pair;
 
 public final class ThreadedClient extends AbstractClient {
 
-    @Override
-    protected <O> Collection<O> execute(final Iterable<IJob<O>> jobs) {
-        final List<O> values = new LinkedList<>();
-        for (final Pair<IJob<O>, O> val : new Threaded<IJob<O>, O>() {
-            @Override
-            protected O exec(final int i, final IJob<O> input) throws Exception {
-                return input.run();
-            }
-        }.run(jobs, 1)) {
-            values.add(val.getSecond());
-        }
-        return values;
-    }
+	@Override
+	protected <O> Collection<O> execute(final Iterable<IJob<O>> jobs) {
+		final List<O> values = new LinkedList<>();
+		for (final Pair<IJob<O>, O> val : new Threaded<IJob<O>, O>() {
+			@Override
+			protected O exec(final int i, final IJob<O> input) throws Exception {
+				return input.run();
+			}
+		}.run(jobs, 1)) {
+			values.add(val.getSecond());
+		}
+		return values;
+	}
 
 }

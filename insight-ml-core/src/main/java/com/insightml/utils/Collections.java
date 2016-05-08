@@ -16,7 +16,6 @@
 package com.insightml.utils;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -29,9 +28,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.commons.math3.util.Pair;
+
 public final class Collections {
 
-	public static enum SortOrder {
+	public enum SortOrder {
 		ASCENDING, DESCENDING
 	}
 
@@ -63,7 +64,8 @@ public final class Collections {
 	public static <T, N extends Number> LinkedList<Pair<T, N>> getMax(final Iterable<Pair<T, N>> map) {
 		LinkedList<Pair<T, N>> maxEntry = new LinkedList<>();
 		for (final Pair<T, N> entry : map) {
-			if (maxEntry.size() == 0 || entry.getSecond().doubleValue() > maxEntry.getFirst().getSecond().doubleValue()) {
+			if (maxEntry.size() == 0
+					|| entry.getSecond().doubleValue() > maxEntry.getFirst().getSecond().doubleValue()) {
 				maxEntry = new LinkedList<>();
 				maxEntry.add(entry);
 			} else if (entry.getSecond().doubleValue() == maxEntry.getFirst().getSecond().doubleValue()) {
@@ -84,15 +86,12 @@ public final class Collections {
 		for (final T item : items) {
 			list.add(item);
 		}
-		java.util.Collections.sort(list, new Comparator<T>() {
-			@Override
-			public int compare(final T arg0, final T arg1) {
-				final int comp = arg0.compareTo(arg1);
-				if (comp == 0) {
-					throw new IllegalStateException(arg0 + ", " + arg1);
-				}
-				return comp;
+		java.util.Collections.sort(list, (arg0, arg1) -> {
+			final int comp = arg0.compareTo(arg1);
+			if (comp == 0) {
+				throw new IllegalStateException(arg0 + ", " + arg1);
 			}
+			return comp;
 		});
 		return list;
 	}
@@ -102,91 +101,76 @@ public final class Collections {
 		for (final T item : items) {
 			list.add(item);
 		}
-		java.util.Collections.sort(list, new Comparator<T>() {
-			@Override
-			public int compare(final T arg0, final T arg1) {
-				final int comp = arg1.compareTo(arg0);
-				if (comp == 0) {
-					throw new IllegalStateException(arg0 + ", " + arg1);
-				}
-				return comp;
+		java.util.Collections.sort(list, (arg0, arg1) -> {
+			final int comp = arg1.compareTo(arg0);
+			if (comp == 0) {
+				throw new IllegalStateException(arg0 + ", " + arg1);
 			}
+			return comp;
 		});
 		return list;
 	}
 
 	public static <T, N extends Number> LinkedList<Pair<T, N>> sortDescending2(final List<Pair<T, N>> list) {
 		final LinkedList<Pair<T, N>> newList = new LinkedList(list);
-		java.util.Collections.sort(newList, new Comparator<Pair<T, N>>() {
-			@Override
-			public int compare(final Pair<T, N> o1, final Pair<T, N> o2) {
-				int comp = Double.valueOf(o1.getSecond().doubleValue()).compareTo(o2.getSecond().doubleValue());
-				if (comp == 0) {
-					if (o1.getFirst() instanceof Comparable) {
-						comp = ((Comparable) o1.getFirst()).compareTo(o2.getFirst());
-						Check.state(comp != 0);
-					} else {
-						return 0;
-					}
+		java.util.Collections.sort(newList, (o1, o2) -> {
+			int comp = Double.valueOf(o1.getSecond().doubleValue()).compareTo(o2.getSecond().doubleValue());
+			if (comp == 0) {
+				if (o1.getFirst() instanceof Comparable) {
+					comp = ((Comparable) o1.getFirst()).compareTo(o2.getFirst());
+					Check.state(comp != 0);
+				} else {
+					return 0;
 				}
-				return comp > 0 ? -1 : 1;
 			}
+			return comp > 0 ? -1 : 1;
 		});
 		return newList;
 	}
 
 	public static <T, N extends Number> List<Pair<T, N>> sortDescendingIncomp(final List<Pair<T, N>> list) {
 		final List<Pair<T, N>> newList = new LinkedList<>(list);
-		java.util.Collections.sort(newList, new Comparator<Pair<T, N>>() {
-			@Override
-			public int compare(final Pair<T, N> o1, final Pair<T, N> o2) {
-				final int comp = Double.valueOf(o1.getSecond().doubleValue()).compareTo(o2.getSecond().doubleValue());
-				if (comp == 0) {
-					// throw new IllegalStateException();
-					return 0;
-				}
-				return comp > 0 ? -1 : 1;
+		java.util.Collections.sort(newList, (o1, o2) -> {
+			final int comp = Double.valueOf(o1.getSecond().doubleValue()).compareTo(o2.getSecond().doubleValue());
+			if (comp == 0) {
+				// throw new IllegalStateException();
+				return 0;
 			}
+			return comp > 0 ? -1 : 1;
 		});
 		return newList;
 	}
 
 	public static <T, N extends Number> Map<T, N> sort(final Map<T, N> map, final SortOrder order) {
-		final TreeMap<T, N> sorted = new TreeMap<>(new Comparator<T>() {
-			@Override
-			public int compare(final T o1, final T o2) {
-				final double o1Value = map.get(o1).doubleValue();
-				final double o2Value = map.get(o2).doubleValue();
-				if (o1Value == o2Value) {
-					if (o1 instanceof Comparable) {
-						return ((Comparable<T>) o1).compareTo(o2);
-					}
-					// TODO: This can be very unexpected!!!
-					return Integer.compare(o1.hashCode(), o2.hashCode());
+		final TreeMap<T, N> sorted = new TreeMap<>((o1, o2) -> {
+			final double o1Value = map.get(o1).doubleValue();
+			final double o2Value = map.get(o2).doubleValue();
+			if (o1Value == o2Value) {
+				if (o1 instanceof Comparable) {
+					return ((Comparable<T>) o1).compareTo(o2);
 				}
-				if (order == SortOrder.DESCENDING) {
-					return o1Value < o2Value ? 1 : -1;
-				}
-				return o1Value > o2Value ? 1 : -1;
+				// TODO: This can be very unexpected!!!
+				return Integer.compare(o1.hashCode(), o2.hashCode());
 			}
+			if (order == SortOrder.DESCENDING) {
+				return o1Value < o2Value ? 1 : -1;
+			}
+			return o1Value > o2Value ? 1 : -1;
 		});
 		sorted.putAll(map);
 		return sorted;
 	}
 
 	public static <T, N extends Comparable<N>> Map<T, N> sortAsc(final Map<T, N> map) {
-		final TreeMap<T, N> sorted = new TreeMap<>(new Comparator<T>() {
-			@Override
-			public int compare(final T o1, final T o2) {
-				if (o1 == o2) {
-					return 0;
-				}
-				final N v1 = map.get(o1);
-				final N v2 = map.get(o2);
-				final int comp = v1.compareTo(v2);
-				Check.state(comp != 0);
-				return comp;
+		final TreeMap<T, N> sorted = new TreeMap<>((o1, o2) -> {
+			if (o1 == o2) {
+				return 0;
 			}
+			final N v1 = map.get(o1);
+			final N v2 = map.get(o2);
+			final int comp = v1.compareTo(v2);
+			Check.state(comp != 0);
+			return comp;
 		});
 		sorted.putAll(map);
 		return sorted;

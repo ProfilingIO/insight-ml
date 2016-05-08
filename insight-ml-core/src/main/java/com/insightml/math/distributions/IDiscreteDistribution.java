@@ -18,14 +18,14 @@ package com.insightml.math.distributions;
 import java.io.Serializable;
 import java.util.Random;
 
-import com.insightml.utils.Pair;
+import org.apache.commons.math3.util.Pair;
 
 public interface IDiscreteDistribution<T> extends Serializable {
 
-    double get(T key);
+	double get(T key);
 
-    T sample(Random random);
+	T sample(Random random);
 
-    Pair<T, Double> getMax();
+	Pair<T, Double> getMax();
 
 }

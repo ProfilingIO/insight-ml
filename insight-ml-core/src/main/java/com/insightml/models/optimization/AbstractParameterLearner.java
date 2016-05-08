@@ -41,10 +41,8 @@ abstract class AbstractParameterLearner<I extends ISample, E, T, C> extends Abst
 		final int index = initial.length > 1 ? input.labelIndex : 0;
 		final ParameterModel<I, T, C> model = new ParameterModel<>(train, initial[index], input.labelIndex, this);
 		final Optimizable trainObjective = objective(model, (ISamples<I, E>) input.getTrain(), train, input.labelIndex);
-		final Optimizable testObjective = input.valid != null ? objective(model,
-				(ISamples<I, E>) input.valid,
-				train,
-				input.labelIndex) : null;
+		final Optimizable testObjective = input.valid != null
+				? objective(model, (ISamples<I, E>) input.valid, train, input.labelIndex) : null;
 		final Triple<double[], Double, Double> params = (testObjective != null ? testObjective : trainObjective)
 				.max(testObjective != null ? trainObjective : testObjective, initial[index]);
 		model.params = params.getFirst();
@@ -57,9 +55,6 @@ abstract class AbstractParameterLearner<I extends ISample, E, T, C> extends Abst
 		return new ObjectiveFunc<>(model, samples, cachable, initial, objective, labelIndex);
 	}
 
-	/**
-	 * @return Some object which is created once for the training data.
-	 */
 	public abstract T train(ISamples<I, E> train, int labelIndex);
 
 	protected abstract C[] computeCachable(ISamples<I, ?> instances, T train);

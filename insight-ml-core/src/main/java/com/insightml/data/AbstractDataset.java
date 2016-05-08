@@ -18,8 +18,9 @@ package com.insightml.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.AbstractModule;
 
 public abstract class AbstractDataset<I extends ISample, E, P> extends AbstractModule implements IDataset<I, E, P> {

@@ -17,6 +17,7 @@ package com.insightml;
 
 import java.io.Serializable;
 
+import org.apache.commons.math3.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,38 +30,37 @@ import com.insightml.evaluation.functions.LogLoss;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.math.distributions.IDiscreteDistribution;
 import com.insightml.models.ILearner;
-import com.insightml.utils.Pair;
 
 public abstract class AbstractModelTest {
 
-    @Test
-    public final void testNumeric() {
-        test(getNumeric(), TestDatasets.createNumeric(), new RMSE());
-    }
+	@Test
+	public final void testNumeric() {
+		test(getNumeric(), TestDatasets.createNumeric(), new RMSE());
+	}
 
-    @Test
-    public final void testBoolean() {
-        test(getBoolean(), TestDatasets.createBoolean(), new LogLoss(false));
-    }
+	@Test
+	public final void testBoolean() {
+		test(getBoolean(), TestDatasets.createBoolean(), new LogLoss(false));
+	}
 
-    @Test
-    public final void testNominal() {
-        test(getNominal(), TestDatasets.createNominal(), new Accuracy(0.5));
-    }
+	@Test
+	public final void testNominal() {
+		test(getNominal(), TestDatasets.createNominal(), new Accuracy(0.5));
+	}
 
-    private static void test(final Pair<? extends ILearner, Double> tuple,
-            final IDataset<AnonymousSample, Double, ?> instances,
-            final IObjectiveFunction<? super AnonymousSample, ? super Serializable> objective) {
-        if (tuple != null) {
-            final double expected = tuple.getSecond();
-            Assert.assertTrue(expected + " > -0.82", expected > -0.82);
-            Tests.testLearner(tuple.getFirst(), instances, objective, expected);
-        }
-    }
+	private static void test(final Pair<? extends ILearner, Double> tuple,
+			final IDataset<AnonymousSample, Double, ?> instances,
+			final IObjectiveFunction<? super AnonymousSample, ? super Serializable> objective) {
+		if (tuple != null) {
+			final double expected = tuple.getSecond();
+			Assert.assertTrue(expected + " > -0.82", expected > -0.82);
+			Tests.testLearner(tuple.getFirst(), instances, objective, expected);
+		}
+	}
 
-    protected abstract Pair<? extends ILearner<ISample, ? super Double, Double>, Double> getNumeric();
+	protected abstract Pair<? extends ILearner<ISample, ? super Double, Double>, Double> getNumeric();
 
-    protected abstract Pair<? extends ILearner<ISample, ? super Boolean, Double>, Double> getBoolean();
+	protected abstract Pair<? extends ILearner<ISample, ? super Boolean, Double>, Double> getBoolean();
 
-    protected abstract Pair<? extends ILearner<ISample, String, IDiscreteDistribution<String>>, Double> getNominal();
+	protected abstract Pair<? extends ILearner<ISample, String, IDiscreteDistribution<String>>, Double> getNominal();
 }

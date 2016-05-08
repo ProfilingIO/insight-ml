@@ -18,10 +18,11 @@ package com.insightml.models;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.collections.DoubleArray;
 
 public abstract class AbstractBasicDoubleLearner extends AbstractDoubleLearner<Double> {

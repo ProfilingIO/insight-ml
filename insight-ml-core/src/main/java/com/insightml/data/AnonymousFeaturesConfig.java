@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.features.AggregateFeatureProvider;
 import com.insightml.data.features.DivFeaturesProvider;
 import com.insightml.data.features.GeneralFeatureProvider;
@@ -29,7 +31,6 @@ import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.AnonymousSample;
 import com.insightml.models.Features;
 import com.insightml.utils.Check;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.types.collections.ArrayIterator;
 

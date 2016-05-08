@@ -17,6 +17,8 @@ package com.insightml.models.trees;
 
 import java.util.concurrent.RecursiveAction;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Vectors;
@@ -27,7 +29,6 @@ import com.insightml.models.LearnerInput;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.Pair;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class RegTree extends AbstractDoubleLearner<Double> {

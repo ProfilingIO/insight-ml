@@ -17,6 +17,8 @@ package com.insightml.models.meta;
 
 import java.util.Random;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.models.ILearner;
@@ -26,7 +28,6 @@ import com.insightml.models.LearnerInput;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.Pair;
 import com.insightml.utils.jobs.ParallelFor;
 
 public class Bagging<I extends ISample> extends AbstractEnsembleLearner<I, Object, Double> {

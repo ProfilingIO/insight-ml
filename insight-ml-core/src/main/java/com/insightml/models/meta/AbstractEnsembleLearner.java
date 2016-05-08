@@ -17,6 +17,8 @@ package com.insightml.models.meta;
 
 import java.util.Random;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.decorators.SamplesMapping;
@@ -24,10 +26,9 @@ import com.insightml.models.AbstractLearner;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerInput;
-import com.insightml.utils.Utils;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.Pair;
+import com.insightml.utils.Utils;
 
 public abstract class AbstractEnsembleLearner<S extends ISample, E, O> extends AbstractLearner<S, E, O> {
 

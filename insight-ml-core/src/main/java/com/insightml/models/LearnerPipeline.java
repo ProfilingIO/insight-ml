@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,6 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.evaluation.simulation.SplitSimulation;
 import com.insightml.evaluation.simulation.optimization.IFeatureSelection;
 import com.insightml.utils.Check;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.types.DoublePair;
 

@@ -15,25 +15,23 @@
  */
 package com.insightml.data.utils;
 
-import com.google.common.collect.Lists;
-import com.insightml.TestInstance;
-import com.insightml.data.samples.ISamples;
-import com.insightml.data.utils.InstancesFilter;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
+import com.insightml.TestInstance;
+import com.insightml.data.samples.ISamples;
+
 public final class InstancesFilterTest {
 
-    @Test
-    public void testInstanceFilter() {
-        final Iterable<TestInstance> instances =
-                TestInstance.create("labelA", "labelA", "labelA", "labelB", "labelB", "labelA");
-        final ISamples<TestInstance, ?> filtered =
-                InstancesFilter.filterBySmallestLabelSize(instances);
+	@Test
+	public void testInstanceFilter() {
+		final Iterable<TestInstance> instances = TestInstance.create("labelA", "labelA", "labelA", "labelB", "labelB",
+				"labelA");
+		final ISamples<TestInstance, ?> filtered = InstancesFilter.filterBySmallestLabelSize(instances);
 
-        Assert.assertEquals(6, Lists.newLinkedList(instances).size());
-        Assert.assertEquals(4, filtered.size());
-    }
+		Assert.assertEquals(6, Lists.newLinkedList(instances).size());
+		Assert.assertEquals(4, filtered.size());
+	}
 
 }

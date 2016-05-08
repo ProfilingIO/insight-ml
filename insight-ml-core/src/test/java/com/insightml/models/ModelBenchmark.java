@@ -17,11 +17,12 @@ package com.insightml.models;
 
 import java.io.Serializable;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.Tests;
 import com.insightml.data.IDataset;
 import com.insightml.data.samples.AnonymousSample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.collections.PairList;
 
 public final class ModelBenchmark<I extends AnonymousSample, E extends Serializable> {

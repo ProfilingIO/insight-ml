@@ -19,11 +19,12 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Samples;
 import com.insightml.utils.Check;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.AbstractClass;
 
 public class Predictions<E, P> extends AbstractClass implements Serializable {

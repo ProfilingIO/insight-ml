@@ -19,36 +19,37 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import com.insightml.utils.Pair;
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.types.collections.ArrayIterator;
 
 public abstract class Threaded<I, O> extends AbstractClass {
 
-    public final List<Pair<I, O>> run(final I[] input, final int directThreshold) {
-        return run(new ArrayIterator<>(input), directThreshold);
-    }
+	public final List<Pair<I, O>> run(final I[] input, final int directThreshold) {
+		return run(new ArrayIterator<>(input), directThreshold);
+	}
 
-    public final List<Pair<I, O>> run(final Iterable<? extends I> queue, final int directThreshold) {
-        final List<Callable<Pair<I, O>>> tasks = new LinkedList<>();
-        int i = -1;
-        for (final I it : queue) {
-            final int j = ++i;
-            tasks.add(new Callable<Pair<I, O>>() {
-                @Override
-                public Pair<I, O> call() {
-                    try {
-                        return new Pair<>(it, exec(j, it));
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                        throw new IllegalStateException(e);
-                    }
-                }
-            });
-        }
-        return new LinkedList<>(JobPool.invokeAll(tasks, directThreshold));
-    }
+	public final List<Pair<I, O>> run(final Iterable<? extends I> queue, final int directThreshold) {
+		final List<Callable<Pair<I, O>>> tasks = new LinkedList<>();
+		int i = -1;
+		for (final I it : queue) {
+			final int j = ++i;
+			tasks.add(new Callable<Pair<I, O>>() {
+				@Override
+				public Pair<I, O> call() {
+					try {
+						return new Pair<>(it, exec(j, it));
+					} catch (final Exception e) {
+						e.printStackTrace();
+						throw new IllegalStateException(e);
+					}
+				}
+			});
+		}
+		return new LinkedList<>(JobPool.invokeAll(tasks, directThreshold));
+	}
 
-    protected abstract O exec(int i, I input) throws Exception;
+	protected abstract O exec(int i, I input) throws Exception;
 
 }

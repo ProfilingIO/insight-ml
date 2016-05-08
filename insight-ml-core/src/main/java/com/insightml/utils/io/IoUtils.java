@@ -35,11 +35,12 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import com.insightml.utils.Check;
-import com.insightml.utils.Pair;
 
 public final class IoUtils {
 

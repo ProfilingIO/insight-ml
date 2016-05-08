@@ -23,121 +23,120 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import com.insightml.utils.Pair;
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.utils.types.AbstractClass;
 
-public final class PairList<F, S> extends AbstractClass implements Iterable<Pair<F, S>>,
-Serializable {
+public final class PairList<F, S> extends AbstractClass implements Iterable<Pair<F, S>>, Serializable {
 
-    private static final long serialVersionUID = 7289587127664569567L;
+	private static final long serialVersionUID = 7289587127664569567L;
 
-    private final LinkedList<Pair<F, S>> list = new LinkedList<>();
-    private final boolean allowDuplicateKeys;
+	private final LinkedList<Pair<F, S>> list = new LinkedList<>();
+	private final boolean allowDuplicateKeys;
 
-    public PairList() {
-        this.allowDuplicateKeys = false;
-    }
+	public PairList() {
+		this.allowDuplicateKeys = false;
+	}
 
-    public PairList(final boolean allowDuplicateKeys) {
-        this.allowDuplicateKeys = allowDuplicateKeys;
-    }
+	public PairList(final boolean allowDuplicateKeys) {
+		this.allowDuplicateKeys = allowDuplicateKeys;
+	}
 
-    public PairList(final Collection<Pair<F, S>> values) {
-        this();
-        list.addAll(values);
-    }
+	public PairList(final Collection<Pair<F, S>> values) {
+		this();
+		list.addAll(values);
+	}
 
-    public synchronized void add(final F first, final S second) {
-        if (!allowDuplicateKeys) {
-            for (final Pair<F, S> entry : list) {
-                if (first.equals(entry.getFirst())) {
-                    throw new IllegalStateException("(" + first + "," + second + ") equals "
-                            + entry);
-                }
-            }
-        }
-        list.add(Pair.create(first, second));
-    }
+	public synchronized void add(final F first, final S second) {
+		if (!allowDuplicateKeys) {
+			for (final Pair<F, S> entry : list) {
+				if (first.equals(entry.getFirst())) {
+					throw new IllegalStateException("(" + first + "," + second + ") equals " + entry);
+				}
+			}
+		}
+		list.add(Pair.create(first, second));
+	}
 
-    public void addAll(final PairList<F, S> lst) {
-        for (final Pair<F, S> entry : lst) {
-            add(entry.getFirst(), entry.getSecond());
-        }
-    }
+	public void addAll(final PairList<F, S> lst) {
+		for (final Pair<F, S> entry : lst) {
+			add(entry.getFirst(), entry.getSecond());
+		}
+	}
 
-    public Pair<F, S> get(final int index) {
-        return list.get(index);
-    }
+	public Pair<F, S> get(final int index) {
+		return list.get(index);
+	}
 
-    public Pair<F, S> getFirst() {
-        return list.isEmpty() ? null : list.getFirst();
-    }
+	public Pair<F, S> getFirst() {
+		return list.isEmpty() ? null : list.getFirst();
+	}
 
-    public Pair<F, S> getLast() {
-        return list.getLast();
-    }
+	public Pair<F, S> getLast() {
+		return list.getLast();
+	}
 
-    public int size() {
-        return list.size();
-    }
+	public int size() {
+		return list.size();
+	}
 
-    public void clear() {
-        list.clear();
-    }
+	public void clear() {
+		list.clear();
+	}
 
-    @Override
-    public Iterator<Pair<F, S>> iterator() {
-        return list.iterator();
-    }
+	@Override
+	public Iterator<Pair<F, S>> iterator() {
+		return list.iterator();
+	}
 
-    public PairList<F, S> subList(final int limit) {
-        return list.size() < limit ? this : new PairList<>(list.subList(0, limit));
-    }
+	public PairList<F, S> subList(final int limit) {
+		return list.size() < limit ? this : new PairList<>(list.subList(0, limit));
+	}
 
-    public LinkedList<Pair<F, S>> asList() {
-        return new LinkedList<>(list);
-    }
+	public LinkedList<Pair<F, S>> asList() {
+		return new LinkedList<>(list);
+	}
 
-    public Map<F, S> asMap() {
-        final Map<F, S> map = new LinkedHashMap<>();
-        for (final Pair<F, S> entry : list) {
-            // TODO: Check for duplicate keys!
-            map.put(entry.getFirst(), entry.getSecond());
-        }
-        return map;
-    }
+	public Map<F, S> asMap() {
+		final Map<F, S> map = new LinkedHashMap<>();
+		for (final Pair<F, S> entry : list) {
+			// TODO: Check for duplicate keys!
+			map.put(entry.getFirst(), entry.getSecond());
+		}
+		return map;
+	}
 
-    public Queue<F> keys() {
-        final Queue<F> values = new LinkedList<>();
-        for (final Pair<F, S> entry : list) {
-            values.add(entry.getFirst());
-        }
-        return values;
-    }
+	public Queue<F> keys() {
+		final Queue<F> values = new LinkedList<>();
+		for (final Pair<F, S> entry : list) {
+			values.add(entry.getFirst());
+		}
+		return values;
+	}
 
-    public LinkedList<S> values() {
-        final LinkedList<S> values = new LinkedList<>();
-        for (final Pair<F, S> entry : list) {
-            if (entry.getSecond() != null) {
-                values.add(entry.getSecond());
-            }
-        }
-        return values;
-    }
+	public LinkedList<S> values() {
+		final LinkedList<S> values = new LinkedList<>();
+		for (final Pair<F, S> entry : list) {
+			if (entry.getSecond() != null) {
+				values.add(entry.getSecond());
+			}
+		}
+		return values;
+	}
 
-    public boolean isEmpty() {
-        return list.isEmpty();
-    }
+	public boolean isEmpty() {
+		return list.isEmpty();
+	}
 
-    @Override
-    public boolean equals(final Object obj) {
-        final PairList<?, ?> oth = (PairList<?, ?>) obj;
-        return allowDuplicateKeys == oth.allowDuplicateKeys && list.equals(oth.list);
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		final PairList<?, ?> oth = (PairList<?, ?>) obj;
+		return allowDuplicateKeys == oth.allowDuplicateKeys && list.equals(oth.list);
+	}
 
-    @Override
-    public String toString() {
-        return list.toString() + ";" + allowDuplicateKeys;
-    }
+	@Override
+	public String toString() {
+		return list.toString() + ";" + allowDuplicateKeys;
+	}
 
 }

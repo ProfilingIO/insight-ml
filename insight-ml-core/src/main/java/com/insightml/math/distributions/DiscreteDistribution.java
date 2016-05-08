@@ -19,14 +19,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
+
+import org.apache.commons.math3.util.Pair;
 
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.utils.Check;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.AbstractClass;
-
-import java.util.Random;
 
 public final class DiscreteDistribution<T> extends AbstractClass
 		implements IDiscreteDistribution<T>, Iterable<Entry<T, Double>> {

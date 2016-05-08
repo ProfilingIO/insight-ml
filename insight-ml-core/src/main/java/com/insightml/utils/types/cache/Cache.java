@@ -25,10 +25,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.google.gson.annotations.Expose;
 import com.insightml.utils.Check;
 import com.insightml.utils.Maps;
-import com.insightml.utils.Pair;
 import com.insightml.utils.types.AbstractClass;
 
 public abstract class Cache<K, V> extends AbstractClass implements Iterable<Entry<K, V>>, Serializable {
