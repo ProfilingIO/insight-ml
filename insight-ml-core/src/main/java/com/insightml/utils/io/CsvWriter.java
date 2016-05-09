@@ -25,8 +25,7 @@ import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.ui.SimpleFormatter;
 
-public final class CsvWriter extends AbstractClass {
-
+public final class CsvWriter extends AbstractClass implements AutoCloseable {
 	private final BufferedWriter builder;
 	private final String[] expectedColumns;
 	private final char separator;
@@ -87,6 +86,7 @@ public final class CsvWriter extends AbstractClass {
 		return str.toString();
 	}
 
+	@Override
 	public void close() {
 		try {
 			builder.close();

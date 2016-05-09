@@ -21,16 +21,14 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.insightml.utils.io.CsvParser;
-
 @Ignore
 public final class CsvParserTest {
 
-    @Test
-    public void test() {
-        for (final String[] row : new CsvParser<>(',', 7).iterator(new File("../data/test.csv"))) {
-            Assert.assertTrue(row.length > 0);
-        }
-    }
+	@Test
+	public void test() {
+		for (final String[] row : new CsvParser<>(',', 7).iterator(new File("../data/test.csv"))) {
+			Assert.assertTrue(row.length > 0);
+		}
+	}
 
 }

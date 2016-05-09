@@ -15,21 +15,28 @@
  */
 package com.insightml.utils.io;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
 
-import com.google.common.collect.ImmutableMap;
-import com.insightml.utils.io.CsvWriter;
+import java.io.File;
 
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
+
 public final class CsvWriterTest {
 
-    @Test
-    public void test() {
-        final CsvWriter writer =
-                new CsvWriter(new File("../data/test-ouput.csv"), ',', true, "testA", "testB");
-        writer.addLine(ImmutableMap.of("testA", 4, "testB", 2));
-        writer.addLine(ImmutableMap.of("testA", 9, "testB", "muh"));
-    }
+	@Test
+	public void test() {
+		final File testOutput = new File("data/test-ouput.csv");
+		try (CsvWriter writer = new CsvWriter(testOutput, ',', true, "testA", "testB")) {
+			writer.addLine(ImmutableMap.of("testA", 4, "testB", 2));
+			writer.addLine(ImmutableMap.of("testA", 9, "testB", "muh"));
+		}
+
+		final String result = IoUtils.readFile(testOutput);
+		assertEquals("testA,testB\n4,2\n9,muh\n", result);
+
+		IoUtils.delete(testOutput);
+	}
 
 }
