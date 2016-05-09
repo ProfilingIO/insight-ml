@@ -18,13 +18,12 @@ package com.insightml.utils;
 import java.io.Serializable;
 import java.util.Map;
 
-public final class Arguments implements Serializable, IArguments {
-
+public final class Arguments implements IArguments {
 	private static final long serialVersionUID = 4806144248416561294L;
 
 	private final Map<String, Serializable> values = Maps.create(16);
 
-	public Arguments() {
+	Arguments() {
 	}
 
 	public Arguments(final String... args) {
@@ -47,7 +46,7 @@ public final class Arguments implements Serializable, IArguments {
 	}
 
 	@Override
-	public <T> T get(final String key) {
+	public <T extends Serializable> T get(final String key) {
 		Check.state(containsKey(key), key + " is not set.");
 		return (T) values.get(key);
 	}

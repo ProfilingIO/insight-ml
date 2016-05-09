@@ -55,8 +55,9 @@ public final class TestDatasets {
 
 	public static SimpleDataset<SimpleSample, Double, Double> numericCommunities() {
 		try {
-			return createNumeric(IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/communities.data")),
-					';', 102, 101);
+			return createNumeric(
+					IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/communities.data.gz")), ';', 102,
+					101);
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}

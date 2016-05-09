@@ -37,6 +37,8 @@ public interface IDataset<S extends ISample, E, O> extends IReporter {
 
 	FeaturesConfig<S, O> getFeaturesConfig(IArguments arguments);
 
-	void close();
+	default void close() {
+		// by default, datasets do not need to be closed
+	}
 
 }

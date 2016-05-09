@@ -19,76 +19,71 @@ import com.insightml.utils.types.AbstractClass;
 
 public abstract class AbstractSample<E> extends AbstractClass implements ISample, Cloneable {
 
-    private static final long serialVersionUID = -7239560442248089807L;
+	private static final long serialVersionUID = -7239560442248089807L;
 
-    private int id;
-    private E[] expected;
-    private float weight;
+	private int id;
+	private E[] expected;
+	private float weight;
 
-    protected AbstractSample() {
-    }
+	protected AbstractSample() {
+	}
 
-    protected AbstractSample(final int id, final E[] expected) {
-        this(id, expected, 1.0f);
-    }
+	protected AbstractSample(final int id, final E[] expected) {
+		this(id, expected, 1.0f);
+	}
 
-    protected AbstractSample(final int id, final E[] expected, final float weight) {
-        this.id = id;
-        this.expected = expected;
-        this.weight = weight;
-    }
+	protected AbstractSample(final int id, final E[] expected, final float weight) {
+		this.id = id;
+		this.expected = expected;
+		this.weight = weight;
+	}
 
-    @Override
-    public final int getId() {
-        return id;
-    }
+	@Override
+	public final int getId() {
+		return id;
+	}
 
-    @Override
-    public final E[] getExpected() {
-        return expected;
-    }
+	@Override
+	public final E[] getExpected() {
+		return expected;
+	}
 
-    @Override
-    public final E getExpected(final int index) {
-        return expected == null ? null : expected[index];
-    }
+	@Override
+	public final E getExpected(final int index) {
+		return expected == null ? null : expected[index];
+	}
 
-    @Override
-    public float getWeight(final int labelIndex) {
-        return weight;
-    }
+	@Override
+	public float getWeight(final int labelIndex) {
+		return weight;
+	}
 
-    @Override
-    public String getComment() {
-        return null;
-    }
+	@Override
+	public String getComment() {
+		return null;
+	}
 
-    @Override
-    public void writeInfo(final ISampleInfoBuilder builder,
-            final Iterable<? extends ISample> instances) {
-        throw new IllegalAccessError();
-    }
+	@Override
+	public void writeInfo(final ISampleInfoBuilder builder, final Iterable<? extends ISample> instances) {
+		throw new IllegalAccessError();
+	}
 
-    @Override
-    public final int hashCode() {
-        return getId();
-    }
+	@Override
+	public final int hashCode() {
+		return getId();
+	}
 
-    @Override
-    public final boolean equals(final Object o) {
-        if (!(o instanceof ISample)) {
-            throw new IllegalStateException("Tried to compare " + this + " to " + o + " ("
-                    + o.getClass() + ")");
-        }
-        return getId() == ((ISample) o).getId();
-    }
+	@Override
+	public final boolean equals(final Object o) {
+		if (!(o instanceof ISample)) {
+			throw new IllegalStateException("Tried to compare " + this + " to " + o + " (" + o.getClass() + ")");
+		}
+		return getId() == ((ISample) o).getId();
+	}
 
-    @Override
-    public final int compareTo(final ISample o) {
-        if (false && getId() == o.getId()) {
-            throw new IllegalArgumentException(this + " vs. " + o);
-        }
-        return Integer.valueOf(getId()).compareTo(o.getId());
-    }
+	@Override
+	public final int compareTo(final ISample o) {
+		return Integer.compare(getId(), o.getId());
+	}
 
 }

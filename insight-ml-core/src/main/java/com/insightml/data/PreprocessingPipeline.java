@@ -16,6 +16,7 @@
 package com.insightml.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
@@ -41,7 +42,7 @@ public final class PreprocessingPipeline<S extends ISample, E> extends AbstractC
 
 	public PreprocessingPipeline(final IFeatureProvider<S> provider, final IFeatureFilter filter,
 			final Normalization normalization) {
-		this.provider = provider;
+		this.provider = Check.notNull(provider);
 		this.filter = Check.notNull(filter);
 		this.normalization = normalization;
 	}
@@ -69,10 +70,10 @@ public final class PreprocessingPipeline<S extends ISample, E> extends AbstractC
 
 	@Override
 	public boolean equals(final Object obj) {
-		final PreprocessingPipeline<S, E> oth = (PreprocessingPipeline<S, E>) obj;
+		final PreprocessingPipeline<?, ?> oth = (PreprocessingPipeline<?, ?>) obj;
 		Check.state(provider.equals(oth.provider), provider);
 		Check.state(filter.equals(oth.filter));
-		return normalization == null && oth.normalization == null || normalization.equals(oth.normalization);
+		return Objects.equals(normalization, oth.normalization);
 	}
 
 	@Override

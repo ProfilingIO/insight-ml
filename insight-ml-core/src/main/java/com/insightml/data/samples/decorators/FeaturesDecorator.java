@@ -131,13 +131,11 @@ public final class FeaturesDecorator<S extends ISample, E> extends AbstractDecor
 	}
 
 	private static final class OrderItem {
-
 		final int index;
 
 		OrderItem(final int index) {
 			this.index = index;
 		}
-
 	}
 
 }

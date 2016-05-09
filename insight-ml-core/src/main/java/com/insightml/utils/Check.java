@@ -45,7 +45,7 @@ public final class Check {
 	}
 
 	public static String notEmpty(final String val, final Object output) {
-		state(!val.isEmpty());
+		state(!val.isEmpty(), output);
 		return val;
 	}
 

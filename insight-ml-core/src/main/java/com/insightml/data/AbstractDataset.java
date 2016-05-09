@@ -60,8 +60,4 @@ public abstract class AbstractDataset<I extends ISample, E, P> extends AbstractM
 		fields.add(new Pair<>("Description", getDescription()));
 		return fields.toString();
 	}
-
-	@Override
-	public void close() {
-	}
 }

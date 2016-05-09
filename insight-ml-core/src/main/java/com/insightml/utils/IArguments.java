@@ -15,26 +15,28 @@
  */
 package com.insightml.utils;
 
-public interface IArguments {
+import java.io.Serializable;
 
-    boolean bool(String key);
+public interface IArguments extends Serializable {
 
-    boolean bool(String key, boolean def);
+	boolean bool(String key);
 
-    int toInt(String key);
+	boolean bool(String key, boolean def);
 
-    Integer toInt(String key, Integer def);
+	int toInt(String key);
 
-    double toDouble(String key);
+	Integer toInt(String key, Integer def);
 
-    Double toDouble(String key, Double def);
+	double toDouble(String key);
 
-    String toString(String key);
+	Double toDouble(String key, Double def);
 
-    String toString(String key, String def);
+	String toString(String key);
 
-    boolean containsKey(String key);
+	String toString(String key, String def);
 
-    <T> T get(String key);
+	boolean containsKey(String key);
+
+	<T extends Serializable> T get(String key);
 
 }

@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class Maps {
-
 	private Maps() {
 	}
 

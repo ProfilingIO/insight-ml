@@ -16,42 +16,40 @@
 package com.insightml.data;
 
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
-import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 
 public final class SimpleDataset<I extends ISample, E, O> extends AbstractDataset<I, E, O> {
 
-    private final Iterable<I> training;
-    private final FeaturesConfig<I, O> config;
+	private final Iterable<I> training;
+	private final FeaturesConfig<I, O> config;
 
-    public SimpleDataset(final String name, final Iterable<I> training,
-            final FeaturesConfig<I, O> config) {
-        super(name);
-        this.training = training;
-        this.config = config;
-    }
+	public SimpleDataset(final String name, final Iterable<I> training, final FeaturesConfig<I, O> config) {
+		super(name);
+		this.training = training;
+		this.config = config;
+	}
 
-    public static <S extends SimpleSample, E, O> SimpleDataset<S, E, O> create(
-            final Iterable<S> instances) {
-        return new SimpleDataset("SimpleDataset", instances, new AnonymousFeaturesConfig<>(
-                instances, -9999999.0, false, new IgnoreFeatureFilter()));
-    }
+	public static <S extends SimpleSample, E, O> SimpleDataset<S, E, O> create(final Iterable<S> instances) {
+		return new SimpleDataset<>("SimpleDataset", instances,
+				new AnonymousFeaturesConfig<>(instances, -9999999.0, false, new IgnoreFeatureFilter()));
+	}
 
-    @Override
-    public FeaturesConfig<I, O> getFeaturesConfig(final IArguments arguments) {
-        return config;
-    }
+	@Override
+	public FeaturesConfig<I, O> getFeaturesConfig(final IArguments arguments) {
+		return config;
+	}
 
-    @Override
-    public Iterable<I> loadTraining(final Integer labelIndex) {
-        Check.argument(labelIndex == null || labelIndex == 0);
-        return training;
-    }
+	@Override
+	public Iterable<I> loadTraining(final Integer labelIndex) {
+		Check.argument(labelIndex == null || labelIndex == 0);
+		return training;
+	}
 
-    @Override
-    public Iterable<I> loadAll() {
-        return loadTraining(null);
-    }
+	@Override
+	public Iterable<I> loadAll() {
+		return loadTraining(null);
+	}
 }
