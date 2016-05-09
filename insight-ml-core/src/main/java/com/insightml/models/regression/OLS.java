@@ -37,7 +37,7 @@ public final class OLS extends AbstractBasicDoubleLearner {
 		return new LinearRegressionModel(regression.estimateRegressionParameters(), featureNames);
 	}
 
-	static double[][] addIntercept(final double[][] x) {
+	public static double[][] addIntercept(final double[][] x) {
 		final int nVars = x[0].length;
 		final double[][] xAug = new double[x.length][nVars + 1];
 		for (int i = 0; i < x.length; ++i) {

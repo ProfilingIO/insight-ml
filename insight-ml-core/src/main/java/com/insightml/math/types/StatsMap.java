@@ -20,13 +20,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.insightml.math.statistics.IStats;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.types.cache.Cache;
-
-import java.util.Set;
 
 public final class StatsMap<T> extends AbstractClass implements Iterable<Entry<T, Stats>>, Serializable {
 
@@ -118,11 +117,10 @@ public final class StatsMap<T> extends AbstractClass implements Iterable<Entry<T
 	}
 
 	public static final class StatsCache<T> extends Cache<T, Stats> {
-
 		private static final long serialVersionUID = 2454716585003160754L;
 
 		StatsCache() {
-			super(1024, true);
+			super(1024);
 		}
 
 		@Override

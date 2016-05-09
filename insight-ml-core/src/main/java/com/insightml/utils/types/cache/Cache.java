@@ -33,23 +33,20 @@ import com.insightml.utils.Maps;
 import com.insightml.utils.types.AbstractClass;
 
 public abstract class Cache<K, V> extends AbstractClass implements Iterable<Entry<K, V>>, Serializable {
-
 	private static final long serialVersionUID = 525992178263628297L;
 
 	@Expose
 	private Map<K, V> cache;
-	private boolean synch;
 
 	protected Cache() {
 	}
 
-	public Cache(final int expectedSize, final boolean synchronizeLoad) {
-		this((Map<K, V>) Maps.create(expectedSize), synchronizeLoad);
+	public Cache(final int expectedSize) {
+		this((Map<K, V>) Maps.create(expectedSize));
 	}
 
-	public Cache(final Map<K, V> cache, final boolean synchronizeLoad) {
+	public Cache(final Map<K, V> cache) {
 		this.cache = Check.notNull(cache);
-		this.synch = synchronizeLoad;
 	}
 
 	public final V get(final K key) {
@@ -61,22 +58,7 @@ public abstract class Cache<K, V> extends AbstractClass implements Iterable<Entr
 	}
 
 	protected final V getOrLoad(final K key, final Supplier<V> loader) {
-		V value = get(key);
-		if (value == null) {
-			if (synch) {
-				synchronized (cache) {
-					value = cache.get(key);
-					if (value == null) {
-						value = loader.get();
-						Check.isNull(put(key, value));
-					}
-				}
-			} else {
-				value = loader.get();
-				Check.isNull(put(key, value));
-			}
-		}
-		return value;
+		return cache.computeIfAbsent(key, k -> loader.get());
 	}
 
 	protected abstract V load(K key);
@@ -119,10 +101,6 @@ public abstract class Cache<K, V> extends AbstractClass implements Iterable<Entr
 
 	public final void clear() {
 		cache.clear();
-	}
-
-	public final boolean isSynchronizeLoad() {
-		return synch;
 	}
 
 	@Override

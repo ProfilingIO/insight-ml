@@ -122,12 +122,12 @@ public final class StatsTable<R, C> extends AbstractClass implements Iterable<En
 		}
 
 		public RowCache(final int expectedSize) {
-			super(expectedSize, true);
+			super(expectedSize);
 		}
 
 		@Override
 		protected Cache<C, StatisticalSummary> load(final R key) {
-			return new Cache<C, StatisticalSummary>(32, true) {
+			return new Cache<C, StatisticalSummary>(32) {
 
 				private static final long serialVersionUID = -595072967976798692L;
 

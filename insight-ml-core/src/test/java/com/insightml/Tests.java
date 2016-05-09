@@ -20,8 +20,8 @@ import java.io.Serializable;
 import org.junit.Assert;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
 import com.insightml.evaluation.simulation.CrossValidation;
 import com.insightml.evaluation.simulation.SimulationResults;
