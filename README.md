@@ -15,11 +15,11 @@ final VoteStrategy strategy = VoteStrategy.AVERAGE;
 final RandomForest learner = new RandomForest(trees, maxDepth, minObs, isample, fsample, strategy);
 
 // create your list of training data points here
-final Collection<SimpleSample> trainingData = null;
+final Collection<SimpleSample> trainingData = ...;
 final IModel<ISample, Double> model = learner.run(trainingData);
 
 // create your list of testing data points here
-final Collection<ISample> test = null;
+final Collection<ISample> test = ...;
 final Double[] predictions = model.apply(new Samples<>(test));
 ```
 
