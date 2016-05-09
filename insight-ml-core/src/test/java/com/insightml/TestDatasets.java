@@ -15,7 +15,9 @@
  */
 package com.insightml;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -26,6 +28,7 @@ import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.utils.AnonymousSamplesReader;
 import com.insightml.evaluation.functions.IObjectiveFunction;
 import com.insightml.evaluation.functions.ObjectiveFunctions;
+import com.insightml.utils.io.IoUtils;
 import com.insightml.utils.types.collections.PairList;
 
 public final class TestDatasets {
@@ -41,18 +44,29 @@ public final class TestDatasets {
 	}
 
 	public static SimpleDataset<SimpleSample, Double, Double> createNumeric() {
-		return createNumeric("data/winequality-white.csv.gz", ';', 12, 11);
+		try {
+			return createNumeric(
+					IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/winequality-white.csv.gz")), ';',
+					12, 11);
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	public static SimpleDataset<SimpleSample, Double, Double> numericCommunities() {
-		return createNumeric("../data/communities.data", ';', 102, 101);
+		try {
+			return createNumeric(IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/communities.data")),
+					';', 102, 101);
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
-	public static SimpleDataset<SimpleSample, Double, Double> createNumeric(final String file, final char split,
+	public static SimpleDataset<SimpleSample, Double, Double> createNumeric(final Reader reader, final char split,
 			final int numColumns, final int labelIndex) {
 		return SimpleDataset
 				.create(new AnonymousSamplesReader<>(null, labelIndex, split, numColumns, false, SimpleSample.class)
-						.run(new File(file)));
+						.run(reader));
 	}
 
 	public static SimpleDataset<SimpleSample, Double, ?> createNumeric(final int numSamples, final int numFeatures) {

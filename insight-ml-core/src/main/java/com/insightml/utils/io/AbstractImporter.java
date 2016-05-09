@@ -16,6 +16,8 @@
 package com.insightml.utils.io;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -30,43 +32,43 @@ import com.insightml.utils.types.AbstractModule;
 
 public abstract class AbstractImporter<I extends ISample, E> extends AbstractModule {
 
-    private final char separator;
-    private final int numColumns;
-    final boolean hasHeader;
-    private final Logger logger = LoggerFactory.getLogger(AbstractImporter.class);
+	private final char separator;
+	private final int numColumns;
+	final boolean hasHeader;
+	private final Logger logger = LoggerFactory.getLogger(AbstractImporter.class);
 
-    public AbstractImporter(final char separator, final int numColumns, final boolean hasHeader) {
-        this.separator = separator;
-        this.numColumns = numColumns;
-        this.hasHeader = hasHeader;
-    }
+	public AbstractImporter(final char separator, final int numColumns, final boolean hasHeader) {
+		this.separator = separator;
+		this.numColumns = numColumns;
+		this.hasHeader = hasHeader;
+	}
 
-    public final ISamples<I, E> unserializeOrImport(final File file, final ISerializer serializer) {
-        new File("tmp/").mkdir();
-        final File fil = new File("tmp/samples_" + file.getName());
-        if (!fil.exists()) {
-            serializer.serialize(fil, run(file));
-        }
-        return serializer.unserialize(fil, Samples.class);
-    }
+	public final ISamples<I, E> unserializeOrImport(final File file, final ISerializer serializer) throws IOException {
+		new File("tmp/").mkdir();
+		final File fil = new File("tmp/samples_" + file.getName());
+		if (!fil.exists()) {
+			serializer.serialize(fil, run(IoUtils.reader(file)));
+		}
+		return serializer.unserialize(fil, Samples.class);
+	}
 
-    public final List<I> run(final File file) {
-        logger.info("Importing from " + file);
-        return Collections.merge(new CsvParser<List<I>>(separator, '"', 0, numColumns) {
+	public final List<I> run(final Reader reader) {
+		logger.info("Importing from " + reader);
+		return Collections.merge(new CsvParser<List<I>>(separator, '"', 0, numColumns) {
 
-            private String[] columnNames;
+			private String[] columnNames;
 
-            @Override
-            protected List<I> parse(final int lineNum, final String[] line) {
-                if (hasHeader && columnNames == null) {
-                    columnNames = line;
-                    return null;
-                }
-                return importLine(lineNum, line, columnNames);
-            }
-        }.run(file));
-    }
+			@Override
+			protected List<I> parse(final int lineNum, final String[] line) {
+				if (hasHeader && columnNames == null) {
+					columnNames = line;
+					return null;
+				}
+				return importLine(lineNum, line, columnNames);
+			}
+		}.run(reader));
+	}
 
-    protected abstract List<I> importLine(int lineNum, String[] line, String[] columnNames);
+	protected abstract List<I> importLine(int lineNum, String[] line, String[] columnNames);
 
 }

@@ -27,7 +27,7 @@ public final class CsvWriterTest {
 
 	@Test
 	public void test() {
-		final File testOutput = new File("data/test-ouput.csv");
+		final File testOutput = new File("test-ouput.csv");
 		try (CsvWriter writer = new CsvWriter(testOutput, ',', true, "testA", "testB")) {
 			writer.addLine(ImmutableMap.of("testA", 4, "testB", 2));
 			writer.addLine(ImmutableMap.of("testA", 9, "testB", "muh"));

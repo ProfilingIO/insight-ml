@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,23 +55,23 @@ public class CsvParser<T> extends AbstractClass {
 		this.numColumns = Check.num(numColumns, -1, 104);
 	}
 
-	public final Iterable<String[]> iterator(final File file) {
+	public final Iterable<String[]> iterator(final File file) throws IOException {
+		return iterator(new InputStreamReader(file.getName().endsWith(".gz")
+				? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)));
+	}
+
+	public final Iterable<String[]> iterator(final Reader reader) {
 		return () -> {
-			try {
-				final It it = new It(new InputStreamReader(file.getName().endsWith(".gz")
-						? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)));
-				for (int i = 0; i < skipLines; ++i) {
-					it.next();
-				}
-				return it;
-			} catch (final IOException e) {
-				throw new UncheckedIOException(e);
+			final It it = new It(reader);
+			for (int i = 0; i < skipLines; ++i) {
+				it.next();
 			}
+			return it;
 		};
 	}
 
-	public Iterable<T> run(final File file) {
-		final Iterator<String[]> iterator = iterator(file).iterator();
+	public Iterable<T> run(final Reader reader) {
+		final Iterator<String[]> iterator = iterator(reader).iterator();
 		final List<T> tasks = new LinkedList<>();
 		for (int i = 1; iterator.hasNext(); ++i) {
 			final T line = parse(i, iterator.next());

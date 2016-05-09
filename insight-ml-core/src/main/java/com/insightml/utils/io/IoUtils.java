@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +86,11 @@ public final class IoUtils {
 	}
 
 	public static LineReader lines(final File file) {
-		return new LineReader(file);
+		try {
+			return new LineReader(inputStream(file));
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	public static LineReader lines(final String file) {
@@ -101,6 +107,23 @@ public final class IoUtils {
 		} catch (final IOException e) {
 			throw new IllegalArgumentException(e);
 		}
+	}
+
+	public static BufferedReader reader(final File file) throws IOException {
+		return reader(inputStream(file));
+	}
+
+	public static BufferedReader reader(final InputStream inputStream) {
+		return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+	}
+
+	public static BufferedReader gzipReader(final InputStream inputStream) throws IOException {
+		return reader(new GZIPInputStream(inputStream));
+	}
+
+	public static InputStream inputStream(final File file) throws IOException {
+		return file.getName().endsWith(".gz") ? new GZIPInputStream(new FileInputStream(file))
+				: new FileInputStream(file);
 	}
 
 	public static String process(final String command) throws IOException {

@@ -16,6 +16,7 @@
 package com.insightml.utils.io;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -25,7 +26,7 @@ import org.junit.Test;
 public final class CsvParserTest {
 
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		for (final String[] row : new CsvParser<>(',', 7).iterator(new File("../data/test.csv"))) {
 			Assert.assertTrue(row.length > 0);
 		}

@@ -16,39 +16,21 @@
 package com.insightml.utils.io;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import com.insightml.utils.Check;
 
 public final class LineReader implements Iterator<String>, Iterable<String> {
-
 	private final BufferedReader br;
 
 	private boolean calledNext;
 	private String nextLine;
-
-	public LineReader(final File file) {
-		this(inputStream(file));
-	}
-
-	private static InputStream inputStream(final File file) {
-		try {
-			return file.getName().endsWith(".gz") ? new GZIPInputStream(new FileInputStream(file))
-					: new FileInputStream(file);
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
 
 	public LineReader(final InputStream file) {
 		try {
