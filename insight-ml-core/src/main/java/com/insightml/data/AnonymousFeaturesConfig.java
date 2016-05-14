@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.Pair;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.features.AggregateFeatureProvider;
 import com.insightml.data.features.DivFeaturesProvider;
 import com.insightml.data.features.GeneralFeatureProvider;
@@ -30,7 +31,6 @@ import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.SimpleSample;
 import com.insightml.models.Features;
-import com.insightml.utils.Check;
 import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.types.collections.ArrayIterator;
 
@@ -54,7 +54,7 @@ public final class AnonymousFeaturesConfig<S extends SimpleSample, O> extends Fe
 		super(null, null);
 		this.provider = fromExamples(examples, defaultValue);
 		this.useDivFeaturesProvider = useDivFeaturesProvider;
-		this.filter = Check.notNull(filter);
+		this.filter = Preconditions.checkNotNull(filter);
 	}
 
 	@Override

@@ -15,6 +15,7 @@
  */
 package com.insightml.data.samples.decorators;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.Check;
@@ -30,7 +31,7 @@ public final class LabelDecorator<S extends ISample, E> extends AbstractDecorato
 		this.expected = expected;
 		this.label = labelIndex;
 		for (final E element : expected) {
-			Check.notNull(element);
+			Preconditions.checkNotNull(element);
 		}
 	}
 

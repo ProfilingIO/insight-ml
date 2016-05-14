@@ -23,6 +23,7 @@ import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.SimpleFeatureConfig;
@@ -31,7 +32,6 @@ import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.evaluation.simulation.SplitSimulation;
 import com.insightml.evaluation.simulation.optimization.IFeatureSelection;
-import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.types.DoublePair;
 
@@ -61,7 +61,7 @@ public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModu
 	}
 
 	public LearnerPipeline(final ILearner<? super S, E, O> learner, final double trainRatio, final boolean preprocess) {
-		this.learner = Check.notNull(learner);
+		this.learner = Preconditions.checkNotNull(learner);
 		this.trainRatio = trainRatio;
 		this.preprocess = preprocess;
 	}

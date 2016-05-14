@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISample;
-import com.insightml.utils.Check;
 
 public abstract class GeneralFeatureProvider<I extends ISample> extends AbstractFeatureProvider<I> {
 
@@ -37,7 +37,7 @@ public abstract class GeneralFeatureProvider<I extends ISample> extends Abstract
 		final String[] names = new String[features.size()];
 		int i = -1;
 		for (final Pair<String, String> feature : features) {
-			names[++i] = Check.notNull(feature.getFirst());
+			names[++i] = Preconditions.checkNotNull(feature.getFirst());
 		}
 		return names;
 	}

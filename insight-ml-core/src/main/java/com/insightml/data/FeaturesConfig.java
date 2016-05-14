@@ -16,8 +16,8 @@
 package com.insightml.data;
 
 import java.io.Serializable;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.ISample;

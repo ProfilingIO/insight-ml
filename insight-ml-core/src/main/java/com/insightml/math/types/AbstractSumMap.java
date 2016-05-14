@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.common.base.Preconditions;
 import com.insightml.math.distributions.DiscreteDistribution;
 import com.insightml.math.distributions.DiscreteDistribution.DistributionBuilder;
 import com.insightml.math.statistics.IStats;
@@ -39,8 +40,8 @@ abstract class AbstractSumMap<T, N extends Number> extends AbstractClass impleme
 	}
 
 	AbstractSumMap(final LinkedHashMap<T, N> map, final N min) {
-		this.map = Check.notNull(map);
-		this.min = Check.notNull(min);
+		this.map = Preconditions.checkNotNull(map);
+		this.min = Preconditions.checkNotNull(min);
 	}
 
 	protected N getMin() {
@@ -53,7 +54,7 @@ abstract class AbstractSumMap<T, N extends Number> extends AbstractClass impleme
 
 	@Override
 	public final <C extends Number> C get(final T key) {
-		return (C) map.get(Check.notNull(key));
+		return (C) map.get(Preconditions.checkNotNull(key));
 	}
 
 	@Override

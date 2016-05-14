@@ -15,55 +15,54 @@
  */
 package com.insightml.models;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.Arrays;
-import com.insightml.utils.Check;
 import com.insightml.utils.jobs.ParallelFor;
 
 public abstract class AbstractIndependentModel<I extends ISample, E> extends AbstractModel<I, E> {
 
-    private static final long serialVersionUID = -4539226467144740757L;
+	private static final long serialVersionUID = -4539226467144740757L;
 
-    protected AbstractIndependentModel() {
-    }
+	protected AbstractIndependentModel() {
+	}
 
-    public AbstractIndependentModel(final String[] features) {
-        super(features);
-    }
+	public AbstractIndependentModel(final String[] features) {
+		super(features);
+	}
 
-    @Override
-    public final E[] apply(final ISamples<I, ?> instances) {
-        final CharSequence[] ref = features();
-        final String[] names = instances.featureNames();
-        final int[] featuresFilter = new int[ref == null ? names.length : ref.length];
+	@Override
+	public final E[] apply(final ISamples<I, ?> instances) {
+		final CharSequence[] ref = features();
+		final String[] names = instances.featureNames();
+		final int[] featuresFilter = new int[ref == null ? names.length : ref.length];
 
-        if (ref == null) {
-            for (int i = 0; i < names.length; ++i) {
-                featuresFilter[i] = i;
-            }
-        } else {
-            for (int i = 0; i < ref.length; ++i) {
-                int idx = -1;
-                for (int j = 0; j < names.length; ++j) {
-                    if (ref[i].equals(names[j])) {
-                        idx = j;
-                        break;
-                    }
-                }
-                featuresFilter[i] = idx;
-            }
-        }
+		if (ref == null) {
+			for (int i = 0; i < names.length; ++i) {
+				featuresFilter[i] = i;
+			}
+		} else {
+			for (int i = 0; i < ref.length; ++i) {
+				int idx = -1;
+				for (int j = 0; j < names.length; ++j) {
+					if (ref[i].equals(names[j])) {
+						idx = j;
+						break;
+					}
+				}
+				featuresFilter[i] = idx;
+			}
+		}
 
-        return Arrays.of(new ParallelFor<E>() {
-            @Override
-            protected E exec(final int i) {
-                return Check.notNull(predict(i, instances, featuresFilter));
-            }
-        }.run(0, instances.size(), 1));
-    }
+		return Arrays.of(new ParallelFor<E>() {
+			@Override
+			protected E exec(final int i) {
+				return Preconditions.checkNotNull(predict(i, instances, featuresFilter));
+			}
+		}.run(0, instances.size(), 1));
+	}
 
-    protected abstract E predict(final int instance, final ISamples<I, ?> instances,
-            int[] featuresFilter);
+	protected abstract E predict(final int instance, final ISamples<I, ?> instances, int[] featuresFilter);
 
 }

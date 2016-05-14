@@ -15,12 +15,13 @@
  */
 package com.insightml.data;
 
-import com.google.common.base.Function;
+import java.util.function.Function;
+
+import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
 import com.insightml.data.samples.ISample;
-import com.insightml.utils.Check;
 
 public final class SimpleFeatureConfig<I extends ISample, P> extends FeaturesConfig<I, P> {
 	private static final long serialVersionUID = -9027051549538426023L;
@@ -36,7 +37,7 @@ public final class SimpleFeatureConfig<I extends ISample, P> extends FeaturesCon
 			final Function<P, P> postProcessor) {
 		super(null, postProcessor);
 		this.provider = provider;
-		this.filter = Check.notNull(filter);
+		this.filter = Preconditions.checkNotNull(filter);
 	}
 
 	@Override

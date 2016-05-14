@@ -18,8 +18,9 @@ package com.insightml.models;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
@@ -43,7 +44,7 @@ public class ModelPipeline<I extends ISample, P> extends AbstractConfigurable im
 
 	public ModelPipeline(final IModel<? super I, P> model, final PreprocessingPipeline<I, ?> pipe,
 			final Function<P, P> postProcessor, final int labelIndex) {
-		this.model = (IModel<I, P>) Check.notNull(model);
+		this.model = (IModel<I, P>) Preconditions.checkNotNull(model);
 		this.pipe = pipe;
 		this.postProcessor = postProcessor;
 		this.labelIndex = labelIndex;
@@ -60,7 +61,7 @@ public class ModelPipeline<I extends ISample, P> extends AbstractConfigurable im
 		}
 		final List<P> result = new LinkedList<>();
 		for (final P pred : output) {
-			result.add(Check.notNull(postProcessor.apply(pred)));
+			result.add(Preconditions.checkNotNull(postProcessor.apply(pred)));
 		}
 		return Arrays.of(result);
 	}

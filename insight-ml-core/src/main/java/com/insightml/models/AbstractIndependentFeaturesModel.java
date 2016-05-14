@@ -15,33 +15,32 @@
  */
 package com.insightml.models;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
-import com.insightml.utils.Check;
 
-public abstract class AbstractIndependentFeaturesModel extends
-        AbstractIndependentModel<ISample, Double> {
+public abstract class AbstractIndependentFeaturesModel extends AbstractIndependentModel<ISample, Double> {
 
-    private static final long serialVersionUID = -1870885956526569825L;
+	private static final long serialVersionUID = -1870885956526569825L;
 
-    protected AbstractIndependentFeaturesModel() {
-    }
+	protected AbstractIndependentFeaturesModel() {
+	}
 
-    public AbstractIndependentFeaturesModel(final String[] features) {
-        super(Check.notNull(features));
-    }
+	public AbstractIndependentFeaturesModel(final String[] features) {
+		super(Preconditions.checkNotNull(features));
+	}
 
-    @Override
-    protected final Double predict(final int instance, final ISamples<ISample, ?> instances,
-            final int[] featuresFilter) {
-        final double[] features = instances.features()[instance];
-        final double[] selection = new double[featuresFilter.length];
-        for (int i = 0; i < selection.length; ++i) {
-            selection[i] = featuresFilter[i] == -1 ? 0 : features[featuresFilter[i]];
-        }
-        return predict(selection);
-    }
+	@Override
+	protected final Double predict(final int instance, final ISamples<ISample, ?> instances,
+			final int[] featuresFilter) {
+		final double[] features = instances.features()[instance];
+		final double[] selection = new double[featuresFilter.length];
+		for (int i = 0; i < selection.length; ++i) {
+			selection[i] = featuresFilter[i] == -1 ? 0 : features[featuresFilter[i]];
+		}
+		return predict(selection);
+	}
 
-    public abstract double predict(final double[] features);
+	public abstract double predict(final double[] features);
 
 }

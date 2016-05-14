@@ -15,6 +15,7 @@
  */
 package com.insightml.evaluation.simulation;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.ISample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
@@ -44,7 +45,7 @@ public final class SimulationSetup<I extends ISample, E, P> extends AbstractClas
 		this.learner = learner;
 		this.objectives = Check.size(objectives, 1, 14);
 		this.report = report;
-		this.client = Check.notNull(client);
+		this.client = Preconditions.checkNotNull(client);
 	}
 
 	public IJobBatch<Predictions<E, P>[]> createBatch() {
@@ -53,7 +54,7 @@ public final class SimulationSetup<I extends ISample, E, P> extends AbstractClas
 
 	@Override
 	public String getDatasetName() {
-		return Check.notNull(datasetName);
+		return Preconditions.checkNotNull(datasetName);
 	}
 
 	@Override

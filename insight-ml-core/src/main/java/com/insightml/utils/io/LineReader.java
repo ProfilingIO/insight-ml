@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.insightml.utils.Check;
+import com.google.common.base.Preconditions;
 
 public final class LineReader implements Iterator<String>, Iterable<String> {
 	private final BufferedReader br;
@@ -34,7 +34,7 @@ public final class LineReader implements Iterator<String>, Iterable<String> {
 
 	public LineReader(final InputStream file) {
 		try {
-			br = new BufferedReader(new InputStreamReader(Check.notNull(file), "UTF-8"));
+			br = new BufferedReader(new InputStreamReader(Preconditions.checkNotNull(file), "UTF-8"));
 		} catch (final UnsupportedEncodingException e) {
 			throw new IllegalStateException(e);
 		}

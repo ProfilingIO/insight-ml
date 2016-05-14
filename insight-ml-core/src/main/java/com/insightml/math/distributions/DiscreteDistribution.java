@@ -23,6 +23,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
+import com.google.common.base.Preconditions;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.utils.Check;
@@ -130,11 +131,10 @@ public final class DiscreteDistribution<T> extends AbstractClass
 	}
 
 	public static final class DistributionBuilder<T> {
-
 		private final Map<T, Double> map = new LinkedHashMap<>();
 
 		public void put(final T key, final double value) {
-			Check.state(value >= -0.0001 && value <= 1.0001 && map.put(Check.notNull(key), value) == null);
+			Check.state(value >= -0.0001 && value <= 1.0001 && map.put(Preconditions.checkNotNull(key), value) == null);
 		}
 
 		public DiscreteDistribution<T> build() {

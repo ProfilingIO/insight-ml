@@ -20,6 +20,7 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.IDataset;
 import com.insightml.data.samples.ISample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
@@ -64,7 +65,7 @@ public abstract class AbstractSimulation<I extends ISample> extends AbstractModu
 	public <E, P> ISimulationResults<E, P>[] run(final ILearnerPipeline<I, P>[] learner,
 			final IDataset<I, E, P> dataset, final IArguments arguments, final boolean report,
 			final IModelTask<I, E, P> task) {
-		return run(Check.notNull(dataset.loadTraining(null)),
+		return run(Preconditions.checkNotNull(dataset.loadTraining(null)),
 				task.getSimulationSetup(learner, dataset, arguments, report, null));
 	}
 

@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Normalization;
-import com.insightml.utils.Check;
 import com.insightml.utils.Compare;
 import com.insightml.utils.StrictComparator;
 import com.insightml.utils.jobs.ParallelFor;
@@ -52,7 +52,8 @@ public final class FeaturesDecorator<S extends ISample, E> extends AbstractDecor
 			@Override
 			protected Object exec(final int i) {
 				final S sample = orig.get(i);
-				features[i] = sample == null ? null : Check.notNull(prov.features(sample, featureNames(), isTraining));
+				features[i] = sample == null ? null
+						: Preconditions.checkNotNull(prov.features(sample, featureNames(), isTraining));
 				return 1;
 			}
 		}.run(0, features.length, 100);

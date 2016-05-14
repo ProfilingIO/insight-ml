@@ -17,17 +17,17 @@ package com.insightml.data.samples.decorators;
 
 import java.util.Random;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.samples.AbstractSamples;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
-import com.insightml.utils.Check;
 
 public abstract class AbstractDecorator<S extends ISample, E> extends AbstractSamples<S, E> {
 
 	protected final ISamples<S, E> ref;
 
 	public AbstractDecorator(final ISamples<S, E> orig) {
-		this.ref = Check.notNull(orig);
+		this.ref = Preconditions.checkNotNull(orig);
 	}
 
 	protected abstract int getInstance(int i);

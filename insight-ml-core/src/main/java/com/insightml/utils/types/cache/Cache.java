@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.utils.Check;
+import com.google.common.base.Preconditions;
 import com.insightml.utils.Maps;
 import com.insightml.utils.types.AbstractClass;
 
@@ -44,11 +44,11 @@ public abstract class Cache<K, V> extends AbstractClass implements Iterable<Entr
 	}
 
 	public Cache(final Map<K, V> cache) {
-		this.cache = Check.notNull(cache);
+		this.cache = Preconditions.checkNotNull(cache);
 	}
 
 	public final V get(final K key) {
-		return cache.get(Check.notNull(key));
+		return cache.get(Preconditions.checkNotNull(key));
 	}
 
 	public final V getOrLoad(final K key) {

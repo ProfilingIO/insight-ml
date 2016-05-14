@@ -18,6 +18,7 @@ package com.insightml.data;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.ISample;
@@ -42,8 +43,8 @@ public final class PreprocessingPipeline<S extends ISample, E> extends AbstractC
 
 	public PreprocessingPipeline(final IFeatureProvider<S> provider, final IFeatureFilter filter,
 			final Normalization normalization) {
-		this.provider = Check.notNull(provider);
-		this.filter = Check.notNull(filter);
+		this.provider = Preconditions.checkNotNull(provider);
+		this.filter = Preconditions.checkNotNull(filter);
 		this.normalization = normalization;
 	}
 

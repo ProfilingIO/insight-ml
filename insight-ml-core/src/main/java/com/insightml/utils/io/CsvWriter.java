@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.ui.SimpleFormatter;
@@ -42,7 +43,7 @@ public final class CsvWriter extends AbstractClass implements AutoCloseable {
 					} else {
 						init = true;
 					}
-					builder.append(Check.notNull(column));
+					builder.append(Preconditions.checkNotNull(column));
 				}
 				builder.append('\n');
 			}

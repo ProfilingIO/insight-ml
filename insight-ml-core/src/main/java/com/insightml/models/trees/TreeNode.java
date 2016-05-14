@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import org.apache.commons.math3.util.Pair;
 
+import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.statistics.Stats;
 import com.insightml.math.types.SumMap;
@@ -63,7 +64,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 
 	Pair<boolean[], boolean[]> split(final ISplit split, final TreeNode leftNode, final TreeNode rightNode,
 			final int[][] orderedIndexes, final boolean[] subset) {
-		rule = Check.notNull(split);
+		rule = Preconditions.checkNotNull(split);
 		left = leftNode;
 		right = rightNode;
 

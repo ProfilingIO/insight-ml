@@ -16,24 +16,24 @@
 package com.insightml.models;
 
 import java.io.Serializable;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.types.SumMap;
 
 public interface IModel<I extends ISample, E> extends Function<ISamples<I, ?>, E[]>, Serializable {
 
-    String getName();
+	String getName();
 
-    String[] features();
+	String[] features();
 
-    SumMap<String> featureImportance();
+	SumMap<String> featureImportance();
 
-    double logLikelihood(I sample, E result);
+	double logLikelihood(I sample, E result);
 
-    String info();
+	String info();
 
-    void close();
+	void close();
 
 }
