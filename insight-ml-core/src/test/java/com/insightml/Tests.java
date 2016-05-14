@@ -18,12 +18,16 @@ package com.insightml;
 import java.io.Serializable;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.insightml.data.IDataset;
 import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.simulation.BasicSimulationResult;
 import com.insightml.evaluation.simulation.CrossValidation;
+import com.insightml.evaluation.simulation.SimulationResultConsumer;
 import com.insightml.evaluation.simulation.SimulationResults;
 import com.insightml.evaluation.simulation.SimulationSetup;
 import com.insightml.models.ILearner;
@@ -32,6 +36,7 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.jobs.ThreadedClient;
 
 public final class Tests {
+	private static final Logger LOG = LoggerFactory.getLogger(Tests.class);
 
 	private Tests() {
 	}
@@ -48,7 +53,9 @@ public final class Tests {
 
 	public static <I extends ISample, E, P> SimulationResults<I, E, P> cv(final IDataset<I, E, P> instances,
 			final LearnerPipeline learner, final IObjectiveFunction<E, P>[] objective) {
-		return new CrossValidation<I>(5, 1, null).run(instances.loadTraining(null),
+		final SimulationResultConsumer resultConsumer = (simulation, learn, result, setup) -> LOG
+				.info(BasicSimulationResult.of(learn, result).toString());
+		return new CrossValidation<I>(5, 1, resultConsumer).run(instances.loadTraining(null),
 				simulationSetup(instances, learner, objective))[0];
 	}
 

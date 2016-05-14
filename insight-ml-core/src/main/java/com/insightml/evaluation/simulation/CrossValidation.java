@@ -29,7 +29,6 @@ import com.insightml.models.ILearnerPipeline;
 import com.insightml.models.ModelPipeline;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Check;
-import com.insightml.utils.io.IDatabase;
 import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;
 
@@ -39,7 +38,7 @@ public final class CrossValidation<I extends ISample> extends AbstractSimulation
 	private final int folds;
 	private final int repetitions;
 
-	public CrossValidation(final int folds, final int repetitions, final IDatabase database) {
+	public CrossValidation(final int folds, final int repetitions, final SimulationResultConsumer database) {
 		super((repetitions == 1 ? "" : repetitions + "x ") + folds + "-Fold Cross-Validation", database);
 		this.folds = Check.num(folds, 2, 20);
 		this.repetitions = Check.num(repetitions, 1, 10);

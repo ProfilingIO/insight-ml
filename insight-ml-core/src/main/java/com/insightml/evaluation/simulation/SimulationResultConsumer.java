@@ -15,12 +15,9 @@
  */
 package com.insightml.evaluation.simulation;
 
-import java.util.Map;
+@FunctionalInterface
+public interface SimulationResultConsumer {
 
-public interface SimulationResult {
-
-	String getModel();
-
-	Map<String, Float> getMetrics();
-
+	void accept(ISimulation<?> simulation, String learn, ISimulationResults<?, ?> performance,
+			ISimulationSetup<?, ?, ?> setup);
 }

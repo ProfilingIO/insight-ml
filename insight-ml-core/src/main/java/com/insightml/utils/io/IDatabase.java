@@ -15,8 +15,6 @@
  */
 package com.insightml.utils.io;
 
-import javax.persistence.EntityManager;
-
 public interface IDatabase extends IDataSource {
 
 	int count(String table, String where);
@@ -38,11 +36,5 @@ public interface IDatabase extends IDataSource {
 	void flush();
 
 	void close();
-
-	EntityManager createManager();
-
-	EntityManager makeTransaction();
-
-	void commitTransaction(EntityManager manager);
 
 }

@@ -17,16 +17,13 @@ package com.insightml.math.distributions;
 
 import org.apache.commons.math3.util.FastMath;
 
-import com.google.gson.annotations.Expose;
 import com.insightml.math.types.Interval;
 import com.insightml.utils.ui.SimpleFormatter;
 
 public final class GaussianDistribution extends AbstractGaussian {
 	private static final long serialVersionUID = -7890800047310199392L;
 
-	@Expose
 	private final double mean;
-	@Expose
 	private final double stddev;
 
 	private final double sigmaSquare;

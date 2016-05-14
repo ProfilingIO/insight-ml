@@ -23,7 +23,6 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.ISample;
 import com.insightml.utils.Utils;
-import com.insightml.utils.io.IDatabase;
 
 public final class SplitSimulation<I extends ISample> extends AbstractSimulation<I> {
 
@@ -31,7 +30,7 @@ public final class SplitSimulation<I extends ISample> extends AbstractSimulation
 
 	private final double trainFraction;
 
-	public SplitSimulation(final double trainFraction, final IDatabase database) {
+	public SplitSimulation(final double trainFraction, final SimulationResultConsumer database) {
 		super((int) (trainFraction * 100) + "/" + (int) ((1 - trainFraction) * 100) + " Split", database);
 		this.trainFraction = trainFraction;
 	}

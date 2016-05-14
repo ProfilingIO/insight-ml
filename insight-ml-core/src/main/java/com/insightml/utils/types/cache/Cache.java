@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.google.gson.annotations.Expose;
 import com.insightml.utils.Check;
 import com.insightml.utils.Maps;
 import com.insightml.utils.types.AbstractClass;
@@ -35,7 +34,6 @@ import com.insightml.utils.types.AbstractClass;
 public abstract class Cache<K, V> extends AbstractClass implements Iterable<Entry<K, V>>, Serializable {
 	private static final long serialVersionUID = 525992178263628297L;
 
-	@Expose
 	private Map<K, V> cache;
 
 	protected Cache() {
