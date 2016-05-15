@@ -21,7 +21,6 @@ import java.util.Locale;
 import com.insightml.utils.Check;
 
 public final class Token extends AbstractToken {
-
 	private static final long serialVersionUID = -4879333234810376325L;
 
 	private char[] token;
@@ -75,7 +74,7 @@ public final class Token extends AbstractToken {
 
 	@Override
 	boolean equals(final IToken obj) {
-		if (obj instanceof NGram) {
+		if (obj == null || obj instanceof NGram) {
 			return false;
 		}
 		return Arrays.equals(token, ((Token) obj).token);

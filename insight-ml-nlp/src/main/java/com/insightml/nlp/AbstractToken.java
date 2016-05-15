@@ -19,16 +19,12 @@ import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractClass;
 
 public abstract class AbstractToken extends AbstractClass implements IToken {
-
 	private static final long serialVersionUID = -452709284497608375L;
 
-	private String original;
-	private boolean isStemmed;
+	private final String original;
+	private final boolean isStemmed;
 	private String pos;
 	private transient Integer hashCode;
-
-	AbstractToken() {
-	}
 
 	AbstractToken(final String original, final boolean isStemmed, final String pos) {
 		Check.argument(!isStemmed || original != null || true);

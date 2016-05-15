@@ -24,34 +24,33 @@ import com.insightml.utils.Check;
 import com.insightml.utils.io.IoUtils;
 
 public final class Text extends AbstractTextProvider {
+	private static final long serialVersionUID = 4141859093908764703L;
 
-    private static final long serialVersionUID = 4141859093908764703L;
+	private final String text;
 
-    private final String text;
+	public Text(final String text, final Language language) {
+		super(language);
+		this.text = Check.length(text, 1, 9999999);
+	}
 
-    private Text(final InputStream text, final Language language) {
-        this(IoUtils.readFile(text, Charset.forName("UTF-8")), language);
-    }
+	private static Text of(final InputStream text, final Language language) {
+		return new Text(IoUtils.readFile(text, Charset.forName("UTF-8")), language);
+	}
 
-    public Text(final String text, final Language language) {
-        super(language);
-        this.text = Check.length(text, 1, 9999999);
-    }
+	public static Text fromFile(final String file, final Language lang) {
+		return of(Text.class.getResourceAsStream(file), lang);
+	}
 
-    public static Text fromFile(final String file, final Language lang) {
-        return new Text(Text.class.getResourceAsStream(file), lang);
-    }
+	public static Queue<Text> fromFiles(final Language lang, final String... files) {
+		final Queue<Text> texts = new LinkedList<>();
+		for (final String file : files) {
+			texts.add(of(Text.class.getResourceAsStream(file), lang));
+		}
+		return texts;
+	}
 
-    public static Queue<Text> fromFiles(final Language lang, final String... files) {
-        final Queue<Text> texts = new LinkedList<>();
-        for (final String file : files) {
-            texts.add(new Text(Text.class.getResourceAsStream(file), lang));
-        }
-        return texts;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
+	@Override
+	public String getText() {
+		return text;
+	}
 }

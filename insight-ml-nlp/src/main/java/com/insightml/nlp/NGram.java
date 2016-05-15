@@ -19,8 +19,7 @@ import java.util.Arrays;
 
 import com.insightml.utils.Check;
 
-public final class NGram extends AbstractToken implements INGram {
-
+public final class NGram extends AbstractToken {
 	private static final long serialVersionUID = -5823066688625491869L;
 
 	private final Token[] tokens;
@@ -28,18 +27,6 @@ public final class NGram extends AbstractToken implements INGram {
 	public NGram(final Token[] tokens, final String original, final String pos) {
 		super(original, isStemmed(tokens), pos);
 		this.tokens = Check.size(tokens, 2, 15);
-	}
-
-	private static boolean isStemmed(final Token[] tokens) {
-		Boolean bool = null;
-		for (final Token token : tokens) {
-			if (bool == null) {
-				bool = token.isStemmed();
-			} else {
-				Check.state(bool == token.isStemmed());
-			}
-		}
-		return bool;
 	}
 
 	NGram(final String[] tokens, final String original) {
@@ -52,6 +39,18 @@ public final class NGram extends AbstractToken implements INGram {
 			tkns[i] = new Token(tokens[i]);
 		}
 		this.tokens = tkns;
+	}
+
+	private static boolean isStemmed(final Token[] tokens) {
+		Boolean bool = null;
+		for (final Token token : tokens) {
+			if (bool == null) {
+				bool = token.isStemmed();
+			} else {
+				Check.state(bool == token.isStemmed());
+			}
+		}
+		return bool;
 	}
 
 	public Token[] getTokens() {

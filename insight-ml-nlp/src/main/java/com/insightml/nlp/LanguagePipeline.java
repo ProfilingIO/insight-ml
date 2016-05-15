@@ -20,11 +20,7 @@ import com.insightml.utils.jobs.Threaded;
 import com.insightml.utils.pipeline.Pipeline;
 
 public final class LanguagePipeline extends Pipeline<ISentence> {
-
 	private static final long serialVersionUID = 7090522298303463557L;
-
-	public LanguagePipeline() {
-	}
 
 	public LanguagePipeline(final LanguagePipelineElement... elements) {
 		super(elements);
