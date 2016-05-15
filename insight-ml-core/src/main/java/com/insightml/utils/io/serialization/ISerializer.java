@@ -16,15 +16,16 @@
 package com.insightml.utils.io.serialization;
 
 import java.io.File;
+import java.io.IOException;
 
 public interface ISerializer {
 
-    <T> T serialize(T obj, String dir);
+	<T> T serialize(T obj, String dir);
 
-    <T> T serialize(File file, T obj);
+	<T> T serialize(File file, T obj);
 
-    <T> T unserialize(File file, Class<T> clazz);
+	<T> T unserialize(File file, Class<T> clazz) throws IOException;
 
-    <T> T loadOrCreate(T instance, String dir);
+	<T> T loadOrCreate(T instance, String dir);
 
 }

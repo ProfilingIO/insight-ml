@@ -35,12 +35,12 @@ public final class StopwordsFilter extends WordFilter {
 		this(minLength, 999, wordFiles);
 	}
 
-	public StopwordsFilter(final int minLength, final int maxLength, final String... wordFiles) {
+	public StopwordsFilter(final int minLength, final int maxLength, final String[] wordFiles) {
 		this(minLength, maxLength, false, wordFiles);
 	}
 
 	public StopwordsFilter(final int minLength, final int maxLength, final boolean postFilter,
-			final String... wordFiles) {
+			final String[] wordFiles) {
 		super(Tag.STOPWORDS, postFilter, wordFiles);
 		this.minLength = Check.num(minLength, 1, 10);
 		this.maxLength = Check.num(maxLength, minLength, 999);
