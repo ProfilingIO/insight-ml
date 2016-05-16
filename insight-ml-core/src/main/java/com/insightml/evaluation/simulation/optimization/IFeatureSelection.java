@@ -19,11 +19,11 @@ import java.util.Observer;
 import java.util.Set;
 
 import com.insightml.data.FeaturesConfig;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
 import com.insightml.utils.types.DoublePair;
 
-public interface IFeatureSelection<I extends ISample, E, P> {
+public interface IFeatureSelection<I extends Sample, E, P> {
 
     DoublePair<Set<String>> run(Iterable<I> training, FeaturesConfig<? extends I, P> config,
             ILearner<? super I, ? super E, ? super P> learner);

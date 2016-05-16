@@ -20,7 +20,7 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Objects;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
@@ -30,26 +30,26 @@ import com.insightml.utils.Arrays;
 import com.insightml.utils.types.collections.PairList;
 import com.insightml.utils.ui.UiUtils;
 
-public final class BoostingModel extends AbstractModel<ISample, Double> {
+public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	private static final long serialVersionUID = -8115269534209318613L;
 
-	private IModel<ISample, Double> first;
-	private PairList<IModel<ISample, Double>, Double> steps;
+	private IModel<Sample, Double> first;
+	private PairList<IModel<Sample, Double>, Double> steps;
 
 	BoostingModel() {
 	}
 
-	public BoostingModel(final IModel<ISample, Double> first, final PairList<IModel<ISample, Double>, Double> steps) {
+	public BoostingModel(final IModel<Sample, Double> first, final PairList<IModel<Sample, Double>, Double> steps) {
 		super(null);
 		this.first = first;
 		this.steps = steps;
 	}
 
 	@Override
-	public Double[] apply(final ISamples<ISample, ?> instances) {
+	public Double[] apply(final ISamples<Sample, ?> instances) {
 		double[] preds = Arrays.cast(first.apply(instances));
-		for (final Pair<IModel<ISample, Double>, Double> step : steps) {
+		for (final Pair<IModel<Sample, Double>, Double> step : steps) {
 			final double[] fit = Arrays.cast(step.getFirst().apply(instances));
 			preds = GBM.updatePredictions(preds, fit, step.getSecond());
 		}
@@ -59,7 +59,7 @@ public final class BoostingModel extends AbstractModel<ISample, Double> {
 	@Override
 	public SumMap<String> featureImportance() {
 		final SumMapBuilder<String> builder = SumMap.builder(false);
-		for (final Pair<IModel<ISample, Double>, Double> step : steps) {
+		for (final Pair<IModel<Sample, Double>, Double> step : steps) {
 			for (final Entry<String, Double> imp : step.getFirst().featureImportance()) {
 				builder.increment(imp.getKey(), imp.getValue());
 			}

@@ -15,80 +15,29 @@
  */
 package com.insightml.evaluation.simulation;
 
-import com.google.common.base.Preconditions;
 import com.insightml.data.FeaturesConfig;
-import com.insightml.data.samples.ISample;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.data.samples.Sample;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearnerPipeline;
-import com.insightml.models.Predictions;
-import com.insightml.utils.Check;
-import com.insightml.utils.jobs.IClient;
-import com.insightml.utils.jobs.IJobBatch;
-import com.insightml.utils.types.AbstractClass;
 
-public final class SimulationSetup<I extends ISample, E, P> extends AbstractClass implements ISimulationSetup<I, E, P> {
+public interface SimulationSetup<I extends Sample, E, P> {
 
-	private final String datasetName;
-	private final FeaturesConfig<I, P> config;
-	private final Integer labelIndex;
-	private final ILearnerPipeline<I, P>[] learner;
-	private final IObjectiveFunction<? super E, ? super P>[] objectives;
-	private final boolean report;
-	private final IClient client;
-
-	public SimulationSetup(final String datasetName, final FeaturesConfig<I, P> config, final Integer labelIndex,
-			final ILearnerPipeline<I, P>[] learner, final IClient client, final boolean report,
-			final IObjectiveFunction<? super E, ? super P>[] objectives) {
-		this.datasetName = datasetName;
-		this.config = config;
-		this.labelIndex = labelIndex;
-		this.learner = learner;
-		this.objectives = Check.size(objectives, 1, 14);
-		this.report = report;
-		this.client = Preconditions.checkNotNull(client);
+	public enum PERFORMANCE_SELECTOR {
+		MEANDIAN, MEAN, MEDIAN, WORST, BEST;
 	}
 
-	public IJobBatch<Predictions<E, P>[]> createBatch() {
-		return client.newBatch();
-	}
+	ILearnerPipeline<I, P>[] getLearner();
 
-	@Override
-	public String getDatasetName() {
-		return Preconditions.checkNotNull(datasetName);
-	}
+	FeaturesConfig<I, P> getConfig();
 
-	@Override
-	public FeaturesConfig<I, P> getConfig() {
-		return config;
-	}
+	boolean doReport();
 
-	public Integer getLabelIndex() {
-		return labelIndex;
-	}
+	String getDatasetName();
 
-	@Override
-	public ILearnerPipeline<I, P>[] getLearner() {
-		return learner;
-	}
+	boolean doDump();
 
-	@Override
-	public IObjectiveFunction<? super E, ? super P>[] getObjectives() {
-		return objectives;
-	}
+	ObjectiveFunction<? super E, ? super P>[] getObjectives();
 
-	@Override
-	public PERFORMANCE_SELECTOR getCriteria() {
-		return PERFORMANCE_SELECTOR.MEAN;
-	}
-
-	@Override
-	public boolean doReport() {
-		return report;
-	}
-
-	@Override
-	public boolean doDump() {
-		return false && report;
-	}
+	PERFORMANCE_SELECTOR getCriteria();
 
 }

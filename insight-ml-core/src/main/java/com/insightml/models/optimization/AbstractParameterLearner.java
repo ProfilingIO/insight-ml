@@ -15,21 +15,21 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.Optimizable;
 import com.insightml.models.AbstractLearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerInput;
 import com.insightml.utils.types.Triple;
 
-abstract class AbstractParameterLearner<I extends ISample, E, T, C> extends AbstractLearner<I, E, Double> {
+abstract class AbstractParameterLearner<I extends Sample, E, T, C> extends AbstractLearner<I, E, Double> {
 
 	private final double[][] initial;
-	private final IObjectiveFunction<? super E, ? super Double> objective;
+	private final ObjectiveFunction<? super E, ? super Double> objective;
 
-	protected AbstractParameterLearner(final double[][] init, final IObjectiveFunction<? super E, ? super Double> obj) {
+	protected AbstractParameterLearner(final double[][] init, final ObjectiveFunction<? super E, ? super Double> obj) {
 		super(null);
 		this.initial = init;
 		this.objective = obj;

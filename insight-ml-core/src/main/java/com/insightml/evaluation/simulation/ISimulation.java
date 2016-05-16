@@ -18,16 +18,16 @@ package com.insightml.evaluation.simulation;
 import java.io.Serializable;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearnerPipeline;
 import com.insightml.models.IModelTask;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.types.IModule;
 
-public interface ISimulation<I extends ISample> extends IModule, Serializable {
+public interface ISimulation<I extends Sample> extends IModule, Serializable {
 
     <E, P> ISimulationResults<E, P>[] run(final Iterable<I> instances,
-            ISimulationSetup<I, E, P> setup);
+            SimulationSetup<I, E, P> setup);
 
     <E, P> ISimulationResults<E, P> simulate(IDataset<I, E, P> dataset, IArguments arguments,
             double[][] blendingParams, boolean delayInit, boolean report, IModelTask<I, E, P> task);

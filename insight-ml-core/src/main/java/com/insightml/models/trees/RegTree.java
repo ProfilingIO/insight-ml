@@ -19,7 +19,7 @@ import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Vectors;
 import com.insightml.math.statistics.Stats;
@@ -50,9 +50,9 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 	}
 
 	@Override
-	public TreeModel run(final LearnerInput<? extends ISample, ? extends Double, ?> input) {
+	public TreeModel run(final LearnerInput<? extends Sample, ? extends Double, ?> input) {
 		Check.state(input.valid == null);
-		final ISamples<ISample, Double> train = (ISamples<ISample, Double>) input.getTrain();
+		final ISamples<Sample, Double> train = (ISamples<Sample, Double>) input.getTrain();
 		final Stats sRoot = new Stats();
 		sRoot.add(0, Vectors.sum(train.weights(input.labelIndex)));
 		final TreeNode root = new TreeNode(sRoot);

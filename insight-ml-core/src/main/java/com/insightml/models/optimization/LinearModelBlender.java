@@ -15,18 +15,18 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.ISample;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.data.samples.Sample;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearner;
 import com.insightml.utils.Check;
 
-public final class LinearModelBlender<I extends ISample, E> extends AbstractModelBlender<I, E>
+public final class LinearModelBlender<I extends Sample, E> extends AbstractModelBlender<I, E>
         implements IModelBlender<I, E, Double> {
 
     private final boolean useOffset;
 
     public LinearModelBlender(final boolean useOffset, final double[][] init,
-            final IObjectiveFunction<E, ? super Double> obj,
+            final ObjectiveFunction<E, ? super Double> obj,
             final ILearner<I, E, ? super Double>... learner) {
         super(learner, init, obj);
         this.useOffset = useOffset;

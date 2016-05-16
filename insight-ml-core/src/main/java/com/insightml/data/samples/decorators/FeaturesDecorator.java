@@ -22,14 +22,14 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Normalization;
 import com.insightml.utils.Compare;
 import com.insightml.utils.StrictComparator;
 import com.insightml.utils.jobs.ParallelFor;
 
-public final class FeaturesDecorator<S extends ISample, E> extends AbstractDecorator<S, E> {
+public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
 
 	private String[] featureNames;
 	double[][] features;

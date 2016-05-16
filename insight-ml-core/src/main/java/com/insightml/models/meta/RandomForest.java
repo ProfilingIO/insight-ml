@@ -15,12 +15,12 @@
  */
 package com.insightml.models.meta;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.utils.IArguments;
 
-public final class RandomForest extends Bagging<ISample> {
+public final class RandomForest extends Bagging<Sample> {
 
 	public RandomForest(final IArguments arguments) {
 		super(arguments, GBRT.getLearner(arguments));

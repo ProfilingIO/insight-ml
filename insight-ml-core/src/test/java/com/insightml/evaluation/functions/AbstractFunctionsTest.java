@@ -26,12 +26,12 @@ import com.insightml.data.samples.Samples;
 
 public abstract class AbstractFunctionsTest {
 
-	protected static void test(final IObjectiveFunction<Object, Object> function, final double expectedScore,
+	protected static void test(final ObjectiveFunction<Object, Object> function, final double expectedScore,
 			final Serializable expected, final double predicted) {
 		test(function, expectedScore, new Serializable[] { expected }, new Double[] { predicted });
 	}
 
-	protected static <E, P> void test(final IObjectiveFunction<E, P> function, final double expectedScore,
+	protected static <E, P> void test(final ObjectiveFunction<E, P> function, final double expectedScore,
 			final Serializable[] expected, final P[] predicted) {
 		final List<TestInstance> instances = new LinkedList<>();
 		for (final Serializable exp : expected) {

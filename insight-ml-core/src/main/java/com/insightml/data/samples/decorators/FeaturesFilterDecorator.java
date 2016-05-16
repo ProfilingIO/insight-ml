@@ -15,13 +15,13 @@
  */
 package com.insightml.data.samples.decorators;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Vectors;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 
-public final class FeaturesFilterDecorator<S extends ISample, E> extends AbstractDecorator<S, E> {
+public final class FeaturesFilterDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
 
 	private final boolean[] filter;
 	private final int[] map;

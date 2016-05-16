@@ -22,14 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.SimpleSample;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.BasicSimulationResult;
 import com.insightml.evaluation.simulation.CrossValidation;
 import com.insightml.evaluation.simulation.SimulationResultConsumer;
 import com.insightml.evaluation.simulation.SimulationResults;
-import com.insightml.evaluation.simulation.SimulationSetup;
+import com.insightml.evaluation.simulation.SimulationSetupImpl;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerPipeline;
 import com.insightml.utils.Arguments;
@@ -41,18 +41,18 @@ public final class Tests {
 	private Tests() {
 	}
 
-	public static <I extends ISample, E, P> SimulationSetup<I, E, P> simulationSetup(final IDataset<I, E, P> dataset,
-			final LearnerPipeline<? super I, E, P> learner, final IObjectiveFunction<? super E, ? super P>... metrics) {
-		return new SimulationSetup<>(dataset.getName(), dataset.getFeaturesConfig(null), null,
+	public static <I extends Sample, E, P> SimulationSetupImpl<I, E, P> simulationSetup(final IDataset<I, E, P> dataset,
+			final LearnerPipeline<? super I, E, P> learner, final ObjectiveFunction<? super E, ? super P>... metrics) {
+		return new SimulationSetupImpl<>(dataset.getName(), dataset.getFeaturesConfig(null), null,
 				new LearnerPipeline[] { learner }, new ThreadedClient(), false, metrics);
 	}
 
-	public static <I extends ISample> CrossValidation<I> getCv() {
+	public static <I extends Sample> CrossValidation<I> getCv() {
 		return new CrossValidation<>(5, 1, null);
 	}
 
-	public static <I extends ISample, E, P> SimulationResults<I, E, P> cv(final IDataset<I, E, P> instances,
-			final LearnerPipeline learner, final IObjectiveFunction<E, P>[] objective) {
+	public static <I extends Sample, E, P> SimulationResults<I, E, P> cv(final IDataset<I, E, P> instances,
+			final LearnerPipeline learner, final ObjectiveFunction<E, P>[] objective) {
 		final SimulationResultConsumer resultConsumer = (simulation, learn, result, setup) -> LOG
 				.info(BasicSimulationResult.of(learn, result).toString());
 		return new CrossValidation<I>(5, 1, resultConsumer).run(instances.loadTraining(null),
@@ -65,7 +65,7 @@ public final class Tests {
 	}
 
 	public static <I extends SimpleSample, E extends Serializable> double testLearner2(final ILearner learner,
-			final TestData testData, final IObjectiveFunction<? super I, ? super E> objective, final Double expected) {
+			final TestData testData, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
 		IDataset instances;
 		switch (testData) {
 		case BOOLEAN:
@@ -81,13 +81,13 @@ public final class Tests {
 	}
 
 	public static <I extends SimpleSample, E extends Serializable> double testLearner(final ILearner learner,
-			final IDataset instances, final IObjectiveFunction<? super I, ? super E> objective, final Double expected) {
+			final IDataset instances, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
 		return testLearner(new LearnerPipeline<>(learner, 1.0), instances, objective, expected);
 	}
 
 	public static <I extends SimpleSample, E extends Serializable> double testLearner(final LearnerPipeline learner,
-			final IDataset instances, final IObjectiveFunction<? super I, ? super E> objective, final Double expected) {
-		final double result = cv(instances, learner, new IObjectiveFunction[] { objective }).getNormalizedResult();
+			final IDataset instances, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
+		final double result = cv(instances, learner, new ObjectiveFunction[] { objective }).getNormalizedResult();
 		if (expected != null) {
 			Assert.assertEquals(expected, result, 0.000005);
 		}

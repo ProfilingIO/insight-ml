@@ -15,22 +15,22 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.Vectors;
 import com.insightml.math.optimization.AbstractOptimizable;
 
-public final class ObjectiveFunc<I extends ISample, E, T, C> extends AbstractOptimizable {
+public final class ObjectiveFunc<I extends Sample, E, T, C> extends AbstractOptimizable {
 
 	private final ISamples<I, E> instances;
 	private final ParameterModel<I, T, C> model;
 	private final C[] cachable;
 	private final int labelIndex;
-	private final IObjectiveFunction<? super E, ? super Double> objective;
+	private final ObjectiveFunction<? super E, ? super Double> objective;
 
 	public ObjectiveFunc(final ParameterModel<I, T, C> model, final ISamples<I, E> instances, final C[] cachable,
-			final double[][] initial, final IObjectiveFunction<? super E, ? super Double> objective,
+			final double[][] initial, final ObjectiveFunction<? super E, ? super Double> objective,
 			final int labelIndex) {
 		super(10000, 0.000001, Vectors.fill(-10, initial[labelIndex].length), Vectors.fill(10,
 				initial[labelIndex].length), null, true);

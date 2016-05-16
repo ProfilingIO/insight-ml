@@ -28,7 +28,7 @@ import com.insightml.math.Vectors;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.collections.IntArray;
 
-public abstract class AbstractSamples<S extends ISample, E> implements ISamples<S, E> {
+public abstract class AbstractSamples<S extends Sample, E> implements ISamples<S, E> {
 
 	@Override
 	public final SamplesMapping<S, E> subset(final int[] indexes) {

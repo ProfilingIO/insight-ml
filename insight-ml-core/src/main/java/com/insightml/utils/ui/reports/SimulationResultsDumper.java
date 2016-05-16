@@ -29,9 +29,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationResult;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Filter;
@@ -138,17 +138,17 @@ public final class SimulationResultsDumper {
 	}
 
 	public static <E, P> void dump(final String filename, final Predictions<E, P>[][] preds,
-			final IObjectiveFunction<? super E, ? super P> objective) {
-		final TripleList<ISample, P, Double> predictions = new TripleList<>();
+			final ObjectiveFunction<? super E, ? super P> objective) {
+		final TripleList<Sample, P, Double> predictions = new TripleList<>();
 		for (final Predictions<E, P>[] run : preds) {
 			for (int label = 0; label < run.length; ++label) {
-				final ISamples<? extends ISample, E> samples = run[label].getSamples();
+				final ISamples<? extends Sample, E> samples = run[label].getSamples();
 				if (samples == null) {
 					logger.info("Not dumping results for label " + label);
 					continue;
 				}
 				for (int i = 0; i < run[label].size(); ++i) {
-					final ISample instance = samples.get(i);
+					final Sample instance = samples.get(i);
 					final E exp = (E) instance.getExpected(label);
 					if (exp == null) {
 						continue;
@@ -165,7 +165,7 @@ public final class SimulationResultsDumper {
 		write(filename, predictions);
 	}
 
-	private static <P> void write(final String filename, final TripleList<ISample, P, Double> predictions) {
+	private static <P> void write(final String filename, final TripleList<Sample, P, Double> predictions) {
 		final String[] header = new String[5];
 		header[0] = "id";
 		header[1] = "error";
@@ -173,10 +173,10 @@ public final class SimulationResultsDumper {
 		header[3] = "predicted";
 		header[4] = "actual";
 		final CsvWriter writer = new CsvWriter(new File(filename), ';', true, header);
-		final List<Triple<ISample, P, Double>> sorted = predictions.toList();
+		final List<Triple<Sample, P, Double>> sorted = predictions.toList();
 		Collections.sort(sorted, (o1, o2) -> o2.getThird().compareTo(o1.getThird()));
 		final SimpleFormatter formatter = new SimpleFormatter(5, true);
-		for (final Triple<ISample, P, Double> prediction : sorted) {
+		for (final Triple<Sample, P, Double> prediction : sorted) {
 			final Map<CharSequence, Object> map = Maps.create(5);
 			map.put("id", prediction.getFirst().getId());
 			map.put("error", prediction.getThird() == null ? null : formatter.format(prediction.getThird()));

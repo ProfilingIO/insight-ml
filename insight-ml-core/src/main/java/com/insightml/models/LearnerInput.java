@@ -18,12 +18,12 @@ package com.insightml.models;
 import com.google.common.base.Supplier;
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.PreprocessingPipeline;
-import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
 import com.insightml.utils.types.Proxy;
 
-public final class LearnerInput<S extends ISample, E, O> {
+public final class LearnerInput<S extends Sample, E, O> {
 	private final Supplier<ISamples<S, E>> train;
 	public final ISamples<S, E> valid;
 	public final int labelIndex;
@@ -48,6 +48,12 @@ public final class LearnerInput<S extends ISample, E, O> {
 		this.valid = valid;
 		this.labelIndex = labelIndex;
 		this.config = config;
+	}
+
+	public static <S extends Sample, E, O> LearnerInput<S, E, O> of(final Iterable<S> data,
+			final FeaturesConfig<S, O> config) {
+		final PreprocessingPipeline<S, E> pipelien = PreprocessingPipeline.create(config, data, null, new Iterable[0]);
+		return new LearnerInput<>(data, null, 0, config, pipelien);
 	}
 
 	public ISamples<S, E> getTrain() {

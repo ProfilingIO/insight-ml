@@ -16,12 +16,12 @@
 package com.insightml.data;
 
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.SimpleSample;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 
-public final class SimpleDataset<I extends ISample, E, O> extends AbstractDataset<I, E, O> {
+public final class SimpleDataset<I extends Sample, E, O> extends AbstractDataset<I, E, O> {
 
 	private final Iterable<I> training;
 	private final FeaturesConfig<I, O> config;
@@ -33,8 +33,8 @@ public final class SimpleDataset<I extends ISample, E, O> extends AbstractDatase
 	}
 
 	public static <S extends SimpleSample, E, O> SimpleDataset<S, E, O> create(final Iterable<S> instances) {
-		return new SimpleDataset<>("SimpleDataset", instances,
-				new AnonymousFeaturesConfig<>(instances, -9999999.0, false, new IgnoreFeatureFilter()));
+		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances,
+				SimpleSample::loadFeatures, -9999999.0, false, new IgnoreFeatureFilter()));
 	}
 
 	@Override

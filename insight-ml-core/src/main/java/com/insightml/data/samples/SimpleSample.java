@@ -19,7 +19,7 @@ import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Check;
 
-public class SimpleSample implements ISample, Cloneable {
+public class SimpleSample implements Sample, Cloneable {
 	private static final long serialVersionUID = 4596410329818803518L;
 
 	private final int id;
@@ -59,12 +59,12 @@ public class SimpleSample implements ISample, Cloneable {
 	}
 
 	@Override
-	public final void writeInfo(final ISampleInfoBuilder builder, final Iterable<? extends ISample> instances) {
+	public final void writeInfo(final ISampleInfoBuilder builder, final Iterable<? extends Sample> instances) {
 		throw new IllegalAccessError();
 	}
 
 	@Override
-	public final int compareTo(final ISample o) {
+	public final int compareTo(final Sample o) {
 		throw new IllegalAccessError();
 	}
 

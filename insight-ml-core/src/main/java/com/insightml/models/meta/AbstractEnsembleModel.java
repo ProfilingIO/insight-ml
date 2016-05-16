@@ -17,14 +17,14 @@ package com.insightml.models.meta;
 
 import java.util.Map.Entry;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractModel;
 import com.insightml.models.IModel;
 import com.insightml.models.trees.TreeModel;
 
-abstract class AbstractEnsembleModel<I extends ISample, E> extends AbstractModel<I, E> {
+abstract class AbstractEnsembleModel<I extends Sample, E> extends AbstractModel<I, E> {
 
 	private static final long serialVersionUID = 8994738708748217269L;
 

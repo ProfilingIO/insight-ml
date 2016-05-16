@@ -17,11 +17,12 @@ package com.insightml.evaluation.simulation;
 
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
+import com.insightml.utils.ui.reports.IReporter;
 
-public interface ISimulationResults<E, P> {
+public interface ISimulationResults<E, P> extends IReporter {
 
-	IObjectiveFunction<? super E, ? super P>[] getObjectives();
+	ObjectiveFunction<? super E, ? super P>[] getObjectives();
 
 	StatisticalSummary[] getResults();
 

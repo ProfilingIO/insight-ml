@@ -19,7 +19,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
@@ -30,7 +30,7 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.jobs.ParallelFor;
 
-public class Bagging<I extends ISample> extends AbstractEnsembleLearner<I, Object, Double> {
+public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object, Double> {
 	private final VoteStrategy strategy;
 
 	public Bagging(final IArguments arguments, final ILearner<I, ? extends Object, Double>... learner) {

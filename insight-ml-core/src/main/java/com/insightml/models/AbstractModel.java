@@ -15,12 +15,12 @@
  */
 package com.insightml.models;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.types.SumMap;
 import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.ui.UiUtils;
 
-public abstract class AbstractModel<I extends ISample, E> extends AbstractConfigurable implements
+public abstract class AbstractModel<I extends Sample, E> extends AbstractConfigurable implements
 IModel<I, E> {
 
     private static final long serialVersionUID = -3450572475700673815L;

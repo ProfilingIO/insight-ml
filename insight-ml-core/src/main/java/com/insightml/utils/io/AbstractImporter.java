@@ -23,14 +23,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Samples;
 import com.insightml.utils.Collections;
 import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.types.AbstractModule;
 
-public abstract class AbstractImporter<I extends ISample, E> extends AbstractModule {
+public abstract class AbstractImporter<I extends Sample, E> extends AbstractModule {
 
 	private final char separator;
 	private final int numColumns;

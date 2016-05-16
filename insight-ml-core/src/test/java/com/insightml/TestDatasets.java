@@ -26,15 +26,15 @@ import com.insightml.data.IDataset;
 import com.insightml.data.SimpleDataset;
 import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.utils.AnonymousSamplesReader;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.functions.ObjectiveFunctions;
 import com.insightml.utils.io.IoUtils;
 import com.insightml.utils.types.collections.PairList;
 
 public final class TestDatasets {
 
-	public static PairList<IDataset<?, ?, ?>, IObjectiveFunction[]> createInstances() {
-		final PairList<IDataset<?, ?, ?>, IObjectiveFunction[]> instances = new PairList<>(true);
+	public static PairList<IDataset<?, ?, ?>, ObjectiveFunction[]> createInstances() {
+		final PairList<IDataset<?, ?, ?>, ObjectiveFunction[]> instances = new PairList<>(true);
 		instances.add(createNumeric(), ObjectiveFunctions.METRICS_NUMERIC);
 		instances.add(createNominal(), ObjectiveFunctions.METRICS_NOMIAL);
 		instances.add(createBoolean(), ObjectiveFunctions.METRICS_BINARY);

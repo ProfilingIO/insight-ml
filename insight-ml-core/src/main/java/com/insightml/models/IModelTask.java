@@ -16,19 +16,19 @@
 package com.insightml.models;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.ISample;
-import com.insightml.evaluation.simulation.ISimulationSetup;
+import com.insightml.data.samples.Sample;
+import com.insightml.evaluation.simulation.SimulationSetup;
 import com.insightml.utils.IArguments;
 
-public interface IModelTask<I extends ISample, E, P> {
+public interface IModelTask<I extends Sample, E, P> {
 
 	IDataset<I, E, P> dataset(IArguments arguments);
 
 	ModelPipeline<I, P> buildModel(IArguments args);
 
-	ISimulationSetup<I, E, P> getSimulationSetup(ILearnerPipeline<I, P>[] learner, IDataset<I, E, P> dataset,
+	SimulationSetup<I, E, P> getSimulationSetup(ILearnerPipeline<I, P>[] learner, IDataset<I, E, P> dataset,
 			IArguments arguments, boolean report, Integer labelIndex);
 
-	<J extends ISample, F, Q> ILearner<J, F, Q> getLearner(IArguments arguments, double[][] params);
+	<J extends Sample, F, Q> ILearner<J, F, Q> getLearner(IArguments arguments, double[][] params);
 
 }

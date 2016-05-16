@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Maths;
 import com.insightml.math.distributions.IDiscreteDistribution;
@@ -36,7 +36,7 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 	}
 
 	@Override
-	public double instance(final Object prediction, final Object label, final ISample sample) {
+	public double instance(final Object prediction, final Object label, final Sample sample) {
 		if (label instanceof String) {
 			final String pred = ((IDiscreteDistribution<String>) prediction).getMax().getFirst();
 			return label.equals(pred) ? 1.0 : 0.0;

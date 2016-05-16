@@ -15,7 +15,7 @@
  */
 package com.insightml.evaluation.functions;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 
 public final class LogLoss extends AbstractObjectiveFunctionFrame<Object, Object> {
 
@@ -28,7 +28,7 @@ public final class LogLoss extends AbstractObjectiveFunctionFrame<Object, Object
 	}
 
 	@Override
-	public double instance(final Object prediction, final Object label, final ISample sample) {
+	public double instance(final Object prediction, final Object label, final Sample sample) {
 		final boolean act = label instanceof Boolean ? (Boolean) label : ((Number) label).doubleValue() == 1;
 		final double capped = Math.min(0.99999999, Math.max(0.00000001, (Double) prediction));
 		final double score = act ? capped : 1 - capped;

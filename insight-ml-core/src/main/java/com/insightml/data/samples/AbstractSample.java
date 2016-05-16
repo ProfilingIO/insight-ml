@@ -17,7 +17,7 @@ package com.insightml.data.samples;
 
 import com.insightml.utils.types.AbstractClass;
 
-public abstract class AbstractSample<E> extends AbstractClass implements ISample, Cloneable {
+public abstract class AbstractSample<E> extends AbstractClass implements Sample, Cloneable {
 
 	private static final long serialVersionUID = -7239560442248089807L;
 
@@ -64,7 +64,7 @@ public abstract class AbstractSample<E> extends AbstractClass implements ISample
 	}
 
 	@Override
-	public void writeInfo(final ISampleInfoBuilder builder, final Iterable<? extends ISample> instances) {
+	public void writeInfo(final ISampleInfoBuilder builder, final Iterable<? extends Sample> instances) {
 		throw new IllegalAccessError();
 	}
 
@@ -75,14 +75,14 @@ public abstract class AbstractSample<E> extends AbstractClass implements ISample
 
 	@Override
 	public final boolean equals(final Object o) {
-		if (!(o instanceof ISample)) {
+		if (!(o instanceof Sample)) {
 			throw new IllegalStateException("Tried to compare " + this + " to " + o + " (" + o.getClass() + ")");
 		}
-		return getId() == ((ISample) o).getId();
+		return getId() == ((Sample) o).getId();
 	}
 
 	@Override
-	public final int compareTo(final ISample o) {
+	public final int compareTo(final Sample o) {
 		return Integer.compare(getId(), o.getId());
 	}
 

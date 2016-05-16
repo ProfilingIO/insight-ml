@@ -21,7 +21,7 @@ import java.util.TreeMap;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 
 import com.google.common.base.MoreObjects;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.utils.types.AbstractClass;
 
 public class BasicSimulationResult extends AbstractClass implements SimulationResult {
@@ -35,7 +35,7 @@ public class BasicSimulationResult extends AbstractClass implements SimulationRe
 
 	public static SimulationResult of(final String learner, final ISimulationResults<?, ?> performance) {
 		final StatisticalSummary[] results = performance.getResults();
-		final IObjectiveFunction<?, ?>[] metrics = performance.getObjectives();
+		final ObjectiveFunction<?, ?>[] metrics = performance.getObjectives();
 		final Map<String, Float> metric = new TreeMap<>();
 		for (int i = 0; i < metrics.length; ++i) {
 			metric.put(metrics[i].getName(), (float) results[i].getMean());

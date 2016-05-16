@@ -15,9 +15,9 @@
  */
 package com.insightml.models;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 
-public interface ILearner<S extends ISample, E, O> {
+public interface ILearner<S extends Sample, E, O> {
 
     String getName();
 

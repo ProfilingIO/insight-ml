@@ -16,10 +16,10 @@
 package com.insightml.models;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 
-public abstract class AbstractIndependentFeaturesModel extends AbstractIndependentModel<ISample, Double> {
+public abstract class AbstractIndependentFeaturesModel extends AbstractIndependentModel<Sample, Double> {
 
 	private static final long serialVersionUID = -1870885956526569825L;
 
@@ -31,7 +31,7 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 	}
 
 	@Override
-	protected final Double predict(final int instance, final ISamples<ISample, ?> instances,
+	protected final Double predict(final int instance, final ISamples<Sample, ?> instances,
 			final int[] featuresFilter) {
 		final double[] features = instances.features()[instance];
 		final double[] selection = new double[featuresFilter.length];

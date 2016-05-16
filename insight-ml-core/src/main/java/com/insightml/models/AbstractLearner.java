@@ -20,7 +20,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
 import com.insightml.models.LearnerArguments.Argument;
 import com.insightml.utils.Check;
@@ -28,7 +28,7 @@ import com.insightml.utils.IArguments;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.ui.UiUtils;
 
-public abstract class AbstractLearner<S extends ISample, E, O> extends AbstractModule implements ILearner<S, E, O> {
+public abstract class AbstractLearner<S extends Sample, E, O> extends AbstractModule implements ILearner<S, E, O> {
 
 	public static final Logger logger = LoggerFactory.getLogger(AbstractLearner.class);
 

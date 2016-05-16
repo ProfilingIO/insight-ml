@@ -19,9 +19,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.insightml.data.samples.ISample;
-import com.insightml.evaluation.functions.IObjectiveFunction;
-import com.insightml.evaluation.simulation.ISimulationSetup.PERFORMANCE_SELECTOR;
+import com.insightml.data.samples.Sample;
+import com.insightml.evaluation.functions.ObjectiveFunction;
+import com.insightml.evaluation.simulation.SimulationSetup.PERFORMANCE_SELECTOR;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Arrays;
@@ -31,13 +31,13 @@ import com.insightml.utils.types.collections.PairList;
 import com.insightml.utils.ui.SimpleFormatter;
 import com.insightml.utils.ui.UiUtils;
 
-public final class SimulationResults<I extends ISample, E, P> extends AbstractClass implements Serializable,
-ISimulationResults<E, P> {
+public final class SimulationResults<I extends Sample, E, P> extends AbstractClass
+		implements Serializable, ISimulationResults<E, P> {
 
 	private static final long serialVersionUID = 2715905427176152958L;
 
 	private final String learner;
-	private final IObjectiveFunction<? super E, ? super P>[] objectives;
+	private final ObjectiveFunction<? super E, ? super P>[] objectives;
 	private final PERFORMANCE_SELECTOR criteria;
 
 	private final long start;
@@ -46,7 +46,7 @@ ISimulationResults<E, P> {
 	private final Predictions<E, P>[][] predictions;
 	private Stats[] stats;
 
-	public SimulationResults(final int numSets, final int numLabels, final ISimulationSetup<I, E, P> setup) {
+	public SimulationResults(final int numSets, final int numLabels, final SimulationSetup<I, E, P> setup) {
 		learner = setup.getLearner()[0].getName();
 		this.objectives = setup.getObjectives();
 		criteria = setup.getCriteria();
@@ -66,7 +66,7 @@ ISimulationResults<E, P> {
 	}
 
 	@Override
-	public IObjectiveFunction<? super E, ? super P>[] getObjectives() {
+	public ObjectiveFunction<? super E, ? super P>[] getObjectives() {
 		return objectives;
 	}
 
@@ -129,6 +129,7 @@ ISimulationResults<E, P> {
 		return predictions.clone();
 	}
 
+	@Override
 	public String getReport() {
 		getResults();
 		final SimpleFormatter formatter = new SimpleFormatter(5, true);
@@ -137,9 +138,9 @@ ISimulationResults<E, P> {
 		info.add("Duration", seconds + " seconds");
 		for (int i = 0; i < objectives.length; ++i) {
 			info.add(objectives[i].getName(),
-					formatter.format(stats[i].getMean()) + " \u00B1"
-							+ formatter.format(stats[i].getStandardDeviation()) + " ["
-							+ formatter.format(stats[i].getMin()) + "," + formatter.format(stats[i].getMax()) + "]");
+					formatter.format(stats[i].getMean()) + " \u00B1" + formatter.format(stats[i].getStandardDeviation())
+							+ " [" + formatter.format(stats[i].getMin()) + "," + formatter.format(stats[i].getMax())
+							+ "]");
 		}
 		// builder.addValue(UiUtils.format(getFeatures()));
 		return UiUtils.format(info);

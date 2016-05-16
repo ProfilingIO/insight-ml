@@ -20,11 +20,11 @@ import java.util.function.Function;
 
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.Normalization;
 import com.insightml.utils.types.AbstractModule;
 
-public abstract class FeaturesConfig<I extends ISample, P> extends AbstractModule implements Serializable {
+public abstract class FeaturesConfig<I extends Sample, P> extends AbstractModule implements Serializable {
 
 	private static final long serialVersionUID = -5411101736646501986L;
 

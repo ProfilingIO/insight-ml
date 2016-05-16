@@ -15,11 +15,11 @@
  */
 package com.insightml.data;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.ui.reports.IReporter;
 
-public interface IPreprocessingPipeline<S extends ISample, E> extends IReporter {
+public interface IPreprocessingPipeline<S extends Sample, E> extends IReporter {
 
     ISamples<S, E> run(Iterable<S> input, boolean isTraining);
 

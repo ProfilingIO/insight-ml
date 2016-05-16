@@ -19,7 +19,7 @@ import org.apache.commons.math3.util.Pair;
 import org.junit.Ignore;
 
 import com.insightml.AbstractModelTest;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.LogLoss;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.math.distributions.IDiscreteDistribution;
@@ -30,7 +30,7 @@ import com.insightml.models.regression.OLS;
 public final class LinearModelBlenderTest extends AbstractModelTest {
 
 	@Override
-	protected Pair<? extends ILearner<ISample, ? super Double, Double>, Double> getNumeric() {
+	protected Pair<? extends ILearner<Sample, ? super Double, Double>, Double> getNumeric() {
 		return new Pair(new LinearModelBlender(true, new double[1][2], new RMSE(), new OLS()), -0.75341);
 	}
 
@@ -40,7 +40,7 @@ public final class LinearModelBlenderTest extends AbstractModelTest {
 	}
 
 	@Override
-	protected Pair<? extends ILearner<ISample, String, IDiscreteDistribution<String>>, Double> getNominal() {
+	protected Pair<? extends ILearner<Sample, String, IDiscreteDistribution<String>>, Double> getNominal() {
 		// TODO Auto-generated method stub
 		return null;
 	}

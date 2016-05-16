@@ -19,10 +19,10 @@ import java.util.Random;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.samples.AbstractSamples;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 
-public abstract class AbstractDecorator<S extends ISample, E> extends AbstractSamples<S, E> {
+public abstract class AbstractDecorator<S extends Sample, E> extends AbstractSamples<S, E> {
 
 	protected final ISamples<S, E> ref;
 

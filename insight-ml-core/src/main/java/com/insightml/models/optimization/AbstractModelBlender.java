@@ -16,21 +16,21 @@
 package com.insightml.models.optimization;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerInput;
 import com.insightml.utils.Check;
 
-public abstract class AbstractModelBlender<I extends ISample, E>
+public abstract class AbstractModelBlender<I extends Sample, E>
 		extends AbstractParameterLearner<I, E, IModel<I, Double>[], Double[]> {
 
 	private final ILearner<I, ? super E, ? super Double>[] learner;
 
 	protected AbstractModelBlender(final ILearner<I, ? super E, ? super Double>[] learner, final double[][] init,
-			final IObjectiveFunction<? super E, ? super Double> obj) {
+			final ObjectiveFunction<? super E, ? super Double> obj) {
 		super(init, obj);
 		this.learner = Check.size(learner, 1, 20);
 	}

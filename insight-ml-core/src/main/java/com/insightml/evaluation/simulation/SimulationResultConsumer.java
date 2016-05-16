@@ -19,5 +19,5 @@ package com.insightml.evaluation.simulation;
 public interface SimulationResultConsumer {
 
 	void accept(ISimulation<?> simulation, String learn, ISimulationResults<?, ?> performance,
-			ISimulationSetup<?, ?, ?> setup);
+			SimulationSetup<?, ?, ?> setup);
 }

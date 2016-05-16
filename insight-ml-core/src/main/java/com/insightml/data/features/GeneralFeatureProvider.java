@@ -20,9 +20,9 @@ import java.util.List;
 import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 
-public abstract class GeneralFeatureProvider<I extends ISample> extends AbstractFeatureProvider<I> {
+public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 
 	protected GeneralFeatureProvider() {
 	}

@@ -22,16 +22,16 @@ import org.apache.commons.math3.util.Pair;
 import com.insightml.Tests;
 import com.insightml.data.IDataset;
 import com.insightml.data.samples.SimpleSample;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.utils.types.collections.PairList;
 
 public final class ModelBenchmark<I extends SimpleSample, E extends Serializable> {
 
 	private final IDataset instances;
-	private final IObjectiveFunction objective;
+	private final ObjectiveFunction objective;
 	private final PairList<ILearner, Double> learners = new PairList<>(true);
 
-	public ModelBenchmark(final IDataset<I, ?, ?> instances, final IObjectiveFunction<? super I, ? super E> objective) {
+	public ModelBenchmark(final IDataset<I, ?, ?> instances, final ObjectiveFunction<? super I, ? super E> objective) {
 		this.instances = instances;
 		this.objective = objective;
 	}

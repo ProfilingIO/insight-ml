@@ -15,13 +15,13 @@
  */
 package com.insightml.evaluation.functions;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 
 public final class RMSLE extends AbstractObjectiveFunctionFrame<Object, Object> {
 	private static final long serialVersionUID = -6151302549655675505L;
 
 	@Override
-	public double instance(final Object prediction, final Object label, final ISample sample) {
+	public double instance(final Object prediction, final Object label, final Sample sample) {
 		final double[] predAndAct = toDouble(prediction, label);
 		final double logPred = predAndAct[0] <= -1 ? 0 : log(predAndAct[0]);
 		final double logAct = log(predAndAct[1]);

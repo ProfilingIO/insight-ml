@@ -19,7 +19,7 @@ import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractBasicDoubleLearner;
 import com.insightml.models.IModel;
 
@@ -30,7 +30,7 @@ public final class OLS extends AbstractBasicDoubleLearner {
 	}
 
 	@Override
-	public IModel<ISample, Double> train(final double[][] features, final double[] expected,
+	public IModel<Sample, Double> train(final double[][] features, final double[] expected,
 			final String[] featureNames) {
 		final OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
 		regression.newSampleData(expected, features);

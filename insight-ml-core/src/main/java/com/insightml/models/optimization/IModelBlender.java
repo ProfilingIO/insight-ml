@@ -15,9 +15,9 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
 
-public interface IModelBlender<S extends ISample, E, O> extends ILearner<S, E, O> {
+public interface IModelBlender<S extends Sample, E, O> extends ILearner<S, E, O> {
 
 }

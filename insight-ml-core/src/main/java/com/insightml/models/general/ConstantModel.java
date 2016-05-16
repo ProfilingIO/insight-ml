@@ -16,12 +16,12 @@
 package com.insightml.models.general;
 
 import com.google.common.base.MoreObjects;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.models.AbstractModel;
 import com.insightml.utils.Arrays;
 
-public final class ConstantModel<E> extends AbstractModel<ISample, E> {
+public final class ConstantModel<E> extends AbstractModel<Sample, E> {
 	private static final long serialVersionUID = 3872171524371116676L;
 
 	private E constant;
@@ -35,7 +35,7 @@ public final class ConstantModel<E> extends AbstractModel<ISample, E> {
 	}
 
 	@Override
-	public E[] apply(final ISamples<ISample, ?> input) {
+	public E[] apply(final ISamples<Sample, ?> input) {
 		return Arrays.fill(input.size(), constant);
 	}
 

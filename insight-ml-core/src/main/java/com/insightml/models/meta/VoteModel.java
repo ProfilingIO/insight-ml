@@ -17,7 +17,7 @@ package com.insightml.models.meta;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arrays;
@@ -25,7 +25,7 @@ import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;
 import com.insightml.utils.jobs.ThreadedClient;
 
-public final class VoteModel<I extends ISample> extends AbstractEnsembleModel<I, Double> {
+public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double> {
 
 	private static final long serialVersionUID = -8515840219123634452L;
 

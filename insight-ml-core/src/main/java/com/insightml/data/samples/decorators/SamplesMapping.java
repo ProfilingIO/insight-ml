@@ -17,10 +17,10 @@ package com.insightml.data.samples.decorators;
 
 import java.lang.reflect.Array;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 
-public final class SamplesMapping<S extends ISample, E> extends AbstractDecorator<S, E> {
+public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator<S, E> {
 
 	final int[] map;
 	private final double[][] features;

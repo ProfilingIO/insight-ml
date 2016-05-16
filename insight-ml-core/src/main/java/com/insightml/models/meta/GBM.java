@@ -20,11 +20,11 @@ import java.util.Random;
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.decorators.LabelDecorator;
 import com.insightml.data.samples.decorators.SamplesMapping;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.AbstractOptimizable;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
@@ -38,19 +38,19 @@ import com.insightml.utils.IArguments;
 import com.insightml.utils.Utils;
 import com.insightml.utils.types.collections.PairList;
 
-public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
+public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
-	final IObjectiveFunction<Object, ? super Double> objective;
+	final ObjectiveFunction<Object, ? super Double> objective;
 
-	public GBM(final IArguments arguments, final IObjectiveFunction<Object, ? super Double> objective,
-			final ILearner<ISample, Double, Double>[] learner) {
+	public GBM(final IArguments arguments, final ObjectiveFunction<Object, ? super Double> objective,
+			final ILearner<Sample, Double, Double>[] learner) {
 		super(arguments, learner);
 		this.objective = objective;
 	}
 
 	public GBM(final int it, final double shrink, final double bag,
-			final IObjectiveFunction<Object, ? super Double> objective,
-			final ILearner<ISample, Double, Double>[] learner) {
+			final ObjectiveFunction<Object, ? super Double> objective,
+			final ILearner<Sample, Double, Double>[] learner) {
 		this(new Arguments("it", it, "shrink", shrink, "bag", bag), objective, learner);
 	}
 
@@ -70,22 +70,22 @@ public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
 	}
 
 	@Override
-	protected final BoostingModel createModel(final ISamples<ISample, Object> samples,
-			final ILearner<ISample, ? extends Object, Double>[] learner, final int labelIndex) {
+	protected final BoostingModel createModel(final ISamples<Sample, Object> samples,
+			final ILearner<Sample, ? extends Object, Double>[] learner, final int labelIndex) {
 		final Object[] expected = samples.expected(labelIndex);
-		final IModel<ISample, Double> first = f0(expected, samples.weights(labelIndex), labelIndex);
-		final PairList<IModel<ISample, Double>, Double> steps = new PairList<>(true);
+		final IModel<Sample, Double> first = f0(expected, samples.weights(labelIndex), labelIndex);
+		final PairList<IModel<Sample, Double>, Double> steps = new PairList<>(true);
 		double[] preds = Arrays.cast(first.apply(samples));
 		final Random random = Utils.random();
 		final int iterations = (int) argument("it");
 		final double shrinkage = argument("shrink");
 		for (int i = 0; i < iterations; ++i) {
-			final ISamples<ISample, Object> subset = subset(samples, preds, expected, random, labelIndex);
+			final ISamples<Sample, Object> subset = subset(samples, preds, expected, random, labelIndex);
 			if (subset == null) {
 				continue;
 			}
 			try {
-				final IModel<ISample, Double> fit = learner[i % learner.length]
+				final IModel<Sample, Double> fit = learner[i % learner.length]
 						.run(new LearnerInput(subset, null, labelIndex));
 				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, i + 1, labelIndex);
 				steps.add(fit, shrinkage * update.getFirst());
@@ -109,15 +109,15 @@ public class GBM extends AbstractEnsembleLearner<ISample, Object, Double> {
 		return new ConstantModel<>(result);
 	}
 
-	private ISamples<ISample, Object> subset(final ISamples<ISample, Object> instances, final double[] preds,
+	private ISamples<Sample, Object> subset(final ISamples<Sample, Object> instances, final double[] preds,
 			final Object[] expected, final Random random, final int labelIndex) {
-		final Pair<SamplesMapping<ISample, Object>, double[]> error = sampleError(instances, preds, expected, random);
+		final Pair<SamplesMapping<Sample, Object>, double[]> error = sampleError(instances, preds, expected, random);
 		return new LabelDecorator<>(error.getFirst(), Arrays.cast(error.getSecond()), labelIndex)
 				.sampleFeatures(argument("fbag"), random);
 	}
 
-	private Pair<Double, double[]> fitGamma(final IModel<ISample, Double> fit, final double[] preds,
-			final ISamples<ISample, Object> instances, final int it, final int labelIndex) {
+	private Pair<Double, double[]> fitGamma(final IModel<Sample, Double> fit, final double[] preds,
+			final ISamples<Sample, Object> instances, final int it, final int labelIndex) {
 		final double[] optim = Arrays.cast(fit.apply(instances));
 		final double gamma = findGamma(instances.expected(labelIndex), instances.weights(labelIndex), preds, optim,
 				0.000000001, labelIndex);

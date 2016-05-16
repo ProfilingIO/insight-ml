@@ -28,7 +28,7 @@ import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.types.collections.ArrayIterator;
 
-public final class Samples<S extends ISample, E> extends AbstractSamples<S, E> implements Serializable {
+public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> implements Serializable {
 
 	private static final long serialVersionUID = 3351881040269525917L;
 

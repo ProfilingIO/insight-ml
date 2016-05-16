@@ -17,12 +17,12 @@ package com.insightml.data.features;
 
 import java.util.Map;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.types.Parameter;
 
-public abstract class AbstractFeatureProvider<I extends ISample> extends AbstractConfigurable
+public abstract class AbstractFeatureProvider<I extends Sample> extends AbstractConfigurable
 		implements IFeatureProvider<I> {
 
 	private double defaultValue;

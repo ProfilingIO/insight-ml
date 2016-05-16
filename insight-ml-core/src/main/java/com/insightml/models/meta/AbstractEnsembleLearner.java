@@ -19,7 +19,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.models.AbstractLearner;
@@ -30,7 +30,7 @@ import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.Utils;
 
-public abstract class AbstractEnsembleLearner<S extends ISample, E, O> extends AbstractLearner<S, E, O> {
+public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends AbstractLearner<S, E, O> {
 
 	private final ILearner<S, ? extends E, O>[] learners;
 
@@ -52,9 +52,9 @@ public abstract class AbstractEnsembleLearner<S extends ISample, E, O> extends A
 	protected abstract IModel<S, O> createModel(ISamples<S, E> instances, ILearner<S, ? extends E, O>[] learner,
 			int labelIndex);
 
-	Pair<SamplesMapping<ISample, Object>, double[]> sampleError(final ISamples<ISample, Object> instances,
+	Pair<SamplesMapping<Sample, Object>, double[]> sampleError(final ISamples<Sample, Object> instances,
 			final double[] preds, final Object[] expected, final Random random) {
-		final SamplesMapping<ISample, Object> sample = (SamplesMapping<ISample, Object>) instances
+		final SamplesMapping<Sample, Object> sample = (SamplesMapping<Sample, Object>) instances
 				.sample(argument("bag"), random).getFirst();
 		final int[] map = sample.getIndexMap();
 		final double[] labels = new double[map.length];

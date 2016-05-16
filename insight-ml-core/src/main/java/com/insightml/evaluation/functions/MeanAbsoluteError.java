@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Predictions;
 
 public final class MeanAbsoluteError extends AbstractObjectiveFunctionFrame<Number, Number> {
@@ -53,7 +53,7 @@ public final class MeanAbsoluteError extends AbstractObjectiveFunctionFrame<Numb
 	}
 
 	@Override
-	public double instance(final Number prediction, final Number label, final ISample sample) {
+	public double instance(final Number prediction, final Number label, final Sample sample) {
 		final double pred = Math.min(max, Math.max(min, prediction.doubleValue()));
 		return Math.abs(label.doubleValue() - pred);
 	}

@@ -21,9 +21,9 @@ import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 
-public final class SimpleFeatureConfig<I extends ISample, P> extends FeaturesConfig<I, P> {
+public final class SimpleFeatureConfig<I extends Sample, P> extends FeaturesConfig<I, P> {
 	private static final long serialVersionUID = -9027051549538426023L;
 
 	private final IFeatureProvider<I> provider;

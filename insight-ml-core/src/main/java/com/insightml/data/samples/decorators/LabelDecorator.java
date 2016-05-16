@@ -16,11 +16,11 @@
 package com.insightml.data.samples.decorators;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.Check;
 
-public final class LabelDecorator<S extends ISample, E> extends AbstractDecorator<S, E> {
+public final class LabelDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
 
 	private final E[] expected;
 	private final int label;

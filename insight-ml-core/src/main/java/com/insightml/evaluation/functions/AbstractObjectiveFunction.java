@@ -18,7 +18,7 @@ package com.insightml.evaluation.functions;
 import com.insightml.math.distributions.IDiscreteDistribution;
 import com.insightml.utils.types.AbstractModule;
 
-public abstract class AbstractObjectiveFunction<E, T> extends AbstractModule implements IObjectiveFunction<E, T> {
+public abstract class AbstractObjectiveFunction<E, T> extends AbstractModule implements ObjectiveFunction<E, T> {
 	private static final long serialVersionUID = -7212322445994504764L;
 
 	@Override

@@ -18,14 +18,14 @@ package com.insightml.data.features;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.DoublePair;
 
-public class AggregateFeatureProvider<I extends ISample> extends AbstractFeatureProvider<I> {
+public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 	private final List<IFeatureProvider<I>> providers;
 
 	public AggregateFeatureProvider(final String name, final double defaultValue,

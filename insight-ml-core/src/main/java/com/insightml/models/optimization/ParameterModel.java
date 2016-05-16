@@ -15,12 +15,12 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.models.AbstractModel;
 import com.insightml.models.IModel;
 
-public final class ParameterModel<I extends ISample, T, C> extends AbstractModel<I, Double> {
+public final class ParameterModel<I extends Sample, T, C> extends AbstractModel<I, Double> {
 
 	private static final long serialVersionUID = 5493923325394278892L;
 

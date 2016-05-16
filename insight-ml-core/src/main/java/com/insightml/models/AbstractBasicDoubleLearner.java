@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.types.collections.DoubleArray;
@@ -32,12 +32,12 @@ public abstract class AbstractBasicDoubleLearner extends AbstractDoubleLearner<D
 	}
 
 	@Override
-	public final IModel<ISample, Double> run(final LearnerInput<? extends ISample, ? extends Double, ?> input) {
+	public final IModel<Sample, Double> run(final LearnerInput<? extends Sample, ? extends Double, ?> input) {
 		final Pair<double[], double[][]> filtered = filter(input);
 		return train(filtered.getSecond(), filtered.getFirst(), input.getTrain().featureNames());
 	}
 
-	private static Pair<double[], double[][]> filter(final LearnerInput<? extends ISample, ? extends Double, ?> input) {
+	private static Pair<double[], double[][]> filter(final LearnerInput<? extends Sample, ? extends Double, ?> input) {
 		final double[][] features = input.getTrain().features();
 		final Double[] expected = input.getTrain().expected(input.labelIndex);
 
@@ -53,6 +53,6 @@ public abstract class AbstractBasicDoubleLearner extends AbstractDoubleLearner<D
 		return new Pair<>(expFiltered.toArray(), featsArray);
 	}
 
-	public abstract IModel<ISample, Double> train(double[][] features, double[] expected, String[] featureNames);
+	public abstract IModel<Sample, Double> train(double[][] features, double[] expected, String[] featureNames);
 
 }

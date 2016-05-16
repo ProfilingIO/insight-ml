@@ -21,10 +21,10 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.Utils;
 
-public final class SplitSimulation<I extends ISample> extends AbstractSimulation<I> {
+public final class SplitSimulation<I extends Sample> extends AbstractSimulation<I> {
 
 	private static final long serialVersionUID = -2994345013519681199L;
 
@@ -41,12 +41,12 @@ public final class SplitSimulation<I extends ISample> extends AbstractSimulation
 	}
 
 	@Override
-	public <E, P> ISimulationResults<E, P>[] run(final Iterable<I> train, final ISimulationSetup<I, E, P> setup) {
+	public <E, P> ISimulationResults<E, P>[] run(final Iterable<I> train, final SimulationSetup<I, E, P> setup) {
 		final Pair<Iterable<I>, List<I>> split = split(train, trainFraction, Utils.random());
 		return run(split.getFirst(), split.getSecond(), setup);
 	}
 
-	public static <S extends ISample> Pair<Iterable<S>, List<S>> split(final Iterable<S> instances,
+	public static <S extends Sample> Pair<Iterable<S>, List<S>> split(final Iterable<S> instances,
 			final double trainFraction, final Random random) {
 		if (trainFraction == 1.0) {
 			return new Pair<>(instances, null);

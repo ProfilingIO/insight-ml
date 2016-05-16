@@ -16,13 +16,20 @@
 package com.insightml.models;
 
 import com.insightml.data.FeaturesConfig;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 
-public interface ILearnerPipeline<S extends ISample, O> {
+public interface ILearnerPipeline<S extends Sample, O> {
 
-    String getName();
+	String getName();
 
-    ModelPipeline<S, O> run(Iterable<S> data, Iterable<S> unlabled,
-            FeaturesConfig<? extends S, O> config, int labelIndex);
+	ModelPipeline<S, O> run(Iterable<S> data, Iterable<S> unlabled, FeaturesConfig<? extends S, O> config,
+			int labelIndex);
 
+	public static <S extends Sample, E, O> ILearnerPipeline<S, O>[] of(final ILearner<? super S, E, O>... learner) {
+		final ILearnerPipeline<S, O>[] pipes = new ILearnerPipeline[learner.length];
+		for (int i = 0; i < learner.length; ++i) {
+			pipes[i] = new LearnerPipeline<>(learner[i]);
+		}
+		return pipes;
+	}
 }

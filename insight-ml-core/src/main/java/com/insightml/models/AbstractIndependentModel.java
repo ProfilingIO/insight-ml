@@ -16,12 +16,12 @@
 package com.insightml.models;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.ParallelFor;
 
-public abstract class AbstractIndependentModel<I extends ISample, E> extends AbstractModel<I, E> {
+public abstract class AbstractIndependentModel<I extends Sample, E> extends AbstractModel<I, E> {
 
 	private static final long serialVersionUID = -4539226467144740757L;
 

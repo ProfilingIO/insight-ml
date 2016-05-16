@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -29,12 +30,13 @@ import com.insightml.data.features.DivFeaturesProvider;
 import com.insightml.data.features.GeneralFeatureProvider;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.SimpleSample;
+import com.insightml.data.features.selection.IgnoreFeatureFilter;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Features;
 import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.types.collections.ArrayIterator;
 
-public final class AnonymousFeaturesConfig<S extends SimpleSample, O> extends FeaturesConfig<S, O> {
+public final class AnonymousFeaturesConfig<S extends Sample, O> extends FeaturesConfig<S, O> {
 
 	private static final long serialVersionUID = -8466353461597201244L;
 
@@ -42,19 +44,25 @@ public final class AnonymousFeaturesConfig<S extends SimpleSample, O> extends Fe
 	private final boolean useDivFeaturesProvider;
 	private IFeatureFilter filter;
 
-	public AnonymousFeaturesConfig(final String[] features, final double defaultValue,
-			final boolean useDivFeaturesProvider) {
+	public AnonymousFeaturesConfig(final String[] features, final Function<S, Features> simpleFeaturesProvider,
+			final double defaultValue, final boolean useDivFeaturesProvider) {
 		super(null, null);
-		this.provider = provider(new ArrayIterator<>(features), defaultValue);
+		this.provider = provider(new ArrayIterator<>(features), simpleFeaturesProvider, defaultValue);
 		this.useDivFeaturesProvider = useDivFeaturesProvider;
 	}
 
-	public AnonymousFeaturesConfig(final Iterable<S> examples, final double defaultValue,
-			final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
+	public AnonymousFeaturesConfig(final Iterable<S> examples, final Function<S, Features> exampleFeaturesProvider,
+			final double defaultValue, final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
 		super(null, null);
-		this.provider = fromExamples(examples, defaultValue);
+		this.provider = fromExamples(examples, exampleFeaturesProvider, defaultValue);
 		this.useDivFeaturesProvider = useDivFeaturesProvider;
 		this.filter = Preconditions.checkNotNull(filter);
+	}
+
+	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Iterable<S> examples,
+			final Function<S, Features> exampleFeaturesProvider, final double defaultValue) {
+		return new AnonymousFeaturesConfig<>(examples, exampleFeaturesProvider, defaultValue, false,
+				new IgnoreFeatureFilter());
 	}
 
 	@Override
@@ -68,17 +76,19 @@ public final class AnonymousFeaturesConfig<S extends SimpleSample, O> extends Fe
 		return filter;
 	}
 
-	private IFeatureProvider<S> fromExamples(final Iterable<S> examples, final double defaultValue) {
+	private IFeatureProvider<S> fromExamples(final Iterable<S> examples,
+			final Function<S, Features> simpleFeaturesProvider, final double defaultValue) {
 		final Set<String> names = new LinkedHashSet<>();
 		for (final S example : examples) {
-			for (final DoublePair<String> feat : example.loadFeatures()) {
+			for (final DoublePair<String> feat : simpleFeaturesProvider.apply(example)) {
 				names.add(feat.getKey());
 			}
 		}
-		return provider(names, defaultValue);
+		return provider(names, simpleFeaturesProvider, defaultValue);
 	}
 
-	private IFeatureProvider<S> provider(final Iterable<String> names, final double defaultValue) {
+	private IFeatureProvider<S> provider(final Iterable<String> names,
+			final Function<S, Features> simpleFeaturesProvider, final double defaultValue) {
 		final List<Pair<String, String>> features = new LinkedList<>();
 		for (final CharSequence feat : names) {
 			features.add(new Pair<>(feat.toString(), ""));
@@ -91,7 +101,7 @@ public final class AnonymousFeaturesConfig<S extends SimpleSample, O> extends Fe
 
 			@Override
 			public Features features(final S instance, final boolean isTraining) {
-				return ((SimpleSample) instance).loadFeatures();
+				return simpleFeaturesProvider.apply(instance);
 			}
 		};
 		final List<IFeatureProvider<S>> providers = new ArrayList<>(2);

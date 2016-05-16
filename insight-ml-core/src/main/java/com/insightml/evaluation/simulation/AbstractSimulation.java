@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.ISample;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.data.samples.Sample;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearner;
 import com.insightml.models.ILearnerPipeline;
 import com.insightml.models.IModelTask;
@@ -37,7 +37,7 @@ import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.ui.reports.ImportanceReport;
 import com.insightml.utils.ui.reports.SimulationResultsDumper;
 
-public abstract class AbstractSimulation<I extends ISample> extends AbstractModule implements ISimulation<I> {
+public abstract class AbstractSimulation<I extends Sample> extends AbstractModule implements ISimulation<I> {
 	private static final long serialVersionUID = -2573735409140672897L;
 
 	private final Logger logger = LoggerFactory.getLogger(AbstractSimulation.class);
@@ -46,17 +46,20 @@ public abstract class AbstractSimulation<I extends ISample> extends AbstractModu
 
 	protected AbstractSimulation(final String name, final SimulationResultConsumer simulationResultConsumer) {
 		super(name);
-		this.simulationResultConsumer = simulationResultConsumer;
+		this.simulationResultConsumer = Preconditions.checkNotNull(simulationResultConsumer);
 	}
 
 	@Override
 	public final <E, P> ISimulationResults<E, P> simulate(final IDataset<I, E, P> dataset, final IArguments arguments,
 			final double[][] blendingParams, final boolean delayInit, final boolean report,
 			final IModelTask<I, E, P> task) {
-		final ILearner<ISample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
+		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
 		final ISimulationResults<E, P> result = run(
-				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), }, dataset, arguments,
-				report, task)[0];
+				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), },
+				dataset,
+				arguments,
+				report,
+				task)[0];
 		dataset.close();
 		return result;
 	}
@@ -70,7 +73,7 @@ public abstract class AbstractSimulation<I extends ISample> extends AbstractModu
 	}
 
 	protected final <E, P> ISimulationResults<E, P>[] run(final Iterable<I> train, final Iterable<I> test,
-			final ISimulationSetup<I, E, P> setup) {
+			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learners = setup.getLearner();
 		final SimulationResults<I, E, P>[] results = new SimulationResults[learners.length];
 		final int numLabels = true ? 1 : train.iterator().next().getExpected().length;
@@ -94,7 +97,7 @@ public abstract class AbstractSimulation<I extends ISample> extends AbstractModu
 	}
 
 	public <E, P> SimulationResults<I, E, P>[] makeResults(final IJobBatch<Predictions<E, P>[]> batch,
-			final ISimulationSetup<I, E, P> setup) {
+			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
 		final SimulationResults<I, E, P>[] result = new SimulationResults[learner.length];
 		for (int i = 0; i < learner.length; ++i) {
@@ -109,7 +112,7 @@ public abstract class AbstractSimulation<I extends ISample> extends AbstractModu
 	}
 
 	protected final <E, P> void notify(final String learn, final ISimulationResults<E, P> performance,
-			final ISimulationSetup<I, E, P> setup, final String subfolder) {
+			final SimulationSetup<I, E, P> setup, final String subfolder) {
 		Check.length(learn, 2, 250);
 		simulationResultConsumer.accept(this, learn, performance, setup);
 		if (setup.doDump()) {
@@ -122,7 +125,7 @@ public abstract class AbstractSimulation<I extends ISample> extends AbstractModu
 		final String filename = learner.substring(0, Math.min(200, learner.length())) + "_" + dataset + ".csv";
 		final String folder = "logs/" + getClass().getSimpleName() + "/" + (subfolder == null ? "" : subfolder + "/");
 		new File(folder).mkdirs();
-		final IObjectiveFunction<? super E, ? super P>[] metrics = performance.getObjectives();
+		final ObjectiveFunction<? super E, ? super P>[] metrics = performance.getObjectives();
 		SimulationResultsDumper.dump(folder + filename, performance.getPredictions(), metrics[0]);
 	}
 

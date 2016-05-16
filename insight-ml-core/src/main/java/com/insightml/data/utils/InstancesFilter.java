@@ -23,7 +23,7 @@ import java.util.Map;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Samples;
 import com.insightml.math.types.IntSumMap;
@@ -36,7 +36,7 @@ public final class InstancesFilter {
 	private InstancesFilter() {
 	}
 
-	public static <I extends ISample> Iterable<I> hasLabelSet(final Iterable<I> instances, final int labelIndex) {
+	public static <I extends Sample> Iterable<I> hasLabelSet(final Iterable<I> instances, final int labelIndex) {
 		final List<I> filtered = new LinkedList<>();
 		for (final I sample : instances) {
 			if (sample.getExpected(labelIndex) != null) {
@@ -46,7 +46,7 @@ public final class InstancesFilter {
 		return filtered;
 	}
 
-	public static <I extends ISample> ISamples<I, ?> onLabel(final Iterable<I> instances, final int labelIndex,
+	public static <I extends Sample> ISamples<I, ?> onLabel(final Iterable<I> instances, final int labelIndex,
 			final int minLabel, final int maxLabel) {
 		final List<I> filtered = new LinkedList<>();
 		for (final I instance : instances) {
@@ -58,7 +58,7 @@ public final class InstancesFilter {
 		return new Samples<>(filtered);
 	}
 
-	static <I extends ISample> ISamples<I, ?> filterBySmallestLabelSize(final Iterable<I> instances) {
+	static <I extends Sample> ISamples<I, ?> filterBySmallestLabelSize(final Iterable<I> instances) {
 		final List<I> filtered = new LinkedList<>();
 		final List<I> instancesCopy = Lists.newLinkedList(instances);
 		final int oldSize = instancesCopy.size();
@@ -78,7 +78,7 @@ public final class InstancesFilter {
 		return new Samples<>(filtered);
 	}
 
-	private static <I extends ISample> int getMaxInstances(final Iterable<I> instances) {
+	private static <I extends Sample> int getMaxInstances(final Iterable<I> instances) {
 		final IntSumMapBuilder<String> labels = IntSumMap.builder(false, 16);
 		for (final I instance : instances) {
 			labels.increment((String) instance.getExpected()[0], 1);

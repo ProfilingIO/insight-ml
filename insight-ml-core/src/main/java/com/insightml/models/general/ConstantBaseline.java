@@ -15,11 +15,11 @@
  */
 package com.insightml.models.general;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractLearner;
 import com.insightml.models.LearnerInput;
 
-public final class ConstantBaseline<E> extends AbstractLearner<ISample, Object, E> {
+public final class ConstantBaseline<E> extends AbstractLearner<Sample, Object, E> {
 	private final E constant;
 
 	public ConstantBaseline(final E constant) {
@@ -28,7 +28,7 @@ public final class ConstantBaseline<E> extends AbstractLearner<ISample, Object, 
 	}
 
 	@Override
-	public ConstantModel<E> run(final LearnerInput<? extends ISample, ? extends Object, ?> input) {
+	public ConstantModel<E> run(final LearnerInput<? extends Sample, ? extends Object, ?> input) {
 		return new ConstantModel<>(constant);
 	}
 

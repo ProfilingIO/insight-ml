@@ -15,10 +15,10 @@
  */
 package com.insightml.models;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 
-public abstract class AbstractDoubleLearner<E> extends AbstractLearner<ISample, E, Double> {
+public abstract class AbstractDoubleLearner<E> extends AbstractLearner<Sample, E, Double> {
 
     public AbstractDoubleLearner(final IArguments arguments) {
         super(arguments);

@@ -18,11 +18,11 @@ package com.insightml.models;
 import java.io.Serializable;
 import java.util.function.Function;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.types.SumMap;
 
-public interface IModel<I extends ISample, E> extends Function<ISamples<I, ?>, E[]>, Serializable {
+public interface IModel<I extends Sample, E> extends Function<ISamples<I, ?>, E[]>, Serializable {
 
 	String getName();
 

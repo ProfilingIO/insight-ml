@@ -20,10 +20,10 @@ import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.types.AbstractModule;
 
-public abstract class AbstractDataset<I extends ISample, E, P> extends AbstractModule implements IDataset<I, E, P> {
+public abstract class AbstractDataset<I extends Sample, E, P> extends AbstractModule implements IDataset<I, E, P> {
 
 	public AbstractDataset() {
 	}

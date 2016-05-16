@@ -28,14 +28,14 @@ import com.insightml.data.FeaturesConfig;
 import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.SimpleFeatureConfig;
 import com.insightml.data.features.selection.ManualSelectionFilter;
-import com.insightml.data.samples.ISample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.simulation.SplitSimulation;
 import com.insightml.evaluation.simulation.optimization.IFeatureSelection;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.types.DoublePair;
 
-public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModule
+public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModule
 		implements Serializable, ILearnerPipeline<S, O> {
 
 	private static final long serialVersionUID = 8008644928002890346L;
@@ -46,6 +46,10 @@ public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModu
 	private final Logger logger = LoggerFactory.getLogger(LearnerPipeline.class);
 
 	private IFeatureSelection<S, E, O> selection;
+
+	public LearnerPipeline(final ILearner<? super S, E, O> learner) {
+		this(learner, 1.0, true);
+	}
 
 	public LearnerPipeline(final ILearner<? super S, E, O> learner, final boolean preprocess) {
 		this(learner, 1.0, preprocess);
@@ -74,7 +78,9 @@ public final class LearnerPipeline<S extends ISample, E, O> extends AbstractModu
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data, unlabled, config,
+		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data,
+				unlabled,
+				config,
 				labelIndex);
 		return new ModelPipeline<>(modelAndPipe.getFirst(), modelAndPipe.getSecond(),
 				config == null ? null : config.getPostProcessor(), labelIndex);

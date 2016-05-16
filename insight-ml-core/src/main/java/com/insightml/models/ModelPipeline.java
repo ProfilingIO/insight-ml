@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.PreprocessingPipeline;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Samples;
 import com.insightml.math.types.SumMap;
@@ -31,7 +31,7 @@ import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.types.Parameter;
 
-public class ModelPipeline<I extends ISample, P> extends AbstractConfigurable implements Serializable {
+public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable implements Serializable {
 	private static final long serialVersionUID = 5471706800666990790L;
 
 	private IModel<I, P> model;

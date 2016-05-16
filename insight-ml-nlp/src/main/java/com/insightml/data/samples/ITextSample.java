@@ -17,6 +17,6 @@ package com.insightml.data.samples;
 
 import com.insightml.nlp.ISentence;
 
-public interface ITextSample extends ISample, Iterable<ISentence> {
+public interface ITextSample extends Sample, Iterable<ISentence> {
 
 }

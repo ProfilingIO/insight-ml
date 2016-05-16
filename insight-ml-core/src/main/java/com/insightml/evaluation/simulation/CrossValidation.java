@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.insightml.data.FeaturesConfig;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.utils.InstancesFilter;
 import com.insightml.models.ILearnerPipeline;
 import com.insightml.models.ModelPipeline;
@@ -32,7 +32,7 @@ import com.insightml.utils.Check;
 import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;
 
-public final class CrossValidation<I extends ISample> extends AbstractSimulation<I> {
+public final class CrossValidation<I extends Sample> extends AbstractSimulation<I> {
 	private static final long serialVersionUID = 2206245632537034091L;
 
 	private final int folds;
@@ -50,7 +50,7 @@ public final class CrossValidation<I extends ISample> extends AbstractSimulation
 	}
 
 	@Override
-	public <E, P> SimulationResults<I, E, P>[] run(final Iterable<I> instances, final ISimulationSetup<I, E, P> setup) {
+	public <E, P> SimulationResults<I, E, P>[] run(final Iterable<I> instances, final SimulationSetup<I, E, P> setup) {
 		SimulationResults<I, E, P>[] lastResult = null;
 		for (final int foldss : folds == -1 ? new int[] { 2, 5, 10 } : new int[] { folds }) {
 			lastResult = runCv(instances, setup);
@@ -63,11 +63,11 @@ public final class CrossValidation<I extends ISample> extends AbstractSimulation
 	}
 
 	private <E, P> SimulationResults<I, E, P>[] runCv(final Iterable<I> instances,
-			final ISimulationSetup<I, E, P> setup) {
+			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
-		final IJobBatch<Predictions<E, P>[]> batch = ((SimulationSetup) setup).createBatch();
+		final IJobBatch<Predictions<E, P>[]> batch = ((SimulationSetupImpl) setup).createBatch();
 		final int numLabels = Check.num(instances.iterator().next().getExpected().length, 1, 10);
-		final Integer labelIndex = ((SimulationSetup) setup).getLabelIndex();
+		final Integer labelIndex = ((SimulationSetupImpl) setup).getLabelIndex();
 		final FeaturesConfig<I, P> config = setup.getConfig();
 		for (int repetition = 0; repetition < repetitions; ++repetition) {
 			// repetition == 0 ? instances : instances.randomize(random);
@@ -95,7 +95,7 @@ public final class CrossValidation<I extends ISample> extends AbstractSimulation
 		return result;
 	}
 
-	private static final class Fold<I extends ISample, E, P> extends AbstractJob<Predictions<E, P>[]> {
+	private static final class Fold<I extends Sample, E, P> extends AbstractJob<Predictions<E, P>[]> {
 		private static final long serialVersionUID = 8592592353685668153L;
 
 		private final int fold;
@@ -127,6 +127,10 @@ public final class CrossValidation<I extends ISample> extends AbstractSimulation
 			final Predictions<E, P>[] preds = new Predictions[learner.length];
 			for (int i = 0; i < preds.length; ++i) {
 				final ModelPipeline<I, P> model = learner[i].run(sets.getFirst(), sets.getSecond(), config, label);
+				logger.info("Completed {} on {} train and {} test samples",
+						getTitle(),
+						sets.getFirst().size(),
+						sets.getSecond().size());
 				if (false) {
 					logger.info(model.info());
 				}

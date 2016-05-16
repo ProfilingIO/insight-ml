@@ -15,11 +15,11 @@
  */
 package com.insightml.data.features;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Features;
 import com.insightml.utils.ui.reports.IReporter;
 
-public interface IFeatureProvider<I extends ISample> extends IReporter {
+public interface IFeatureProvider<I extends Sample> extends IReporter {
 
 	String getName();
 

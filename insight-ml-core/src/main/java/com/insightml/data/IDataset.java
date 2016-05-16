@@ -15,11 +15,11 @@
  */
 package com.insightml.data;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.ui.reports.IReporter;
 
-public interface IDataset<S extends ISample, E, O> extends IReporter {
+public interface IDataset<S extends Sample, E, O> extends IReporter {
 
 	String getName();
 

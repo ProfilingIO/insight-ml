@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Predictions;
 
 public abstract class AbstractIndependentLabelsObjectiveFunction<E, T> extends AbstractObjectiveFunction<E, T> {
@@ -45,7 +45,7 @@ public abstract class AbstractIndependentLabelsObjectiveFunction<E, T> extends A
 	}
 
 	@Override
-	public final double instance(final T pred, final E exp, final ISample sample) {
+	public final double instance(final T pred, final E exp, final Sample sample) {
 		throw new IllegalAccessError();
 	}
 

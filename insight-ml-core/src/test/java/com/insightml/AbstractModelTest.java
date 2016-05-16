@@ -23,9 +23,9 @@ import org.junit.Test;
 
 import com.insightml.data.IDataset;
 import com.insightml.data.samples.SimpleSample;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.Accuracy;
-import com.insightml.evaluation.functions.IObjectiveFunction;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.functions.LogLoss;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.math.distributions.IDiscreteDistribution;
@@ -50,7 +50,7 @@ public abstract class AbstractModelTest {
 
 	private static void test(final Pair<? extends ILearner, Double> tuple,
 			final IDataset<SimpleSample, Double, ?> instances,
-			final IObjectiveFunction<? super SimpleSample, ? super Serializable> objective) {
+			final ObjectiveFunction<? super SimpleSample, ? super Serializable> objective) {
 		if (tuple != null) {
 			final double expected = tuple.getSecond();
 			Assert.assertTrue(expected + " > -0.82", expected > -0.82);
@@ -58,9 +58,9 @@ public abstract class AbstractModelTest {
 		}
 	}
 
-	protected abstract Pair<? extends ILearner<ISample, ? super Double, Double>, Double> getNumeric();
+	protected abstract Pair<? extends ILearner<Sample, ? super Double, Double>, Double> getNumeric();
 
-	protected abstract Pair<? extends ILearner<ISample, ? super Boolean, Double>, Double> getBoolean();
+	protected abstract Pair<? extends ILearner<Sample, ? super Boolean, Double>, Double> getBoolean();
 
-	protected abstract Pair<? extends ILearner<ISample, String, IDiscreteDistribution<String>>, Double> getNominal();
+	protected abstract Pair<? extends ILearner<Sample, String, IDiscreteDistribution<String>>, Double> getNominal();
 }

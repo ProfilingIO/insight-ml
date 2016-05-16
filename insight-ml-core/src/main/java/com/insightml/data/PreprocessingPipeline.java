@@ -21,7 +21,7 @@ import java.util.Objects;
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Samples;
 import com.insightml.data.samples.decorators.FeaturesDecorator;
@@ -29,7 +29,7 @@ import com.insightml.math.Normalization;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 
-public final class PreprocessingPipeline<S extends ISample, E> extends AbstractConfigurable
+public final class PreprocessingPipeline<S extends Sample, E> extends AbstractConfigurable
 		implements Serializable, IPreprocessingPipeline<S, E> {
 
 	private static final long serialVersionUID = 3411531030881000331L;
@@ -48,7 +48,7 @@ public final class PreprocessingPipeline<S extends ISample, E> extends AbstractC
 		this.normalization = normalization;
 	}
 
-	public static <S extends ISample, E> PreprocessingPipeline<S, E> create(final FeaturesConfig<S, ?> config,
+	public static <S extends Sample, E> PreprocessingPipeline<S, E> create(final FeaturesConfig<S, ?> config,
 			final Iterable<S> training, final Integer labelIndex, final Iterable<S>[] instances) {
 		final IFeatureProvider<S> featureProvider = config.newFeatureProvider(training, instances);
 		return new PreprocessingPipeline<>(featureProvider,

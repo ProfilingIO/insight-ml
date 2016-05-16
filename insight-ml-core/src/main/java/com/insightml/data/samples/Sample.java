@@ -17,18 +17,18 @@ package com.insightml.data.samples;
 
 import java.io.Serializable;
 
-public interface ISample extends Serializable, Comparable<ISample> {
+public interface Sample extends Serializable, Comparable<Sample> {
 
-    int getId();
+	int getId();
 
-    <E> E[] getExpected();
+	<E> E[] getExpected();
 
-    <E> E getExpected(int labelIndex);
+	<E> E getExpected(int labelIndex);
 
-    float getWeight(int labelIndex);
+	float getWeight(int labelIndex);
 
-    String getComment();
+	String getComment();
 
-    void writeInfo(ISampleInfoBuilder builder, Iterable<? extends ISample> instances);
+	void writeInfo(ISampleInfoBuilder builder, Iterable<? extends Sample> instances);
 
 }

@@ -19,7 +19,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-public interface ISamples<S extends ISample, E> extends Iterable<S> {
+public interface ISamples<S extends Sample, E> extends Iterable<S> {
 
 	S get(int i);
 

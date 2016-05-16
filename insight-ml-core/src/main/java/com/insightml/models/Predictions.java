@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.ISample;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Samples;
 import com.insightml.utils.Check;
@@ -36,12 +36,12 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 	private P[] predictions;
 	private E[] expected;
 	private double[] weights;
-	private transient ISamples<? extends ISample, E> samples;
+	private transient ISamples<? extends Sample, E> samples;
 
 	protected Predictions() {
 	}
 
-	public <I extends ISample> Predictions(final int run, final ModelPipeline<I, P> model,
+	public <I extends Sample> Predictions(final int run, final ModelPipeline<I, P> model,
 			final Iterable<? extends I> samples) {
 		this.run = run;
 		this.labelIndex = model.getLabelIndex();
@@ -58,11 +58,11 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 		return predictions;
 	}
 
-	public ISamples<? extends ISample, E> getSamples() {
+	public ISamples<? extends Sample, E> getSamples() {
 		return samples;
 	}
 
-	public ISample getSample(final int i) {
+	public Sample getSample(final int i) {
 		return samples.get(i);
 	}
 
@@ -86,10 +86,10 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 		return predictions.length;
 	}
 
-	public List<Pair<ISample, P>> asList() {
-		final List<Pair<ISample, P>> list = new LinkedList<>();
+	public List<Pair<Sample, P>> asList() {
+		final List<Pair<Sample, P>> list = new LinkedList<>();
 		for (int i = 0; i < size(); ++i) {
-			list.add(new Pair<ISample, P>(samples.get(i), predictions[i]));
+			list.add(new Pair<Sample, P>(samples.get(i), predictions[i]));
 		}
 		return list;
 	}
