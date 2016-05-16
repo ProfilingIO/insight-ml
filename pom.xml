@@ -5,8 +5,33 @@
 	<groupId>com.insightml</groupId>
 
 	<artifactId>insight-ml-parent</artifactId>
-	<version>1-SNAPSHOT</version>
+	<version>1</version>
 	<packaging>pom</packaging>
+
+	<name>insight-ml</name>
+	<description>Java machine learning library</description>
+	<url>http://insightml.com</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:ssh://github.com/ProfilingIO/insight-ml.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/ProfilingIO/insight-ml.git</developerConnection>
+		<url>https://github.com/ProfilingIO/insight-ml</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>Stefan Henß</name>
+			<email>stefan.henss@gmail.com</email>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
