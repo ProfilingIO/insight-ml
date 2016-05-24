@@ -75,10 +75,11 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 	protected final <E, P> ISimulationResults<E, P>[] run(final Iterable<I> train, final Iterable<I> test,
 			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learners = setup.getLearner();
-		final SimulationResults<I, E, P>[] results = new SimulationResults[learners.length];
+		final SimulationResults<E, P>[] results = new SimulationResults[learners.length];
 		final int numLabels = true ? 1 : train.iterator().next().getExpected().length;
 		for (int l = 0; l < learners.length; ++l) {
-			results[l] = new SimulationResults<>(1, numLabels, setup);
+			final SimulationResultsBuilder<E, P> builder = new SimulationResultsBuilder<>(learners[l].getName(), 1,
+					numLabels, setup, -1);
 			for (int i = 0; i < numLabels; ++i) {
 				logger.debug("Training model...");
 				final ModelPipeline<I, P> model = learners[l].run(train, test, setup.getConfig(), i);
@@ -89,24 +90,29 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 					}
 				}
 				logger.debug("Making predictions...");
-				results[l].add(new Predictions<E, P>(1, model, test));
+				builder.add(new Predictions<E, P>(1, model, test), 0);
 			}
+			results[l] = builder.build();
 			notify(learners[l].getName(), results[l], setup, null);
 		}
 		return results;
 	}
 
-	public <E, P> SimulationResults<I, E, P>[] makeResults(final IJobBatch<Predictions<E, P>[]> batch,
+	public <E, P> SimulationResults<E, P>[] makeResults(final IJobBatch<Predictions<E, P>[]> batch,
 			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
-		final SimulationResults<I, E, P>[] result = new SimulationResults[learner.length];
+		final SimulationResultsBuilder<E, P>[] builders = new SimulationResultsBuilder[learner.length];
 		for (int i = 0; i < learner.length; ++i) {
-			result[i] = new SimulationResults<>(batch.size(), 1, setup);
+			builders[i] = new SimulationResultsBuilder<>(learner[i].getName(), batch.size(), 1, setup, -1);
 		}
 		for (final Predictions<E, P>[] preds : batch.run()) {
 			for (int i = 0; i < preds.length; ++i) {
-				result[i].add(preds[i]);
+				builders[i].add(preds[i], 0);
 			}
+		}
+		final SimulationResults<E, P>[] result = new SimulationResults[builders.length];
+		for (int i = 0; i < result.length; ++i) {
+			result[i] = builders[i].build();
 		}
 		return result;
 	}
@@ -116,12 +122,12 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 		Check.length(learn, 2, 250);
 		simulationResultConsumer.accept(this, learn, performance, setup);
 		if (setup.doDump()) {
-			dump(subfolder, setup.getDatasetName(), learn, (SimulationResults<I, E, P>) performance);
+			dump(subfolder, setup.getDatasetName(), learn, (SimulationResults<E, P>) performance);
 		}
 	}
 
 	private <E, P> void dump(final String subfolder, final String dataset, final String learner,
-			final SimulationResults<I, E, P> performance) {
+			final SimulationResults<E, P> performance) {
 		final String filename = learner.substring(0, Math.min(200, learner.length())) + "_" + dataset + ".csv";
 		final String folder = "logs/" + getClass().getSimpleName() + "/" + (subfolder == null ? "" : subfolder + "/");
 		new File(folder).mkdirs();

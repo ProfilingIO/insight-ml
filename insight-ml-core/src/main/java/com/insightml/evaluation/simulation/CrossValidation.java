@@ -50,8 +50,8 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 	}
 
 	@Override
-	public <E, P> SimulationResults<I, E, P>[] run(final Iterable<I> instances, final SimulationSetup<I, E, P> setup) {
-		SimulationResults<I, E, P>[] lastResult = null;
+	public <E, P> SimulationResults<E, P>[] run(final Iterable<I> instances, final SimulationSetup<I, E, P> setup) {
+		SimulationResults<E, P>[] lastResult = null;
 		for (final int foldss : folds == -1 ? new int[] { 2, 5, 10 } : new int[] { folds }) {
 			lastResult = runCv(instances, setup);
 			final ILearnerPipeline<I, P>[] learner = setup.getLearner();
@@ -62,8 +62,7 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 		return lastResult;
 	}
 
-	private <E, P> SimulationResults<I, E, P>[] runCv(final Iterable<I> instances,
-			final SimulationSetup<I, E, P> setup) {
+	private <E, P> SimulationResults<E, P>[] runCv(final Iterable<I> instances, final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
 		final IJobBatch<Predictions<E, P>[]> batch = ((SimulationSetupImpl) setup).createBatch();
 		final int numLabels = Check.num(instances.iterator().next().getExpected().length, 1, 10);
@@ -83,16 +82,21 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 				}
 			}
 		}
-		final SimulationResults<I, E, P>[] result = new SimulationResults[learner.length];
+		final SimulationResultsBuilder<E, P>[] builders = new SimulationResultsBuilder[learner.length];
 		for (int i = 0; i < learner.length; ++i) {
-			result[i] = new SimulationResults<>(folds * repetitions, numLabels, setup);
+			builders[i] = new SimulationResultsBuilder<>(learner[i].getName(), folds * repetitions, numLabels, setup,
+					-1);
 		}
 		for (final Predictions<E, P>[] preds : batch.run()) {
 			for (int i = 0; i < preds.length; ++i) {
-				result[i].add(preds[i]);
+				builders[i].add(preds[i], 0);
 			}
 		}
-		return result;
+		final SimulationResults<E, P>[] results = new SimulationResults[learner.length];
+		for (int i = 0; i < results.length; ++i) {
+			results[i] = builders[i].build();
+		}
+		return results;
 	}
 
 	private static final class Fold<I extends Sample, E, P> extends AbstractJob<Predictions<E, P>[]> {

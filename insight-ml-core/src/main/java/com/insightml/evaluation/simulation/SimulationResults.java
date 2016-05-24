@@ -16,42 +16,37 @@
 package com.insightml.evaluation.simulation;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationSetup.PERFORMANCE_SELECTOR;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.Predictions;
-import com.insightml.utils.Arrays;
-import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.types.collections.PairList;
 import com.insightml.utils.ui.SimpleFormatter;
 import com.insightml.utils.ui.UiUtils;
 
-public final class SimulationResults<I extends Sample, E, P> extends AbstractClass
-		implements Serializable, ISimulationResults<E, P> {
-
+public final class SimulationResults<E, P> extends AbstractClass implements Serializable, ISimulationResults<E, P> {
 	private static final long serialVersionUID = 2715905427176152958L;
 
 	private final String learner;
 	private final ObjectiveFunction<? super E, ? super P>[] objectives;
 	private final PERFORMANCE_SELECTOR criteria;
 
-	private final long start;
-	private int seconds;
+	private final int milliseconds;
 
 	private final Predictions<E, P>[][] predictions;
-	private Stats[] stats;
+	private final Stats[] stats;
 
-	public SimulationResults(final int numSets, final int numLabels, final SimulationSetup<I, E, P> setup) {
-		learner = setup.getLearner()[0].getName();
-		this.objectives = setup.getObjectives();
-		criteria = setup.getCriteria();
-		predictions = new Predictions[Check.num(numSets, 1, 9999)][Check.num(numLabels, 1, 99)];
-		start = System.currentTimeMillis();
+	public SimulationResults(final String learner, final ObjectiveFunction<? super E, ? super P>[] objectives,
+			final PERFORMANCE_SELECTOR criteria, final int milliseconds, final Predictions<E, P>[][] predictions,
+			final Stats[] stats) {
+		this.learner = learner;
+		this.objectives = objectives;
+		this.criteria = criteria;
+		this.milliseconds = milliseconds;
+		this.predictions = predictions;
+		this.stats = stats;
 	}
 
 	@Override
@@ -70,38 +65,8 @@ public final class SimulationResults<I extends Sample, E, P> extends AbstractCla
 		return objectives;
 	}
 
-	public void add(final Predictions<E, P> preds) {
-		Check.state(stats == null);
-		final int set = Check.num(preds.getSet() - 1, 0, predictions.length - 1);
-		Check.isNull(predictions[set][preds.getLabelIndex()]);
-		predictions[set][preds.getLabelIndex()] = preds;
-	}
-
 	@Override
 	public Stats[] getResults() {
-		if (stats == null) {
-			if (seconds == 0) {
-				seconds = (int) (System.currentTimeMillis() - start) / 1000;
-			}
-			stats = Arrays.fill(objectives.length, Stats.class);
-			final List<Predictions<E, P>>[] preds = new List[predictions[0].length];
-			for (final Predictions<E, P>[] run : predictions) {
-				for (int i = 0; i < run.length; ++i) {
-					if (preds[i] == null) {
-						preds[i] = new LinkedList<>();
-					}
-					preds[i].add(run[i]);
-				}
-			}
-			for (int m = 0; m < objectives.length; ++m) {
-				for (final double value : Check.size(objectives[m].acrossLabels(preds).getValues(),
-						1,
-						999999,
-						objectives[m])) {
-					stats[m].add(value);
-				}
-			}
-		}
 		return stats;
 	}
 
@@ -126,7 +91,7 @@ public final class SimulationResults<I extends Sample, E, P> extends AbstractCla
 	}
 
 	public Predictions<E, P>[][] getPredictions() {
-		return predictions.clone();
+		return predictions;
 	}
 
 	@Override
@@ -135,7 +100,7 @@ public final class SimulationResults<I extends Sample, E, P> extends AbstractCla
 		final SimpleFormatter formatter = new SimpleFormatter(5, true);
 		final PairList<String, String> info = new PairList<>();
 		info.add("Model", learner);
-		info.add("Duration", seconds + " seconds");
+		info.add("Duration", milliseconds + " ms");
 		for (int i = 0; i < objectives.length; ++i) {
 			info.add(objectives[i].getName(),
 					formatter.format(stats[i].getMean()) + " \u00B1" + formatter.format(stats[i].getStandardDeviation())

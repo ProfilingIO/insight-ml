@@ -15,7 +15,6 @@
  */
 package com.insightml.evaluation.functions;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -46,9 +45,7 @@ public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjec
 				}
 			}
 		}
-		final DescriptiveStatistics stats = new DescriptiveStatistics(new double[] { getResult(sum, weightSum) });
-		System.err.println(Arrays.toString(stats.getValues()));
-		return stats;
+		return new DescriptiveStatistics(new double[] { getResult(sum, weightSum) });
 	}
 
 	@Override

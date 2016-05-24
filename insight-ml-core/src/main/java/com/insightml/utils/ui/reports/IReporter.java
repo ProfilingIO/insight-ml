@@ -15,8 +15,9 @@
  */
 package com.insightml.utils.ui.reports;
 
+@FunctionalInterface
 public interface IReporter {
 
-    String getReport();
+	String getReport();
 
 }

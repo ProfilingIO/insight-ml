@@ -51,7 +51,7 @@ public final class Tests {
 		return new CrossValidation<>(5, 1, null);
 	}
 
-	public static <I extends Sample, E, P> SimulationResults<I, E, P> cv(final IDataset<I, E, P> instances,
+	public static <I extends Sample, E, P> SimulationResults<E, P> cv(final IDataset<I, E, P> instances,
 			final LearnerPipeline learner, final ObjectiveFunction<E, P>[] objective) {
 		final SimulationResultConsumer resultConsumer = (simulation, learn, result, setup) -> LOG
 				.info(BasicSimulationResult.of(learn, result).toString());
