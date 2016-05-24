@@ -79,18 +79,19 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 		final int numLabels = true ? 1 : train.iterator().next().getExpected().length;
 		for (int l = 0; l < learners.length; ++l) {
 			final SimulationResultsBuilder<E, P> builder = new SimulationResultsBuilder<>(learners[l].getName(), 1,
-					numLabels, setup, -1);
+					numLabels, setup);
 			for (int i = 0; i < numLabels; ++i) {
 				logger.debug("Training model...");
+				final long start = System.currentTimeMillis();
 				final ModelPipeline<I, P> model = learners[l].run(train, test, setup.getConfig(), i);
+				logger.debug("Making predictions...");
+				builder.add(Predictions.create(1, model, test, (int) (System.currentTimeMillis() - start)));
 				if (setup.doReport()) {
 					logger.info(model.info());
 					if (false) {
 						ImportanceReport.writeLatex(model, setup.getDatasetName(), "logs/models/");
 					}
 				}
-				logger.debug("Making predictions...");
-				builder.add(new Predictions<E, P>(1, model, test), 0);
 			}
 			results[l] = builder.build();
 			notify(learners[l].getName(), results[l], setup, null);
@@ -103,11 +104,11 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
 		final SimulationResultsBuilder<E, P>[] builders = new SimulationResultsBuilder[learner.length];
 		for (int i = 0; i < learner.length; ++i) {
-			builders[i] = new SimulationResultsBuilder<>(learner[i].getName(), batch.size(), 1, setup, -1);
+			builders[i] = new SimulationResultsBuilder<>(learner[i].getName(), batch.size(), 1, setup);
 		}
 		for (final Predictions<E, P>[] preds : batch.run()) {
 			for (int i = 0; i < preds.length; ++i) {
-				builders[i].add(preds[i], 0);
+				builders[i].add(preds[i]);
 			}
 		}
 		final SimulationResults<E, P>[] result = new SimulationResults[builders.length];

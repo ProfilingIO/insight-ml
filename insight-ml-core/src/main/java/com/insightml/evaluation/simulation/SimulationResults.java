@@ -33,20 +33,22 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 	private final ObjectiveFunction<? super E, ? super P>[] objectives;
 	private final PERFORMANCE_SELECTOR criteria;
 
-	private final int milliseconds;
-
 	private final Predictions<E, P>[][] predictions;
 	private final Stats[] stats;
 
+	private final int trainingIimeInMillis;
+	private final int predictionIimeInMillis;
+
 	public SimulationResults(final String learner, final ObjectiveFunction<? super E, ? super P>[] objectives,
-			final PERFORMANCE_SELECTOR criteria, final int milliseconds, final Predictions<E, P>[][] predictions,
-			final Stats[] stats) {
+			final PERFORMANCE_SELECTOR criteria, final Predictions<E, P>[][] predictions, final Stats[] stats,
+			final int trainingIimeInMillis, final int predictionIimeInMillis) {
 		this.learner = learner;
 		this.objectives = objectives;
 		this.criteria = criteria;
-		this.milliseconds = milliseconds;
 		this.predictions = predictions;
 		this.stats = stats;
+		this.trainingIimeInMillis = trainingIimeInMillis;
+		this.predictionIimeInMillis = predictionIimeInMillis;
 	}
 
 	@Override
@@ -100,7 +102,8 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 		final SimpleFormatter formatter = new SimpleFormatter(5, true);
 		final PairList<String, String> info = new PairList<>();
 		info.add("Model", learner);
-		info.add("Duration", milliseconds + " ms");
+		info.add("Training time", trainingIimeInMillis + " ms");
+		info.add("Prediction time", predictionIimeInMillis + " ms");
 		for (int i = 0; i < objectives.length; ++i) {
 			info.add(objectives[i].getName(),
 					formatter.format(stats[i].getMean()) + " \u00B1" + formatter.format(stats[i].getStandardDeviation())

@@ -84,12 +84,11 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 		}
 		final SimulationResultsBuilder<E, P>[] builders = new SimulationResultsBuilder[learner.length];
 		for (int i = 0; i < learner.length; ++i) {
-			builders[i] = new SimulationResultsBuilder<>(learner[i].getName(), folds * repetitions, numLabels, setup,
-					-1);
+			builders[i] = new SimulationResultsBuilder<>(learner[i].getName(), folds * repetitions, numLabels, setup);
 		}
 		for (final Predictions<E, P>[] preds : batch.run()) {
 			for (int i = 0; i < preds.length; ++i) {
-				builders[i].add(preds[i], 0);
+				builders[i].add(preds[i]);
 			}
 		}
 		final SimulationResults<E, P>[] results = new SimulationResults[learner.length];
@@ -130,7 +129,12 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 			final Pair<List<I>, List<I>> sets = partition();
 			final Predictions<E, P>[] preds = new Predictions[learner.length];
 			for (int i = 0; i < preds.length; ++i) {
+				final long start = System.currentTimeMillis();
 				final ModelPipeline<I, P> model = learner[i].run(sets.getFirst(), sets.getSecond(), config, label);
+				preds[i] = Predictions.create(actualFold,
+						model,
+						sets.getSecond(),
+						(int) (System.currentTimeMillis() - start));
 				logger.info("Completed {} on {} train and {} test samples",
 						getTitle(),
 						sets.getFirst().size(),
@@ -138,7 +142,6 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 				if (false) {
 					logger.info(model.info());
 				}
-				preds[i] = new Predictions<>(actualFold, model, sets.getSecond());
 			}
 			return preds;
 		}

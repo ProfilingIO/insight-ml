@@ -30,24 +30,25 @@ public class SimulationResultsBuilder<E, P> {
 	private final ObjectiveFunction<? super E, ? super P>[] objectives;
 	private final PERFORMANCE_SELECTOR criteria;
 
-	private int timeInMillis;
+	private int trainingIimeInMillis;
+	private int predictionIimeInMillis;
 
 	private final Predictions<E, P>[][] predictions;
 
 	public SimulationResultsBuilder(final String modelName, final int numSets, final int numLabels,
-			final SimulationSetup<?, E, P> setup, final int trainingTimeInMillis) {
+			final SimulationSetup<?, E, P> setup) {
 		learner = modelName;
 		this.objectives = setup.getObjectives();
 		criteria = setup.getCriteria();
 		predictions = new Predictions[Check.num(numSets, 1, 9999)][Check.num(numLabels, 1, 99)];
-		this.timeInMillis = trainingTimeInMillis;
 	}
 
-	public void add(final Predictions<E, P> preds, final int predTimeInMillis) {
+	public void add(final Predictions<E, P> preds) {
 		final int set = Check.num(preds.getSet() - 1, 0, predictions.length - 1);
 		Check.isNull(predictions[set][preds.getLabelIndex()]);
 		predictions[set][preds.getLabelIndex()] = preds;
-		this.timeInMillis += predTimeInMillis;
+		this.trainingIimeInMillis += preds.getModelTrainingTimeInMillis();
+		this.predictionIimeInMillis += preds.getTimeInMillis();
 	}
 
 	public SimulationResults<E, P> build() {
@@ -69,6 +70,7 @@ public class SimulationResultsBuilder<E, P> {
 				stats[m].add(value);
 			}
 		}
-		return new SimulationResults<>(learner, objectives, criteria, timeInMillis, predictions, stats);
+		return new SimulationResults<>(learner, objectives, criteria, predictions, stats, trainingIimeInMillis,
+				predictionIimeInMillis);
 	}
 }
