@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.utils.types;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+@FunctionalInterface
+public interface ICopyable<T> {
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+	T copy();
 
-public interface ISimulationResults<E, P> extends IReporter {
-
-	String getModelName();
-
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
-
-	StatisticalSummary[] getResults();
-
-	int numPredictions();
-
-	double getNormalizedResult();
 }

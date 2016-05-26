@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.data.features.stats;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+import java.util.Map;
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+import org.junit.Ignore;
 
-public interface ISimulationResults<E, P> extends IReporter {
+import com.insightml.data.samples.ISamples;
 
-	String getModelName();
+@Ignore
+public final class ChiSquareTest extends AbstractFeatureStatsTest {
 
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
+	@Override
+	public void test(final ISamples<?, Double> inst) {
+		final ChiSquare mi = new ChiSquare(0.25);
+		final FeatureStatistics instances = new FeatureStatistics(inst, 0);
+		final Map<String, Double> result = mi.run(instances);
 
-	StatisticalSummary[] getResults();
+		System.err.println(result);
+	}
 
-	int numPredictions();
-
-	double getNormalizedResult();
 }

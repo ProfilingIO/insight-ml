@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.utils.ui;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+import java.util.Map;
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+import org.apache.commons.math3.util.Pair;
 
-public interface ISimulationResults<E, P> extends IReporter {
+import com.insightml.data.features.stats.FeatureStatistics;
+import com.insightml.utils.types.collections.PairList;
 
-	String getModelName();
+public interface IChartGui {
 
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
+	void run();
 
-	StatisticalSummary[] getResults();
+	void addLineChart(PairList<String, Map<Number, Number>> chart);
 
-	int numPredictions();
+	void addHistogram(String xAxisLabel, String yAxisLabel, Pair<String, FeatureStatistics>... values);
 
-	double getNormalizedResult();
 }

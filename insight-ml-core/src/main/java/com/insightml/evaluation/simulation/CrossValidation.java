@@ -54,9 +54,8 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 		SimulationResults<E, P>[] lastResult = null;
 		for (final int foldss : folds == -1 ? new int[] { 2, 5, 10 } : new int[] { folds }) {
 			lastResult = runCv(instances, setup);
-			final ILearnerPipeline<I, P>[] learner = setup.getLearner();
-			for (int i = 0; i < learner.length; ++i) {
-				notify(learner[i].getName(), lastResult[i], setup, foldss * repetitions + "");
+			for (final SimulationResults<E, P> element : lastResult) {
+				notify(element, setup, foldss * repetitions + "");
 			}
 		}
 		return lastResult;
@@ -131,13 +130,9 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 			for (int i = 0; i < preds.length; ++i) {
 				final long start = System.currentTimeMillis();
 				final ModelPipeline<I, P> model = learner[i].run(sets.getFirst(), sets.getSecond(), config, label);
-				preds[i] = Predictions.create(actualFold,
-						model,
-						sets.getSecond(),
+				preds[i] = Predictions.create(actualFold, model, sets.getSecond(),
 						(int) (System.currentTimeMillis() - start));
-				logger.info("Completed {} on {} train and {} test samples",
-						getTitle(),
-						sets.getFirst().size(),
+				logger.info("Completed {} on {} train and {} test samples", getTitle(), sets.getFirst().size(),
 						sets.getSecond().size());
 				if (false) {
 					logger.info(model.info());

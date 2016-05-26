@@ -13,22 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.utils.types.collections;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+public final class DoubleLinkedList {
+	private Node tail;
+	private int size;
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+	public void add(final double d) {
+		final Node node = new Node(d);
+		node.before = tail;
+		tail = node;
+		++size;
+	}
 
-public interface ISimulationResults<E, P> extends IReporter {
+	public double[] toArray() {
+		final double[] arr = new double[size];
+		int i = size;
+		for (Node pointer = tail; pointer != null; pointer = pointer.before) {
+			arr[--i] = pointer.value;
+		}
+		return arr;
+	}
 
-	String getModelName();
+	private static final class Node {
 
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
+		Node before;
+		final double value;
 
-	StatisticalSummary[] getResults();
+		Node(final double value) {
+			this.value = value;
+		}
+	}
 
-	int numPredictions();
-
-	double getNormalizedResult();
 }

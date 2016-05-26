@@ -52,6 +52,11 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 	}
 
 	@Override
+	public String getModelName() {
+		return learner;
+	}
+
+	@Override
 	public int numPredictions() {
 		int sum = 0;
 		for (final Predictions<E, P>[] preds : predictions) {

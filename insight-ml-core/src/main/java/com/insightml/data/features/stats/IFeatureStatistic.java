@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.data.features.stats;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+import java.util.Map;
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+@FunctionalInterface
+public interface IFeatureStatistic {
 
-public interface ISimulationResults<E, P> extends IReporter {
+	Map<String, Double> run(FeatureStatistics stats);
 
-	String getModelName();
-
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
-
-	StatisticalSummary[] getResults();
-
-	int numPredictions();
-
-	double getNormalizedResult();
 }

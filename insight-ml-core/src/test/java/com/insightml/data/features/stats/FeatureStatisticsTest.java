@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.data.features.stats;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+import org.junit.Assert;
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+import com.insightml.data.samples.ISamples;
 
-public interface ISimulationResults<E, P> extends IReporter {
+public final class FeatureStatisticsTest extends AbstractFeatureStatsTest {
 
-	String getModelName();
+	@Override
+	public void test(final ISamples<?, Double> instances) {
+		final FeatureStatistics stats = new FeatureStatistics(instances, 0);
+		final String str = stats.toString("f2");
+		Assert.assertTrue(str.length() + "", str.length() > 95);
+	}
 
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
-
-	StatisticalSummary[] getResults();
-
-	int numPredictions();
-
-	double getNormalizedResult();
 }

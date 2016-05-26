@@ -55,11 +55,8 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			final IModelTask<I, E, P> task) {
 		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
 		final ISimulationResults<E, P> result = run(
-				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), },
-				dataset,
-				arguments,
-				report,
-				task)[0];
+				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), }, dataset, arguments,
+				report, task)[0];
 		dataset.close();
 		return result;
 	}
@@ -94,7 +91,7 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 				}
 			}
 			results[l] = builder.build();
-			notify(learners[l].getName(), results[l], setup, null);
+			notify(results[l], setup, null);
 		}
 		return results;
 	}
@@ -118,8 +115,9 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 		return result;
 	}
 
-	protected final <E, P> void notify(final String learn, final ISimulationResults<E, P> performance,
-			final SimulationSetup<I, E, P> setup, final String subfolder) {
+	protected final <E, P> void notify(final ISimulationResults<E, P> performance, final SimulationSetup<I, E, P> setup,
+			final String subfolder) {
+		final String learn = performance.getModelName();
 		Check.length(learn, 2, 250);
 		simulationResultConsumer.accept(this, learn, performance, setup);
 		if (setup.doDump()) {

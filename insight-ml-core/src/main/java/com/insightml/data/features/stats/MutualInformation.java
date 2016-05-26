@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.evaluation.simulation;
+package com.insightml.data.features.stats;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+final class MutualInformation extends AbstractClassificationStatistic {
 
-import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.utils.ui.reports.IReporter;
+	MutualInformation(final double binSize) {
+		super(binSize);
+	}
 
-public interface ISimulationResults<E, P> extends IReporter {
+	@Override
+	protected double pointWise(final ClassFeatureMatrix matrix, final int labelBin, final int featureBin) {
+		final double both = matrix.prob(labelBin, featureBin);
+		if (both == 0) {
+			return 0;
+		}
+		final double prod = matrix.classProb(labelBin) * matrix.featureProb(featureBin);
+		return both * Math.log(both / prod);
+	}
 
-	String getModelName();
-
-	ObjectiveFunction<? super E, ? super P>[] getObjectives();
-
-	StatisticalSummary[] getResults();
-
-	int numPredictions();
-
-	double getNormalizedResult();
 }
