@@ -32,22 +32,19 @@ import com.insightml.utils.ui.reports.IUiProvider;
 public final class FeaturesCorrelation extends AbstractClass implements IUiProvider<ISamples<?, Double>> {
 
 	public static FeatureCorrelation[] correlation(final ISamples<?, ?> table, final int labelIndex) {
-		return Arrays.of(new ParallelFor<FeatureCorrelation>() {
-			@Override
-			protected FeatureCorrelation exec(final int feature) {
-				final double[] feats = new double[table.size()];
-				final double[][] features = table.features();
-				for (int i = 0; i < feats.length; ++i) {
-					feats[i] = features[i][feature];
-				}
-				final Object[] exp = table.expected(labelIndex);
-				final double[] expCast = new double[exp.length];
-				for (int i = 0; i < exp.length; ++i) {
-					expCast[i] = Utils.toDouble(exp[i]);
-				}
-				return new FeatureCorrelation(feats, expCast, table.featureNames()[feature]);
+		return Arrays.of(ParallelFor.run(feature -> {
+			final double[] feats = new double[table.size()];
+			final double[][] features = table.features();
+			for (int i = 0; i < feats.length; ++i) {
+				feats[i] = features[i][feature];
 			}
-		}.run(0, table.numFeatures(), 1));
+			final Object[] exp = table.expected(labelIndex);
+			final double[] expCast = new double[exp.length];
+			for (int i = 0; i < exp.length; ++i) {
+				expCast[i] = Utils.toDouble(exp[i]);
+			}
+			return new FeatureCorrelation(feats, expCast, table.featureNames()[feature]);
+		}, 0, table.numFeatures(), 1));
 	}
 
 	@Override

@@ -16,8 +16,8 @@
 package com.insightml.models.optimization;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
@@ -39,7 +39,7 @@ public abstract class AbstractModelBlender<I extends Sample, E>
 	public final IModel<I, Double>[] train(final ISamples<I, E> train, final int labelIndex) {
 		final IModel<I, Double>[] models = new IModel[learner.length];
 		for (int i = 0; i < learner.length; ++i) {
-			models[i] = (IModel<I, Double>) learner[i].run(new LearnerInput(train, null, labelIndex));
+			models[i] = (IModel<I, Double>) learner[i].run(new LearnerInput(train, null, null, labelIndex));
 		}
 		return models;
 	}

@@ -19,8 +19,8 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
@@ -61,17 +61,14 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 		final double featureSample = argument("fsample");
 		final IModel<I, Double>[] models = new IModel[bags];
 		final double[] weights = new double[bags];
-		new ParallelFor<Object>() {
-			@Override
-			protected Object exec(final int i) {
-				final Random random = new Random((long) Math.pow(i + 2, 2));
-				final Pair<ISamples<I, Object>, ISamples<I, Object>> sub = instances.sample(instancesSample, random);
-				models[i] = learner[i % learner.length]
-						.run(new LearnerInput(sub.getFirst().sampleFeatures(featureSample, random), null, labelIndex));
-				weights[i] = 1;
-				return 1;
-			}
-		}.run(0, bags, 9999999);
+		ParallelFor.run(i -> {
+			final Random random = new Random((long) Math.pow(i + 2, 2));
+			final Pair<ISamples<I, Object>, ISamples<I, Object>> sub = instances.sample(instancesSample, random);
+			models[i] = learner[i % learner.length].run(
+					new LearnerInput(sub.getFirst().sampleFeatures(featureSample, random), null, null, labelIndex));
+			weights[i] = 1;
+			return 1;
+		}, 0, bags, 9999999);
 		return new VoteModel<>(models, weights, strategy);
 	}
 

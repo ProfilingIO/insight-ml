@@ -32,8 +32,8 @@ public final class SplitGain extends AbstractIndependentFeatureStatistic {
 			weightSum += context.weights[i];
 			labelSum += context.expected[i] * context.weights[i];
 		}
-		final ISplit split = new ThresholdSplitFinder(context, subset, subset.length, labelSum, weightSum, feature)
-				.compute();
+		final ISplit split = new ThresholdSplitFinder(context, subset, subset.length, labelSum, weightSum)
+				.compute(feature);
 		return split == null ? 0 : split.getImprovement() / split.getWeightSum();
 	}
 }

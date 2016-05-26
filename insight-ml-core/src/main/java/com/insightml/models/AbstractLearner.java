@@ -70,7 +70,7 @@ public abstract class AbstractLearner<S extends Sample, E, O> extends AbstractMo
 	}
 
 	public final IModel<S, O> run(final Collection<? extends S> trainingData) {
-		return run(new LearnerInput<>(new Samples<>(trainingData), null, 0));
+		return run(new LearnerInput<>(new Samples<>(trainingData), null, null, 0));
 	}
 
 }

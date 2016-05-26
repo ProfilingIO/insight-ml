@@ -21,47 +21,46 @@ import com.insightml.models.ILearner;
 import com.insightml.utils.Check;
 
 public final class LinearModelBlender<I extends Sample, E> extends AbstractModelBlender<I, E>
-        implements IModelBlender<I, E, Double> {
+		implements IModelBlender<I, E, Double> {
 
-    private final boolean useOffset;
+	private final boolean useOffset;
 
-    public LinearModelBlender(final boolean useOffset, final double[][] init,
-            final ObjectiveFunction<E, ? super Double> obj,
-            final ILearner<I, E, ? super Double>... learner) {
-        super(learner, init, obj);
-        this.useOffset = useOffset;
-    }
+	public LinearModelBlender(final boolean useOffset, final double[][] init,
+			final ObjectiveFunction<E, ? super Double> obj, final ILearner<I, E, ? super Double>... learner) {
+		super(learner, init, obj);
+		this.useOffset = useOffset;
+	}
 
-    @Override
-    public double predict(final double[] params, final Double[] predictions, final int labelIndex) {
-        final int numModels = predictions.length;
-        Check.argument(params.length >= 2);
-        Check.argument(params.length == Math.max(2, numModels + (useOffset ? 0 : -1)));
-        double[] params2;
-        if (numModels == 1) {
-            params2 = params;
-        } else {
-            params2 = new double[numModels + (useOffset ? 1 : 0)];
-            double sum = 0;
-            for (int i = 0; i < numModels - 1; ++i) {
-                params2[i] = params[i];
-                sum += params[i];
-            }
-            params2[numModels - 1] = 1 - sum;
-            if (useOffset) {
-                params2[numModels] = params[numModels - 1];
-            }
-        }
-        double result = !useOffset ? 0 : params2[numModels];
-        for (int model = 0; model < numModels; ++model) {
-            result += predictions[model] * params2[model];
-        }
-        return result;
-    }
+	@Override
+	public double predict(final double[] params, final Double[] predictions, final int labelIndex) {
+		final int numModels = predictions.length;
+		Check.argument(params.length >= 2);
+		Check.argument(params.length == Math.max(2, numModels + (useOffset ? 0 : -1)));
+		double[] params2;
+		if (numModels == 1) {
+			params2 = params;
+		} else {
+			params2 = new double[numModels + (useOffset ? 1 : 0)];
+			double sum = 0;
+			for (int i = 0; i < numModels - 1; ++i) {
+				params2[i] = params[i];
+				sum += params[i];
+			}
+			params2[numModels - 1] = 1 - sum;
+			if (useOffset) {
+				params2[numModels] = params[numModels - 1];
+			}
+		}
+		double result = !useOffset ? 0 : params2[numModels];
+		for (int model = 0; model < numModels; ++model) {
+			result += predictions[model] * params2[model];
+		}
+		return result;
+	}
 
-    @Override
-    public String getName() {
-        return "Linear" + super.toString();
-    }
+	@Override
+	public String getName() {
+		return "Linear" + super.toString();
+	}
 
 }

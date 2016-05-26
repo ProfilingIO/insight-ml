@@ -16,8 +16,10 @@
 package com.insightml.models.meta;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
+import com.insightml.models.trees.RegTree;
 import com.insightml.utils.IArguments;
 
 public final class RandomForest extends Bagging<Sample> {
@@ -33,7 +35,15 @@ public final class RandomForest extends Bagging<Sample> {
 
 	public RandomForest(final int trees, final int minDepth, final int maxDepth, final int minObs, final double isample,
 			final double fsample, final VoteStrategy strategy) {
-		super(trees, isample, fsample, strategy, GBRT.getLearner(minDepth, maxDepth, minObs));
+		super(trees, isample, fsample, strategy, getLearner(minDepth, maxDepth, minObs));
+	}
+
+	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs) {
+		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
+		for (int i = 0; i < learner.length; ++i) {
+			learner[i] = new RegTree(i + minDepth, minObs, false);
+		}
+		return learner;
 	}
 
 	@Override

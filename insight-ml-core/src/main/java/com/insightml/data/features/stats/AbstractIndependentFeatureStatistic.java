@@ -33,12 +33,9 @@ public abstract class AbstractIndependentFeatureStatistic
 	@Override
 	public final Map<String, Double> run(final FeatureStatistics stats) {
 		final String[] feats = stats.getInstances().featureNames();
-		final Double[] result = true ? new Double[feats.length] : Arrays.of(new ParallelFor<Double>() {
-			@Override
-			protected Double exec(final int i) {
-				return Double.valueOf(compute(stats, i, feats[i]));
-			}
-		}.run(0, feats.length, 1));
+		final Double[] result = true ? new Double[feats.length] : Arrays.of(ParallelFor.run(i -> {
+			return Double.valueOf(compute(stats, i, feats[i]));
+		}, 0, feats.length, 1));
 		for (int i = 0; i < feats.length; ++i) {
 			result[i] = Double.valueOf(compute(stats, i, feats[i]));
 		}

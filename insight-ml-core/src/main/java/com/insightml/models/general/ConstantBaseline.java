@@ -28,7 +28,7 @@ public final class ConstantBaseline<E> extends AbstractLearner<Sample, Object, E
 	}
 
 	@Override
-	public ConstantModel<E> run(final LearnerInput<? extends Sample, ? extends Object, ?> input) {
+	public ConstantModel<E> run(final LearnerInput<? extends Sample, ? extends Object> input) {
 		return new ConstantModel<>(constant);
 	}
 

@@ -19,8 +19,8 @@ import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.Vectors;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.AbstractDoubleLearner;
@@ -32,13 +32,16 @@ import com.insightml.utils.IArguments;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class RegTree extends AbstractDoubleLearner<Double> {
+	private final boolean parallelize;
 
 	public RegTree(final IArguments arguments) {
 		super(arguments);
+		parallelize = true;
 	}
 
-	public RegTree(final int depth, final int minobs) {
-		super(new Arguments("depth", depth + "", "minObs", minobs + ""));
+	public RegTree(final int depth, final int minobs, final boolean parallelize) {
+		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs)));
+		this.parallelize = parallelize;
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 	}
 
 	@Override
-	public TreeModel run(final LearnerInput<? extends Sample, ? extends Double, ?> input) {
+	public TreeModel run(final LearnerInput<? extends Sample, ? extends Double> input) {
 		Check.state(input.valid == null);
 		final ISamples<Sample, Double> train = (ISamples<Sample, Double>) input.getTrain();
 		final Stats sRoot = new Stats();
@@ -62,24 +65,26 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		new GrowJob(root, context, subset, 1).compute();
+		new GrowJob(root, context, subset, 1, parallelize).compute();
 		return new TreeModel(root, train.featureNames());
 	}
 
 	static final class GrowJob extends RecursiveAction {
-
 		private static final long serialVersionUID = 1788913869138107684L;
 
 		private final TreeNode parent;
 		final SplitFinderContext context;
 		final boolean[] subset;
 		private final int depth;
+		private final boolean parallelize;
 
-		public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth) {
+		public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth,
+				final boolean parallelize) {
 			parent = left;
 			this.context = context;
 			this.subset = subset;
 			this.depth = depth;
+			this.parallelize = parallelize;
 		}
 
 		@Override
@@ -94,10 +99,10 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 			final Pair<boolean[], boolean[]> split = parent.split(best, left, right, context.orderedInstances, subset);
 			if (depth < context.maxDepth) {
 				if (split.getFirst().length >= context.minObs * 2) {
-					new GrowJob(left, context, split.getFirst(), depth + 1).compute();
+					new GrowJob(left, context, split.getFirst(), depth + 1, parallelize).compute();
 				}
 				if (split.getSecond().length >= context.minObs * 2) {
-					new GrowJob(right, context, split.getSecond(), depth + 1).compute();
+					new GrowJob(right, context, split.getSecond(), depth + 1, parallelize).compute();
 				}
 			} else if (false) {
 				final AbstractDoubleLearner learner = null;
@@ -122,13 +127,14 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 			final double labelSumF = labelSum;
 			final double weightSumF = weightSum;
 
+			final ThresholdSplitFinder thresholdSplitFinder = new ThresholdSplitFinder(context, subset, samplesF,
+					labelSumF, weightSumF);
+
 			ISplit bestSplit = null;
-			for (final ISplit split : new ParallelFor<ISplit>() {
-				@Override
-				protected ISplit exec(final int i) {
-					return new ThresholdSplitFinder(context, subset, samplesF, labelSumF, weightSumF, i).compute();
-				}
-			}.run(0, context.orderedInstances.length, 1)) {
+			for (final ISplit split : ParallelFor.run(thresholdSplitFinder::compute,
+					0,
+					context.orderedInstances.length,
+					parallelize ? 1 : Integer.MAX_VALUE)) {
 				if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
 					bestSplit = split;
 				}

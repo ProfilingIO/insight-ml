@@ -78,9 +78,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data,
-				unlabled,
-				config,
+		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data, unlabled, config,
 				labelIndex);
 		return new ModelPipeline<>(modelAndPipe.getFirst(), modelAndPipe.getSecond(),
 				config == null ? null : config.getPostProcessor(), labelIndex);
@@ -119,6 +117,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		}
 		valid = null;
 
-		return new Pair<>((IModel<S, O>) learner.run(new LearnerInput(train, valid2, labelIndex, config, pipe)), pipe);
+		return new Pair<>((IModel<S, O>) learner.run(new LearnerInput(train, valid2, labelIndex, origConfig, pipe)),
+				pipe);
 	}
 }

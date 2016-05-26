@@ -19,8 +19,8 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.models.AbstractLearner;
 import com.insightml.models.ILearner;
@@ -40,7 +40,7 @@ public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends Ab
 	}
 
 	@Override
-	public final IModel<S, O> run(final LearnerInput<? extends S, ? extends E, ?> input) {
+	public final IModel<S, O> run(final LearnerInput<? extends S, ? extends E> input) {
 		Check.num(input.getTrain().size(), 50, 9999999);
 		return createModel((ISamples<S, E>) input.getTrain(), learners, input.labelIndex);
 	}

@@ -15,8 +15,8 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.Optimizable;
 import com.insightml.models.AbstractLearner;
@@ -36,7 +36,7 @@ abstract class AbstractParameterLearner<I extends Sample, E, T, C> extends Abstr
 	}
 
 	@Override
-	public final IModel<I, Double> run(final LearnerInput<? extends I, ? extends E, ?> input) {
+	public final IModel<I, Double> run(final LearnerInput<? extends I, ? extends E> input) {
 		final T train = train((ISamples<I, E>) input.getTrain(), input.labelIndex);
 		final int index = initial.length > 1 ? input.labelIndex : 0;
 		final ParameterModel<I, T, C> model = new ParameterModel<>(train, initial[index], input.labelIndex, this);

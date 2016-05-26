@@ -27,8 +27,10 @@ import java.util.concurrent.Future;
 import com.insightml.utils.Check;
 
 public final class JobPool {
-
 	private static ForkJoinPool pool;
+
+	private JobPool() {
+	}
 
 	public static synchronized void setParallelism(final int parallelism) {
 		pool = new ForkJoinPool(parallelism);
@@ -59,7 +61,6 @@ public final class JobPool {
 			try {
 				results.add(result.get());
 			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
 				throw new IllegalStateException(e);
 			}
 		}

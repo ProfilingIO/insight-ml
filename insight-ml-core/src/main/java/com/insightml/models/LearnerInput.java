@@ -16,44 +16,49 @@
 package com.insightml.models;
 
 import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
-import com.insightml.utils.types.Proxy;
 
-public final class LearnerInput<S extends Sample, E, O> {
+public final class LearnerInput<S extends Sample, E> {
 	private final Supplier<ISamples<S, E>> train;
 	public final ISamples<S, E> valid;
+	public final FeaturesConfig<S, ?> config;
 	public final int labelIndex;
 
-	public final FeaturesConfig<S, O> config;
+	public LearnerInput(final Supplier<ISamples<S, E>> train, final ISamples<S, E> valid,
+			final FeaturesConfig<S, ?> config, final int labelIndex) {
+		this.train = train;
+		this.valid = valid;
+		this.config = config;
+		this.labelIndex = labelIndex;
+	}
 
-	public LearnerInput(final ISamples<S, E> train, final ISamples<S, E> valid, final int labelIndex) {
+	public LearnerInput(final ISamples<S, E> train, final ISamples<S, E> valid, final FeaturesConfig<S, ?> config,
+			final int labelIndex) {
 		this.train = () -> train;
 		this.valid = valid;
+		this.config = config;
 		this.labelIndex = labelIndex;
-		this.config = null;
 	}
 
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
-			final FeaturesConfig<S, O> config, final PreprocessingPipeline<S, E> pipe) {
-		this.train = new Proxy<ISamples<S, E>>() {
-			@Override
-			protected ISamples<S, E> load() {
-				return pipe == null ? new Samples<>(train) : pipe.run(train, true);
-			}
-		};
+			final FeaturesConfig<S, ?> config, final PreprocessingPipeline<S, E> pipe) {
+		this.train = Suppliers.memoize(() -> pipe == null ? new Samples<>(train) : pipe.run(train, true));
 		this.valid = valid;
-		this.labelIndex = labelIndex;
 		this.config = config;
+		this.labelIndex = labelIndex;
 	}
 
-	public static <S extends Sample, E, O> LearnerInput<S, E, O> of(final Iterable<S> data,
+	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
 			final FeaturesConfig<S, O> config) {
-		final PreprocessingPipeline<S, E> pipelien = PreprocessingPipeline.create(config, data, null, new Iterable[0]);
-		return new LearnerInput<>(data, null, 0, config, pipelien);
+		return new LearnerInput<>(Suppliers.memoize(() -> {
+			final PreprocessingPipeline<S, E> pipe = PreprocessingPipeline.create(config, data, null, new Iterable[0]);
+			return pipe == null ? new Samples<>(data) : pipe.run(data, true);
+		}), null, config, 0);
 	}
 
 	public ISamples<S, E> getTrain() {

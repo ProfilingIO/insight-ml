@@ -36,10 +36,10 @@ public final class GBRT extends GBM {
 		return getLearner(arguments.toInt("depth", 4), arguments.toInt("depth", 4), arguments.toInt("minObs", 10));
 	}
 
-	static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs) {
+	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
-			learner[i] = new RegTree(i + minDepth, minObs);
+			learner[i] = new RegTree(i + minDepth, minObs, true);
 		}
 		return learner;
 	}

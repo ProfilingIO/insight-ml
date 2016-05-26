@@ -16,8 +16,8 @@
 package com.insightml.models;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.ParallelFor;
 
@@ -55,12 +55,8 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 			}
 		}
 
-		return Arrays.of(new ParallelFor<E>() {
-			@Override
-			protected E exec(final int i) {
-				return Preconditions.checkNotNull(predict(i, instances, featuresFilter));
-			}
-		}.run(0, instances.size(), 1));
+		return Arrays.of(ParallelFor.run(i -> Preconditions.checkNotNull(predict(i, instances, featuresFilter)), 0,
+				instances.size(), 1));
 	}
 
 	protected abstract E predict(final int instance, final ISamples<I, ?> instances, int[] featuresFilter);

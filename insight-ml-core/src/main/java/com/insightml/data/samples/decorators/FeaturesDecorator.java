@@ -22,8 +22,8 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.Normalization;
 import com.insightml.utils.Compare;
 import com.insightml.utils.StrictComparator;
@@ -48,15 +48,12 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 		featureNames = featureFilter.allowedFeatures(prov.featureNames(orig));
 
 		features = new double[orig.size()][];
-		new ParallelFor<Object>() {
-			@Override
-			protected Object exec(final int i) {
-				final S sample = orig.get(i);
-				features[i] = sample == null ? null
-						: Preconditions.checkNotNull(prov.features(sample, featureNames(), isTraining));
-				return 1;
-			}
-		}.run(0, features.length, 100);
+		ParallelFor.run(i -> {
+			final S sample = orig.get(i);
+			features[i] = sample == null ? null
+					: Preconditions.checkNotNull(prov.features(sample, featureNames(), isTraining));
+			return 1;
+		}, 0, features.length, 100);
 	}
 
 	@Override
@@ -101,29 +98,25 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 				if (orderedByFeatures == null) {
 					final int size = size();
 					final int[][] ordered = new int[featureNames.length][];
-					new ParallelFor<Object>() {
-						@Override
-						protected Object exec(final int f) {
-							final List<OrderItem> order = new ArrayList<>(size);
-							for (int i = 0; i < size; ++i) {
-								order.add(new OrderItem(i));
-							}
-							Collections.sort(order, new StrictComparator<OrderItem>() {
-								@Override
-								public int comp(final OrderItem o1, final OrderItem o2) {
-									final int comp = Compare.compareDouble(features[o1.index][f],
-											features[o2.index][f]);
-									return comp == 0 ? Compare.compareInt(o1.index, o2.index) : comp;
-								}
-							});
-							ordered[f] = new int[size];
-							int i = -1;
-							for (final OrderItem tuple : order) {
-								ordered[f][++i] = tuple.index;
-							}
-							return "";
+					ParallelFor.run(f -> {
+						final List<OrderItem> order = new ArrayList<>(size);
+						for (int i = 0; i < size; ++i) {
+							order.add(new OrderItem(i));
 						}
-					}.run(0, featureNames.length, 1);
+						Collections.sort(order, new StrictComparator<OrderItem>() {
+							@Override
+							public int comp(final OrderItem o1, final OrderItem o2) {
+								final int comp = Compare.compareDouble(features[o1.index][f], features[o2.index][f]);
+								return comp == 0 ? Compare.compareInt(o1.index, o2.index) : comp;
+							}
+						});
+						ordered[f] = new int[size];
+						int i = -1;
+						for (final OrderItem tuple : order) {
+							ordered[f][++i] = tuple.index;
+						}
+						return "";
+					}, 0, featureNames.length, 1);
 					orderedByFeatures = ordered;
 				}
 			}

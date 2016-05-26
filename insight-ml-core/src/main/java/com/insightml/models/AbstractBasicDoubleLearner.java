@@ -32,12 +32,12 @@ public abstract class AbstractBasicDoubleLearner extends AbstractDoubleLearner<D
 	}
 
 	@Override
-	public final IModel<Sample, Double> run(final LearnerInput<? extends Sample, ? extends Double, ?> input) {
+	public final IModel<Sample, Double> run(final LearnerInput<? extends Sample, ? extends Double> input) {
 		final Pair<double[], double[][]> filtered = filter(input);
 		return train(filtered.getSecond(), filtered.getFirst(), input.getTrain().featureNames());
 	}
 
-	private static Pair<double[], double[][]> filter(final LearnerInput<? extends Sample, ? extends Double, ?> input) {
+	private static Pair<double[], double[][]> filter(final LearnerInput<? extends Sample, ? extends Double> input) {
 		final double[][] features = input.getTrain().features();
 		final Double[] expected = input.getTrain().expected(input.labelIndex);
 

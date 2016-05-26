@@ -20,8 +20,8 @@ import java.util.Random;
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.LabelDecorator;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.evaluation.functions.ObjectiveFunction;
@@ -86,7 +86,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 			}
 			try {
 				final IModel<Sample, Double> fit = learner[i % learner.length]
-						.run(new LearnerInput(subset, null, labelIndex));
+						.run(new LearnerInput(subset, null, null, labelIndex));
 				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, i + 1, labelIndex);
 				steps.add(fit, shrinkage * update.getFirst());
 				preds = update.getSecond();

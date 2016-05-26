@@ -15,35 +15,27 @@
  */
 package com.insightml.models.trees;
 
-import java.util.concurrent.RecursiveTask;
-
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
 import com.insightml.utils.ui.UiUtils;
 
-public final class ThresholdSplitFinder extends RecursiveTask<ISplit> {
-
-	private static final long serialVersionUID = 7094732182132063228L;
-
+public final class ThresholdSplitFinder {
 	private final SplitFinderContext context;
 	private final boolean[] subset;
-	private final int feature;
 	private final int samples;
 	private final double labelSum;
 	private final double weightSum;
 
 	public ThresholdSplitFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
-			final double labelSum, final double weightSum, final int feature) {
+			final double labelSum, final double weightSum) {
 		this.context = context;
 		this.subset = subset;
 		this.samples = samples;
 		this.labelSum = labelSum;
 		this.weightSum = weightSum;
-		this.feature = feature;
 	}
 
-	@Override
-	public ISplit compute() {
+	public ISplit compute(final int feature) {
 		double curThr = -9999999;
 		final int[] ordered = context.orderedInstances[feature];
 

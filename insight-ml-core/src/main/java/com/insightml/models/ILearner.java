@@ -19,10 +19,10 @@ import com.insightml.data.samples.Sample;
 
 public interface ILearner<S extends Sample, E, O> {
 
-    String getName();
+	String getName();
 
-    LearnerArguments arguments();
+	LearnerArguments arguments();
 
-    IModel<S, O> run(LearnerInput<? extends S, ? extends E, ?> input);
+	IModel<S, O> run(LearnerInput<? extends S, ? extends E> input);
 
 }

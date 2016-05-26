@@ -86,7 +86,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	}
 
 	public void setLeafModel(final AbstractDoubleLearner learner, final ISamples<?, Double> instances) {
-		model = (AbstractIndependentFeaturesModel) learner.run(new LearnerInput<>(instances, null, 0));
+		model = (AbstractIndependentFeaturesModel) learner.run(new LearnerInput<>(instances, null, null, 0));
 	}
 
 	public SumMap<String> featureImportance(final boolean normalize) {
