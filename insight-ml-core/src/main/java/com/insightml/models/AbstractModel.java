@@ -20,51 +20,49 @@ import com.insightml.math.types.SumMap;
 import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.ui.UiUtils;
 
-public abstract class AbstractModel<I extends Sample, E> extends AbstractConfigurable implements
-IModel<I, E> {
+public abstract class AbstractModel<I extends Sample, E> extends AbstractConfigurable implements IModel<I, E> {
+	private static final long serialVersionUID = -3450572475700673815L;
 
-    private static final long serialVersionUID = -3450572475700673815L;
+	private String[] features;
 
-    private String[] features;
+	public AbstractModel() {
+	}
 
-    public AbstractModel() {
-    }
+	public AbstractModel(final String[] features) {
+		this.features = features;
+	}
 
-    public AbstractModel(final String[] features) {
-        this.features = features;
-    }
+	@Override
+	public final String[] features() {
+		return features;
+	}
 
-    @Override
-    public final String[] features() {
-        return features;
-    }
+	@Override
+	public SumMap<String> featureImportance() {
+		return null;
+	}
 
-    @Override
-    public SumMap<String> featureImportance() {
-        return null;
-    }
+	@Override
+	public double logLikelihood(final I sample, final E result) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public double logLikelihood(final I sample, final E result) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public String info() {
+		final SumMap<String> importance = featureImportance();
+		if (importance != null) {
+			return "\n" + UiUtils.format(importance.distribution(), 0).toString();
+		}
+		return "No model info for " + getClass().toString();
+	}
 
-    @Override
-    public String info() {
-        final SumMap<String> importance = featureImportance();
-        if (importance != null) {
-            return "\n" + UiUtils.format(importance.distribution(), 0).toString();
-        }
-        return "No model info for " + getClass().toString();
-    }
+	@Override
+	public Object[] getComponents() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Object[] getComponents() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void close() {
-    }
+	@Override
+	public void close() {
+	}
 
 }

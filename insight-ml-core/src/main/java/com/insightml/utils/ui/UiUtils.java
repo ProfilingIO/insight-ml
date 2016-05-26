@@ -48,7 +48,7 @@ public final class UiUtils {
 			builder.append('{');
 		}
 		for (final Entry<?, ?> entry : map.entrySet()) {
-			builder.append(fill(entry.getKey(), multiLine ? 40 : 1));
+			builder.append(fill(entry.getKey(), multiLine ? 50 : 1));
 			if (!multiLine) {
 				builder.append(": ");
 			}

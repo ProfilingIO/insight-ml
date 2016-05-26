@@ -16,8 +16,8 @@
 package com.insightml.models;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 
 public abstract class AbstractIndependentFeaturesModel extends AbstractIndependentModel<Sample, Double> {
 
@@ -31,7 +31,7 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 	}
 
 	@Override
-	protected final Double predict(final int instance, final ISamples<Sample, ?> instances,
+	protected final Double predict(final int instance, final ISamples<? extends Sample, ?> instances,
 			final int[] featuresFilter) {
 		final double[] features = instances.features()[instance];
 		final double[] selection = new double[featuresFilter.length];

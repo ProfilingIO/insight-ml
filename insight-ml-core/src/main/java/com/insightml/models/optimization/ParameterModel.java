@@ -15,8 +15,8 @@
  */
 package com.insightml.models.optimization;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractModel;
 import com.insightml.models.IModel;
 
@@ -39,12 +39,12 @@ public final class ParameterModel<I extends Sample, T, C> extends AbstractModel<
 	}
 
 	@Override
-	public Double[] apply(final ISamples<I, ?> instances) {
+	public Double[] apply(final ISamples<? extends I, ?> instances) {
 		final C[] cachable = learner.computeCachable(instances, train);
 		return run(instances, cachable);
 	}
 
-	Double[] run(final ISamples<I, ?> instances, final C[] cachable) {
+	Double[] run(final ISamples<? extends I, ?> instances, final C[] cachable) {
 		final Double[] preds = new Double[instances.size()];
 		for (int i = 0; i < preds.length; ++i) {
 			preds[i] = learner.predict(params, cachable[i], labelIndex);

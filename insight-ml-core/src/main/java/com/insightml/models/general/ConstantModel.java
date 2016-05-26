@@ -15,9 +15,9 @@
  */
 package com.insightml.models.general;
 
-import com.google.common.base.MoreObjects;
-import com.insightml.data.samples.Sample;
+import com.google.common.base.Objects;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractModel;
 import com.insightml.utils.Arrays;
 
@@ -35,7 +35,7 @@ public final class ConstantModel<E> extends AbstractModel<Sample, E> {
 	}
 
 	@Override
-	public E[] apply(final ISamples<Sample, ?> input) {
+	public E[] apply(final ISamples<? extends Sample, ?> input) {
 		return Arrays.fill(input.size(), constant);
 	}
 
@@ -46,6 +46,6 @@ public final class ConstantModel<E> extends AbstractModel<Sample, E> {
 
 	@Override
 	public String getName() {
-		return MoreObjects.toStringHelper(this).addValue(constant).toString();
+		return Objects.toStringHelper(this).addValue(constant).toString();
 	}
 }

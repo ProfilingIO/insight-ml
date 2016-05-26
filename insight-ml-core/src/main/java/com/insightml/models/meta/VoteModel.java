@@ -17,8 +17,8 @@ package com.insightml.models.meta;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.AbstractJob;
@@ -44,7 +44,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 	}
 
 	@Override
-	public Double[] apply(final ISamples<I, ?> instnces) {
+	public Double[] apply(final ISamples<? extends I, ?> instnces) {
 		final IModel<I, Double>[] models = getModels();
 		final double[] weights = getWeights();
 		final IJobBatch<Object> batch = new ThreadedClient().newBatch();

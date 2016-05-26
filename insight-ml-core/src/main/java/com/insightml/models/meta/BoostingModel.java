@@ -20,8 +20,8 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Objects;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractModel;
@@ -47,7 +47,7 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 	}
 
 	@Override
-	public Double[] apply(final ISamples<Sample, ?> instances) {
+	public Double[] apply(final ISamples<? extends Sample, ?> instances) {
 		double[] preds = Arrays.cast(first.apply(instances));
 		for (final Pair<IModel<Sample, Double>, Double> step : steps) {
 			final double[] fit = Arrays.cast(step.getFirst().apply(instances));
@@ -69,7 +69,8 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	@Override
 	public String info() {
-		return steps.size() > 1 ? steps.get(1).getFirst().info() + steps.getLast().getFirst().info() + "\n"
+		return steps.size() > 1 ? "First model:\n" + steps.get(1).getFirst().info() + "Last model:\n"
+				+ steps.getLast().getFirst().info() + "\nFeature importance overall:\n"
 				+ UiUtils.format(featureImportance().distribution(), 0) : "No training data";
 	}
 

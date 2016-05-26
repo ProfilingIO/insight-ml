@@ -57,7 +57,7 @@ abstract class AbstractParameterLearner<I extends Sample, E, T, C> extends Abstr
 
 	public abstract T train(ISamples<I, E> train, int labelIndex);
 
-	protected abstract C[] computeCachable(ISamples<I, ?> instances, T train);
+	protected abstract C[] computeCachable(ISamples<? extends I, ?> instances, T train);
 
 	public abstract double predict(double[] params, C cached, int labelIndex);
 

@@ -45,7 +45,8 @@ public abstract class AbstractModelBlender<I extends Sample, E>
 	}
 
 	@Override
-	protected final Double[][] computeCachable(final ISamples<I, ?> instances, final IModel<I, Double>[] models) {
+	protected final Double[][] computeCachable(final ISamples<? extends I, ?> instances,
+			final IModel<I, Double>[] models) {
 		final Double[][] map = new Double[instances.size()][models.length];
 		for (int i = 0; i < models.length; ++i) {
 			final Double[] preds = models[i].apply(instances);
