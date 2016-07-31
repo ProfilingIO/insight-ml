@@ -36,10 +36,9 @@ public abstract class FeaturesConfig<I extends Sample, P> extends AbstractModule
 		this.postProcessor = postProcessor;
 	}
 
-	public abstract IFeatureProvider<I> newFeatureProvider(final Iterable<I> training, final Iterable<I>[] rest);
+	public abstract IFeatureProvider<I> newFeatureProvider();
 
-	public abstract IFeatureFilter newFeatureFilter(final Iterable<I> training, final IFeatureProvider<I> provider,
-			final Integer labelIndex);
+	public abstract IFeatureFilter newFeatureFilter();
 
 	public final Normalization getNormalization() {
 		return normalization;

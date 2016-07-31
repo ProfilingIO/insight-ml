@@ -21,8 +21,8 @@ import org.junit.Test;
 
 import com.insightml.TestDatasets;
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 
 public abstract class AbstractFeatureStatsTest {
@@ -33,7 +33,7 @@ public abstract class AbstractFeatureStatsTest {
 		for (final Pair<IDataset<?, ?, ?>, ObjectiveFunction[]> dataset : TestDatasets.createInstances()) {
 			final Iterable<? extends Sample> inst = dataset.getFirst().loadAll();
 			if (!(inst.iterator().next().getExpected(0) instanceof String)) {
-				test(((IDataset) dataset.getFirst()).pipeline(inst, null, new Iterable[0]).run(inst, true));
+				test(((IDataset) dataset.getFirst()).pipeline().run(inst, true));
 			}
 		}
 	}

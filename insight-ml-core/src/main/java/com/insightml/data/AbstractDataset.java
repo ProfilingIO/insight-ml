@@ -48,9 +48,8 @@ public abstract class AbstractDataset<I extends Sample, E, P> extends AbstractMo
 	}
 
 	@Override
-	public final PreprocessingPipeline<I, E> pipeline(final Iterable<I> training, final Integer labelIndex,
-			final Iterable<I>[] instances) {
-		return PreprocessingPipeline.create(getFeaturesConfig(null), training, labelIndex, instances);
+	public final PreprocessingPipeline<I, E> pipeline() {
+		return PreprocessingPipeline.create(getFeaturesConfig(null));
 	}
 
 	@Override

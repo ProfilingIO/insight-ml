@@ -78,14 +78,13 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data, unlabled, config,
-				labelIndex);
+		final Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe = modelAndPipe(data, config, labelIndex);
 		return new ModelPipeline<>(modelAndPipe.getFirst(), modelAndPipe.getSecond(),
 				config == null ? null : config.getPostProcessor(), labelIndex);
 	}
 
 	private Pair<IModel<S, O>, PreprocessingPipeline<S, E>> modelAndPipe(final Iterable<S> data,
-			final Iterable<S> unlabled, final FeaturesConfig<? extends S, O> origConfig, final int labelIndex) {
+			final FeaturesConfig<? extends S, O> origConfig, final int labelIndex) {
 		final Pair<Iterable<S>, List<S>> split = SplitSimulation.split(data, trainRatio, null);
 		final Iterable<S> train = split.getFirst();
 		List<S> valid = split.getSecond();
@@ -100,15 +99,14 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 			if (selection != null) {
 				final DoublePair<Set<String>> result = selection.run(train, origConfig, learner);
 				if (result != null) {
-					config = new SimpleFeatureConfig<>(origConfig.newFeatureProvider(null, new Iterable[0]),
+					config = new SimpleFeatureConfig<>(origConfig.newFeatureProvider(),
 							new ManualSelectionFilter(result.getKey(), true), null);
 				}
 			}
 			if (config == null) {
 				config = origConfig;
 			}
-			final Iterable<S>[] rest = new Iterable[] { unlabled, valid };
-			pipe = PreprocessingPipeline.create((FeaturesConfig<S, O>) config, train, labelIndex, rest);
+			pipe = PreprocessingPipeline.create((FeaturesConfig<S, O>) config);
 			if (valid != null && false) {
 				valid2 = pipe.run(valid, true);
 			}

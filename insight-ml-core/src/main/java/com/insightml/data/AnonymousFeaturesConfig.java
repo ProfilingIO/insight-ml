@@ -15,7 +15,7 @@
  */
 package com.insightml.data;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +34,6 @@ import com.insightml.data.features.selection.IgnoreFeatureFilter;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.Features;
 import com.insightml.utils.types.DoublePair;
-import com.insightml.utils.types.collections.ArrayIterator;
 
 public final class AnonymousFeaturesConfig<S extends Sample, O> extends FeaturesConfig<S, O> {
 
@@ -47,7 +46,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	public AnonymousFeaturesConfig(final String[] features, final Function<S, Features> simpleFeaturesProvider,
 			final double defaultValue, final boolean useDivFeaturesProvider) {
 		super(null, null);
-		this.provider = provider(new ArrayIterator<>(features), simpleFeaturesProvider, defaultValue);
+		this.provider = provider(features, simpleFeaturesProvider, defaultValue);
 		this.useDivFeaturesProvider = useDivFeaturesProvider;
 	}
 
@@ -66,13 +65,12 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	@Override
-	public IFeatureProvider<S> newFeatureProvider(final Iterable<S> training, final Iterable<S>[] rest) {
+	public IFeatureProvider<S> newFeatureProvider() {
 		return provider;
 	}
 
 	@Override
-	public IFeatureFilter newFeatureFilter(final Iterable<S> training, final IFeatureProvider<S> prov,
-			final Integer labelIndex) {
+	public IFeatureFilter newFeatureFilter() {
 		return filter;
 	}
 
@@ -84,32 +82,43 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 				names.add(feat.getKey());
 			}
 		}
-		return provider(names, simpleFeaturesProvider, defaultValue);
+		return provider(names.toArray(new String[names.size()]), simpleFeaturesProvider, defaultValue);
 	}
 
-	private IFeatureProvider<S> provider(final Iterable<String> names,
+	private IFeatureProvider<S> provider(final String[] featureNames,
 			final Function<S, Features> simpleFeaturesProvider, final double defaultValue) {
-		final List<Pair<String, String>> features = new LinkedList<>();
-		for (final CharSequence feat : names) {
-			features.add(new Pair<>(feat.toString(), ""));
+		final SimpleFeatureProvider<S> prov = new SimpleFeatureProvider<>(featureNames, simpleFeaturesProvider,
+				defaultValue);
+		if (!useDivFeaturesProvider) {
+			return prov;
 		}
-		final IFeatureProvider<S> prov = new GeneralFeatureProvider<S>("features", defaultValue) {
-			@Override
-			protected List<Pair<String, String>> getFeatures() {
-				return features;
-			}
+		return new AggregateFeatureProvider<>("features", defaultValue,
+				Arrays.asList(prov, new DivFeaturesProvider<>(prov, defaultValue)));
+	}
 
-			@Override
-			public Features features(final S instance, final boolean isTraining) {
-				return simpleFeaturesProvider.apply(instance);
+	public static final class SimpleFeatureProvider<S extends Sample> extends GeneralFeatureProvider<S> {
+		private final List<Pair<String, String>> features;
+		private final Function<S, Features> simpleFeaturesProvider;
+
+		public SimpleFeatureProvider(final String[] featureNames, final Function<S, Features> simpleFeaturesProvider,
+				final double defaultValue) {
+			super("features", defaultValue);
+			this.features = new LinkedList<>();
+			for (final CharSequence feat : featureNames) {
+				features.add(new Pair<>(feat.toString(), ""));
 			}
-		};
-		final List<IFeatureProvider<S>> providers = new ArrayList<>(2);
-		providers.add(prov);
-		if (useDivFeaturesProvider) {
-			providers.add(new DivFeaturesProvider<>(prov, defaultValue));
+			this.simpleFeaturesProvider = simpleFeaturesProvider;
 		}
-		return new AggregateFeatureProvider<>("features", defaultValue, providers);
+
+		@Override
+		protected List<Pair<String, String>> getFeatures() {
+			return features;
+		}
+
+		@Override
+		public Features features(final S sample, final boolean isTraining) {
+			return simpleFeaturesProvider.apply(sample);
+		}
 	}
 
 }

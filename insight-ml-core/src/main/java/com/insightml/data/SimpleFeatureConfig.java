@@ -41,13 +41,12 @@ public final class SimpleFeatureConfig<I extends Sample, P> extends FeaturesConf
 	}
 
 	@Override
-	public IFeatureProvider<I> newFeatureProvider(final Iterable<I> training, final Iterable<I>[] rest) {
+	public IFeatureProvider<I> newFeatureProvider() {
 		return provider;
 	}
 
 	@Override
-	public IFeatureFilter newFeatureFilter(final Iterable<I> training, final IFeatureProvider<I> prov,
-			final Integer labelIndex) {
+	public IFeatureFilter newFeatureFilter() {
 		return filter;
 	}
 }

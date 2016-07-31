@@ -56,7 +56,7 @@ public final class LearnerInput<S extends Sample, E> {
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
 			final FeaturesConfig<S, O> config) {
 		return new LearnerInput<>(Suppliers.memoize(() -> {
-			final PreprocessingPipeline<S, E> pipe = PreprocessingPipeline.create(config, data, null, new Iterable[0]);
+			final PreprocessingPipeline<S, E> pipe = PreprocessingPipeline.create(config);
 			return pipe == null ? new Samples<>(data) : pipe.run(data, true);
 		}), null, config, 0);
 	}

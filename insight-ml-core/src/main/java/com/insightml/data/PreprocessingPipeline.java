@@ -21,8 +21,8 @@ import java.util.Objects;
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
 import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.math.Normalization;
@@ -48,11 +48,9 @@ public final class PreprocessingPipeline<S extends Sample, E> extends AbstractCo
 		this.normalization = normalization;
 	}
 
-	public static <S extends Sample, E> PreprocessingPipeline<S, E> create(final FeaturesConfig<S, ?> config,
-			final Iterable<S> training, final Integer labelIndex, final Iterable<S>[] instances) {
-		final IFeatureProvider<S> featureProvider = config.newFeatureProvider(training, instances);
-		return new PreprocessingPipeline<>(featureProvider,
-				config.newFeatureFilter(training, featureProvider, labelIndex), config.getNormalization());
+	public static <S extends Sample, E> PreprocessingPipeline<S, E> create(final FeaturesConfig<S, ?> config) {
+		return new PreprocessingPipeline<>(config.newFeatureProvider(), config.newFeatureFilter(),
+				config.getNormalization());
 	}
 
 	@Override

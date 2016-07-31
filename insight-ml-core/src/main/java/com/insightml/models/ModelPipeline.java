@@ -22,8 +22,8 @@ import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.PreprocessingPipeline;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
 import com.insightml.math.types.SumMap;
 import com.insightml.utils.Arrays;
@@ -35,7 +35,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 	private static final long serialVersionUID = 5471706800666990790L;
 
 	private IModel<I, P> model;
-	private PreprocessingPipeline pipe;
+	private PreprocessingPipeline<I, ?> pipe;
 	private Function<P, P> postProcessor;
 	private int labelIndex;
 
@@ -50,8 +50,8 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		this.labelIndex = labelIndex;
 	}
 
-	public ISamples<I, ?> preprocess(final Iterable<? extends I> test) {
-		return pipe == null ? new Samples(test) : pipe.run(test, false);
+	public <E> ISamples<I, E> preprocess(final Iterable<? extends I> test) {
+		return pipe == null ? new Samples<>((Iterable<I>) test) : (ISamples<I, E>) pipe.run((Iterable<I>) test, false);
 	}
 
 	public P[] run(final Iterable<? extends I> test) {
