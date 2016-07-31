@@ -33,14 +33,19 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 	@Override
 	protected final Double predict(final int instance, final ISamples<? extends Sample, ?> instances,
 			final int[] featuresFilter) {
+		return predict(selectFeatures(instance, instances, featuresFilter));
+	}
+
+	protected static double[] selectFeatures(final int instance, final ISamples<? extends Sample, ?> instances,
+			final int[] featuresFilter) {
 		final double[] features = instances.features()[instance];
 		final double[] selection = new double[featuresFilter.length];
 		for (int i = 0; i < selection.length; ++i) {
 			selection[i] = featuresFilter[i] == -1 ? 0 : features[featuresFilter[i]];
 		}
-		return predict(selection);
+		return selection;
 	}
 
-	public abstract double predict(final double[] features);
+	public abstract double predict(double[] features);
 
 }

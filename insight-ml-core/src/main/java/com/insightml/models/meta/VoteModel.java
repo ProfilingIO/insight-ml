@@ -19,13 +19,17 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
+import com.insightml.models.DistributionModel;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;
+import com.insightml.utils.jobs.ParallelFor;
 import com.insightml.utils.jobs.ThreadedClient;
 
-public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double> {
+public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double>
+		implements DistributionModel<I> {
 
 	private static final long serialVersionUID = -8515840219123634452L;
 
@@ -74,6 +78,19 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			preds[i] = resolve(map[i]);
 		}
 		return preds;
+	}
+
+	@Override
+	public Stats[] predictDistribution(final ISamples<? extends I, ?> instnces) {
+		final IModel<I, Double>[] models = getModels();
+		final Stats[] map = Arrays.fill(instnces.size(), Stats.class);
+		for (final Stats[] preds : ParallelFor
+				.run(i -> ((DistributionModel<I>) models[i]).predictDistribution(instnces), 0, models.length, 1)) {
+			for (int j = 0; j < preds.length; ++j) {
+				map[j].add(preds[j]);
+			}
+		}
+		return map;
 	}
 
 	private double resolve(final DescriptiveStatistics stats) {

@@ -34,6 +34,14 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 
 	@Override
 	public final E[] apply(final ISamples<? extends I, ?> instances) {
+		final int[] featuresFilter = constractFeaturesFilter(instances);
+		return Arrays.of(ParallelFor.run(i -> Preconditions.checkNotNull(predict(i, instances, featuresFilter)),
+				0,
+				instances.size(),
+				1));
+	}
+
+	protected int[] constractFeaturesFilter(final ISamples<? extends I, ?> instances) {
 		final CharSequence[] ref = features();
 		final String[] names = instances.featureNames();
 		final int[] featuresFilter = new int[ref == null ? names.length : ref.length];
@@ -54,11 +62,7 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 				featuresFilter[i] = idx;
 			}
 		}
-
-		return Arrays.of(ParallelFor.run(i -> Preconditions.checkNotNull(predict(i, instances, featuresFilter)),
-				0,
-				instances.size(),
-				1));
+		return featuresFilter;
 	}
 
 	protected abstract E predict(final int instance, final ISamples<? extends I, ?> instances, int[] featuresFilter);

@@ -27,7 +27,6 @@ import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractDoubleLearner;
 import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.LearnerInput;
-import com.insightml.utils.Check;
 import com.insightml.utils.Collections;
 import com.insightml.utils.Collections.SortOrder;
 import com.insightml.utils.types.AbstractClass;
@@ -41,25 +40,29 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	private TreeNode left;
 	private TreeNode right;
 
-	private double pred;
-	private double weight;
-	private double stddev;
+	private Stats stats;
 	private AbstractIndependentFeaturesModel model;
 
 	TreeNode() {
 	}
 
 	TreeNode(final Stats stats) {
-		pred = stats.getMean();
-		weight = Check.num(stats.getSumOfWeights(), 0, 99999999);
-		stddev = stats.getStandardDeviation();
+		this.stats = stats;
 	}
 
 	public double predict(final double[] features) {
 		if (rule == null) {
-			return model == null ? pred : model.predict(features) * 0.5 + pred * 0.5;
+			return model == null ? stats.getMean() : model.predict(features) * 0.5 + stats.getMean() * 0.5;
 		}
 		return rule.moveRight(features) ? right.predict(features) : left.predict(features);
+	}
+
+	public Stats predictDistribution(final double[] features) {
+		if (rule == null) {
+			Preconditions.checkState(model == null);
+			return stats;
+		}
+		return rule.moveRight(features) ? right.predictDistribution(features) : left.predictDistribution(features);
 	}
 
 	Pair<boolean[], boolean[]> split(final ISplit split, final TreeNode leftNode, final TreeNode rightNode,
@@ -112,16 +115,20 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
 			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true, true));
+					true,
+					true));
 		}
 		return builder.toString();
 	}
 
 	private void print(final String prefix, final boolean isTail, final StringBuilder builder) {
-		builder.append(prefix + (isTail ? "└── " : "├── ")
-				+ (rule != null ? rule
-						: UiUtils.format(pred) + " +/- " + UiUtils.format(stddev) + " (" + UiUtils.format(weight) + ")")
-				+ "\n");
+		builder.append(
+				prefix + (isTail ? "└── " : "├── ")
+						+ (rule != null ? rule
+								: UiUtils.format(stats.getMean()) + " +/- "
+										+ UiUtils.format(stats.getStandardDeviation()) + " ("
+										+ UiUtils.format(stats.getSumOfWeights()) + ")")
+						+ "\n");
 		if (rule != null) {
 			left.print(prefix + (isTail ? "    " : "│   "), false, builder);
 			right.print(prefix + (isTail ? "    " : "│   "), true, builder);
@@ -131,11 +138,11 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	@Override
 	public boolean equals(final Object obj) {
 		final TreeNode oth = (TreeNode) obj;
-		if (pred != oth.pred) {
+		if (stats.getMean() != oth.stats.getMean()) {
 			return false;
 		}
 		// TODO: deeper equals
-		return weight == oth.weight;
+		return stats.getSumOfWeights() == oth.stats.getSumOfWeights();
 	}
 
 }
