@@ -22,85 +22,92 @@ import com.insightml.utils.ui.UiUtils;
 
 final class ComparisonFinder extends RecursiveTask<ISplit> {
 
-    private static final long serialVersionUID = -7881568314142752784L;
+	private static final long serialVersionUID = -7881568314142752784L;
 
-    private final SplitFinderContext context;
-    private final int feature;
-    private final double labelSum;
-    private final double weightSum;
+	private final SplitFinderContext context;
+	private final int feature;
+	private final double labelSum;
+	private final double weightSum;
 
-    public ComparisonFinder(final SplitFinderContext context, final boolean[] subset,
-            final int samples, final double labelSum, final double weightSum, final int feature) {
-        this.context = context;
-        this.labelSum = labelSum;
-        this.weightSum = weightSum;
-        this.feature = feature;
-    }
+	public ComparisonFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
+			final double labelSum, final double weightSum, final int feature) {
+		this.context = context;
+		this.labelSum = labelSum;
+		this.weightSum = weightSum;
+		this.feature = feature;
+	}
 
-    @Override
-    public ISplit compute() {
-        final Split best = null;
+	@Override
+	public ISplit compute() {
+		final Split best = null;
 
-        double bestImprovement = -999;
-        int bestFeature2 = -1;
+		double bestImprovement = -999;
+		int bestFeature2 = -1;
 
-        f: for (int i = 0; i < context.featureNames.length; ++i) {
-            if (i != feature) {
-                int left = 0;
-                final Stats labelSumL = new Stats();
+		f: for (int i = 0; i < context.featureNames.length; ++i) {
+			if (i != feature) {
+				int left = 0;
+				final Stats labelSumL = new Stats();
 
-                final int length = context.expected.length;
-                for (int j = 0; j < length; ++j) {
-                    if (context.features[j][feature] < context.features[j][i]) {
-                        if (++left >= length - context.minObs) {
-                            continue f;
-                        }
-                        labelSumL.add(context.expected[j], context.weights[j]);
-                    }
-                }
+				final int length = context.expected.length;
+				for (int j = 0; j < length; ++j) {
+					if (context.features[j][feature] < context.features[j][i]) {
+						if (++left >= length - context.minObs) {
+							continue f;
+						}
+						labelSumL.add(context.expected[j], context.weights[j]);
+					}
+				}
 
-                if (left >= context.minObs) {
-                    final double improvement =
-                            AbstractSplit.improvement(labelSumL, labelSum, weightSum);
-                    if (!AbstractSplit.isFirstBetter(bestImprovement, improvement, i, bestFeature2)) {
-                        bestImprovement = improvement;
-                        bestFeature2 = i;
-                    }
-                }
-            }
-        }
-        return best;
-    }
+				if (left >= context.minObs) {
+					final double improvement = AbstractSplit.improvement(labelSumL, labelSum, weightSum);
+					if (!AbstractSplit.isFirstBetter(bestImprovement, improvement, i, bestFeature2)) {
+						bestImprovement = improvement;
+						bestFeature2 = i;
+					}
+				}
+			}
+		}
+		return best;
+	}
 
-    static final class Split extends AbstractSplit {
+	static final class Split extends AbstractSplit {
 
-        private static final long serialVersionUID = 7300516686604742393L;
+		private static final long serialVersionUID = 7300516686604742393L;
 
-        private final String featureName;
-        private final int featureB;
-        private final CharSequence featureNameB;
+		private final String featureName;
+		private final int featureB;
+		private final CharSequence featureNameB;
 
-        public Split(final SplitFinderContext context, final int featureA, final int featureB) {
-            super();
-            featureName = context.featureNames[featureA];
-            this.featureB = featureB;
-            featureNameB = context.featureNames[featureB];
-        }
+		public Split(final SplitFinderContext context, final int featureA, final int featureB) {
+			super();
+			featureName = context.featureNames[featureA];
+			this.featureB = featureB;
+			featureNameB = context.featureNames[featureB];
+		}
 
-        @Override
-        public String getFeatureName() {
-            return featureName;
-        }
+		@Override
+		public String getFeatureName() {
+			return featureName;
+		}
 
-        @Override
-        public boolean moveRight(final double[] features) {
-            return features[feature] >= features[featureB];
-        }
+		@Override
+		public boolean moveRight(final double[] features) {
+			return features[feature] >= features[featureB];
+		}
 
-        @Override
-        public String toString() {
-            return featureName + "<" + featureNameB + " (" + UiUtils.format(improve) + ")";
-        }
-    }
+		@Override
+		public String explain(final double[] features) {
+			if (moveRight(features)) {
+				return featureName + " (" + features[feature] + ") >=" + featureNameB + " (" + features[featureB] + ")";
+			}
+			return featureName + " (" + features[feature] + ") < " + featureNameB + " (" + features[featureB] + ")";
+		}
+
+		@Override
+		public String toString() {
+			return featureName + "<" + featureNameB + " (" + UiUtils.format(improve) + ")";
+		}
+	}
 
 }

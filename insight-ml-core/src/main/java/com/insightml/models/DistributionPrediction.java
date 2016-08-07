@@ -15,12 +15,29 @@
  */
 package com.insightml.models;
 
-import com.insightml.data.samples.ISamples;
-import com.insightml.data.samples.Sample;
+import java.util.List;
 
-@FunctionalInterface
-public interface DistributionModel<I extends Sample> {
+import com.insightml.math.statistics.Stats;
 
-	DistributionPrediction[] predictDistribution(ISamples<? extends I, ?> samples);
+public final class DistributionPrediction {
+	private final Stats prediction;
+	private final Object debug;
 
+	public DistributionPrediction(final Stats prediction, final Object debug) {
+		this.prediction = prediction;
+		this.debug = debug;
+	}
+
+	public Stats getPrediction() {
+		return prediction;
+	}
+
+	public Object getDebug() {
+		return debug;
+	}
+
+	public void add(final DistributionPrediction o) {
+		prediction.add(o.prediction);
+		((List) debug).add(o.debug);
+	}
 }

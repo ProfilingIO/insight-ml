@@ -20,80 +20,80 @@ import com.insightml.utils.types.AbstractClass;
 
 abstract class AbstractSplit extends AbstractClass implements ISplit {
 
-    private static final long serialVersionUID = -6931400300729153655L;
+	private static final long serialVersionUID = -6931400300729153655L;
 
-    private Stats statsL;
-    private Stats statsR;
-    private transient int lastIndexLeft;
-    double improve;
+	private Stats statsL;
+	private Stats statsR;
+	private transient int lastIndexLeft;
+	double improve;
 
-    int feature;
+	int feature;
 
-    AbstractSplit() {
-    }
+	AbstractSplit() {
+	}
 
-    AbstractSplit(final Stats statsL, final Stats statsR, final double improvement,
-            final int lastIndexLeft, final int feature) {
-        this.statsL = statsL;
-        this.statsR = statsR;
-        improve = improvement;
-        this.lastIndexLeft = lastIndexLeft;
-        this.feature = feature;
-    }
+	AbstractSplit(final Stats statsL, final Stats statsR, final double improvement, final int lastIndexLeft,
+			final int feature) {
+		this.statsL = statsL;
+		this.statsR = statsR;
+		improve = improvement;
+		this.lastIndexLeft = lastIndexLeft;
+		this.feature = feature;
+	}
 
-    @Override
-    public int getFeature() {
-        return feature;
-    }
+	@Override
+	public int getFeature() {
+		return feature;
+	}
 
-    @Override
-    public double getWeightSum() {
-        return statsL.getSumOfWeights() + statsR.getSumOfWeights();
-    }
+	@Override
+	public double getWeightSum() {
+		return statsL.getSumOfWeights() + statsR.getSumOfWeights();
+	}
 
-    @Override
-    public int getLastIndexLeft() {
-        return lastIndexLeft;
-    }
+	@Override
+	public int getLastIndexLeft() {
+		return lastIndexLeft;
+	}
 
-    static final double improvement(final Stats sumL, final double labelSum, final double weightSum) {
-        final double labelSumL = sumL.getWeightedSum();
-        final double weightSumL = sumL.getSumOfWeights();
-        final double weightSumR = weightSum - weightSumL;
-        final double dTemp = labelSumL / weightSumL - (labelSum - labelSumL) / weightSumR;
-        return weightSumL * weightSumR * dTemp * dTemp / weightSum;
-    }
+	static final double improvement(final Stats sumL, final double labelSum, final double weightSum) {
+		final double labelSumL = sumL.getWeightedSum();
+		final double weightSumL = sumL.getSumOfWeights();
+		final double weightSumR = weightSum - weightSumL;
+		final double dTemp = labelSumL / weightSumL - (labelSum - labelSumL) / weightSumR;
+		return weightSumL * weightSumR * dTemp * dTemp / weightSum;
+	}
 
-    @Override
-    public final double getImprovement() {
-        return improve;
-    }
+	@Override
+	public final double getImprovement() {
+		return improve;
+	}
 
-    @Override
-    public final boolean isBetterThan(final ISplit split) {
-        final AbstractSplit splitt = (AbstractSplit) split;
-        return isFirstBetter(improve, splitt.improve, feature, splitt.feature);
-    }
+	@Override
+	public final boolean isBetterThan(final ISplit split) {
+		final AbstractSplit splitt = (AbstractSplit) split;
+		return isFirstBetter(improve, splitt.improve, feature, splitt.feature);
+	}
 
-    public static boolean isFirstBetter(final double improvement1, final double improvement2,
-            final int feature1, final int feature2) {
-        if (improvement1 < improvement2) {
-            return false;
-        }
-        if (improvement1 > improvement2) {
-            return true;
-        }
-        return feature1 == feature2 ? true : feature1 < feature2;
-    }
+	public static boolean isFirstBetter(final double improvement1, final double improvement2, final int feature1,
+			final int feature2) {
+		if (improvement1 < improvement2) {
+			return false;
+		}
+		if (improvement1 > improvement2) {
+			return true;
+		}
+		return feature1 == feature2 ? true : feature1 < feature2;
+	}
 
-    @Override
-    public final Stats getStatsL() {
-        return statsL;
-    }
+	@Override
+	public final Stats getStatsL() {
+		return statsL;
+	}
 
-    @Override
-    public final Stats getStatsR() {
-        return statsR;
-    }
+	@Override
+	public final Stats getStatsR() {
+		return statsR;
+	}
 
 }

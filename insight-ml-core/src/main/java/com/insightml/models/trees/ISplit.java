@@ -19,18 +19,20 @@ import com.insightml.math.statistics.Stats;
 
 public interface ISplit extends IBinarySplit {
 
-    String getFeatureName();
+	String getFeatureName();
 
-    double getWeightSum();
+	double getWeightSum();
 
-    Stats getStatsL();
+	Stats getStatsL();
 
-    Stats getStatsR();
+	Stats getStatsR();
 
-    boolean isBetterThan(ISplit bestSplit);
+	boolean isBetterThan(ISplit bestSplit);
 
-    int getFeature();
+	int getFeature();
 
-    int getLastIndexLeft();
+	int getLastIndexLeft();
+
+	String explain(double[] features);
 
 }

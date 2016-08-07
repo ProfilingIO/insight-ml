@@ -15,12 +15,15 @@
  */
 package com.insightml.models.meta;
 
+import java.util.ArrayList;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.DistributionModel;
+import com.insightml.models.DistributionPrediction;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.AbstractJob;
@@ -81,10 +84,13 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 	}
 
 	@Override
-	public Stats[] predictDistribution(final ISamples<? extends I, ?> instnces) {
+	public DistributionPrediction[] predictDistribution(final ISamples<? extends I, ?> instnces) {
 		final IModel<I, Double>[] models = getModels();
-		final Stats[] map = Arrays.fill(instnces.size(), Stats.class);
-		for (final Stats[] preds : ParallelFor
+		final DistributionPrediction[] map = new DistributionPrediction[instnces.size()];
+		for (int i = 0; i < map.length; ++i) {
+			map[i] = new DistributionPrediction(new Stats(), new ArrayList<>());
+		}
+		for (final DistributionPrediction[] preds : ParallelFor
 				.run(i -> ((DistributionModel<I>) models[i]).predictDistribution(instnces), 0, models.length, 1)) {
 			for (int j = 0; j < preds.length; ++j) {
 				map[j].add(preds[j]);

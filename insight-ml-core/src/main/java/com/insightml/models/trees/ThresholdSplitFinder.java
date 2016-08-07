@@ -89,7 +89,6 @@ public final class ThresholdSplitFinder {
 	}
 
 	public static final class Split extends AbstractSplit implements Cloneable {
-
 		private static final long serialVersionUID = -8060176890051949338L;
 
 		private double thresh;
@@ -113,6 +112,14 @@ public final class ThresholdSplitFinder {
 		@Override
 		public boolean moveRight(final double[] features) {
 			return features[feature] > thresh;
+		}
+
+		@Override
+		public String explain(final double[] features) {
+			if (moveRight(features)) {
+				return fname + " (" + UiUtils.format(features[feature]) + ") > " + UiUtils.format(thresh);
+			}
+			return fname + " (" + UiUtils.format(features[feature]) + ") \u2264 " + UiUtils.format(thresh);
 		}
 
 		@Override

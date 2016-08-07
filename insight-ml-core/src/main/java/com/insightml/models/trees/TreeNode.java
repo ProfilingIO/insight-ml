@@ -16,16 +16,20 @@
 package com.insightml.models.trees;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.statistics.Stats;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractDoubleLearner;
 import com.insightml.models.AbstractIndependentFeaturesModel;
+import com.insightml.models.DistributionPrediction;
 import com.insightml.models.LearnerInput;
 import com.insightml.utils.Collections;
 import com.insightml.utils.Collections.SortOrder;
@@ -33,7 +37,6 @@ import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.ui.UiUtils;
 
 public final class TreeNode extends AbstractClass implements Serializable {
-
 	private static final long serialVersionUID = -4612424838699629485L;
 
 	private ISplit rule;
@@ -57,12 +60,18 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return rule.moveRight(features) ? right.predict(features) : left.predict(features);
 	}
 
-	public Stats predictDistribution(final double[] features) {
+	public DistributionPrediction predictDistribution(final double[] features) {
 		if (rule == null) {
 			Preconditions.checkState(model == null);
-			return stats;
+			return new DistributionPrediction(stats, java.util.Collections.emptyList());
 		}
-		return rule.moveRight(features) ? right.predictDistribution(features) : left.predictDistribution(features);
+		final boolean moveRight = rule.moveRight(features);
+		final DistributionPrediction pred = moveRight ? right.predictDistribution(features)
+				: left.predictDistribution(features);
+		final List<String> debug = Lists.newArrayList(
+				rule.explain(features) + " \u2192 " + presentPrediction(moveRight ? right.stats : left.stats));
+		debug.addAll((Collection<? extends String>) pred.getDebug());
+		return new DistributionPrediction(pred.getPrediction(), debug);
 	}
 
 	Pair<boolean[], boolean[]> split(final ISplit split, final TreeNode leftNode, final TreeNode rightNode,
@@ -115,24 +124,22 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
 			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true,
-					true));
+					true, true));
 		}
 		return builder.toString();
 	}
 
 	private void print(final String prefix, final boolean isTail, final StringBuilder builder) {
-		builder.append(
-				prefix + (isTail ? "└── " : "├── ")
-						+ (rule != null ? rule
-								: UiUtils.format(stats.getMean()) + " +/- "
-										+ UiUtils.format(stats.getStandardDeviation()) + " ("
-										+ UiUtils.format(stats.getSumOfWeights()) + ")")
-						+ "\n");
+		builder.append(prefix + (isTail ? "└── " : "├── ") + (rule != null ? rule : presentPrediction(stats)) + "\n");
 		if (rule != null) {
 			left.print(prefix + (isTail ? "    " : "│   "), false, builder);
 			right.print(prefix + (isTail ? "    " : "│   "), true, builder);
 		}
+	}
+
+	private static String presentPrediction(final Stats stats) {
+		return UiUtils.format(stats.getMean()) + " +/- " + UiUtils.format(stats.getStandardDeviation()) + " ("
+				+ UiUtils.format(stats.getSumOfWeights()) + ")";
 	}
 
 	@Override

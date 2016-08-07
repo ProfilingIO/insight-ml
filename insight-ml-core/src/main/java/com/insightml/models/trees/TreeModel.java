@@ -19,10 +19,10 @@ import java.util.Arrays;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
-import com.insightml.math.statistics.Stats;
 import com.insightml.math.types.SumMap;
 import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DistributionModel;
+import com.insightml.models.DistributionPrediction;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class TreeModel extends AbstractIndependentFeaturesModel implements DistributionModel<Sample> {
@@ -43,19 +43,19 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 		return root.predict(features);
 	}
 
-	public Stats predictDistribution(final double[] features) {
+	public DistributionPrediction predictDistribution(final double[] features) {
 		return root.predictDistribution(features);
 	}
 
 	@Override
-	public Stats[] predictDistribution(final ISamples<? extends Sample, ?> instances) {
+	public DistributionPrediction[] predictDistribution(final ISamples<? extends Sample, ?> instances) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);
 		return ParallelFor.run(i -> predictDistribution(i, instances, featuresFilter), 0, instances.size(), 1)
-				.toArray(new Stats[instances.size()]);
+				.toArray(new DistributionPrediction[instances.size()]);
 	}
 
-	private Stats predictDistribution(final int instance, final ISamples<? extends Sample, ?> instances,
-			final int[] featuresFilter) {
+	private DistributionPrediction predictDistribution(final int instance,
+			final ISamples<? extends Sample, ?> instances, final int[] featuresFilter) {
 		return predictDistribution(selectFeatures(instance, instances, featuresFilter));
 	}
 
