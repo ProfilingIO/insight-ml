@@ -21,6 +21,6 @@ import com.insightml.data.samples.Sample;
 @FunctionalInterface
 public interface DistributionModel<I extends Sample> {
 
-	DistributionPrediction[] predictDistribution(ISamples<? extends I, ?> samples);
+	DistributionPrediction[] predictDistribution(ISamples<? extends I, ?> samples, boolean debug);
 
 }

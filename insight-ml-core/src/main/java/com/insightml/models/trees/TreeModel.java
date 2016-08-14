@@ -43,20 +43,21 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 		return root.predict(features);
 	}
 
-	public DistributionPrediction predictDistribution(final double[] features) {
-		return root.predictDistribution(features);
+	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
+		return root.predictDistribution(features, debug);
 	}
 
 	@Override
-	public DistributionPrediction[] predictDistribution(final ISamples<? extends Sample, ?> instances) {
+	public DistributionPrediction[] predictDistribution(final ISamples<? extends Sample, ?> instances,
+			final boolean debug) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);
-		return ParallelFor.run(i -> predictDistribution(i, instances, featuresFilter), 0, instances.size(), 1)
+		return ParallelFor.run(i -> predictDistribution(i, instances, featuresFilter, debug), 0, instances.size(), 1)
 				.toArray(new DistributionPrediction[instances.size()]);
 	}
 
 	private DistributionPrediction predictDistribution(final int instance,
-			final ISamples<? extends Sample, ?> instances, final int[] featuresFilter) {
-		return predictDistribution(selectFeatures(instance, instances, featuresFilter));
+			final ISamples<? extends Sample, ?> instances, final int[] featuresFilter, final boolean debug) {
+		return predictDistribution(selectFeatures(instance, instances, featuresFilter), debug);
 	}
 
 	@Override

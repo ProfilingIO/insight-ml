@@ -60,18 +60,37 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return rule.moveRight(features) ? right.predict(features) : left.predict(features);
 	}
 
-	public DistributionPrediction predictDistribution(final double[] features) {
+	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
+		if (!debug) {
+			return new DistributionPrediction(predictDistributionNoDebug(features), null);
+		}
 		if (rule == null) {
-			Preconditions.checkState(model == null);
-			return new DistributionPrediction(stats, java.util.Collections.emptyList());
+			return new DistributionPrediction(stats, null);
 		}
 		final boolean moveRight = rule.moveRight(features);
-		final DistributionPrediction pred = moveRight ? right.predictDistribution(features)
-				: left.predictDistribution(features);
-		final List<String> debug = Lists.newArrayList(
-				rule.explain(features) + " \u2192 " + presentPrediction(moveRight ? right.stats : left.stats));
-		debug.addAll((Collection<? extends String>) pred.getDebug());
-		return new DistributionPrediction(pred.getPrediction(), debug);
+		final DistributionPrediction pred = moveRight ? right.predictDistribution(features, debug) : left
+				.predictDistribution(features, debug);
+		return new DistributionPrediction(pred.getPrediction(), debug ? makeDebugOutput(features, moveRight, pred)
+				: null);
+	}
+
+	private Stats predictDistributionNoDebug(final double[] features) {
+		if (rule == null) {
+			return stats;
+		}
+		final boolean moveRight = rule.moveRight(features);
+		return moveRight ? right.predictDistributionNoDebug(features) : left.predictDistributionNoDebug(features);
+	}
+
+	private List<String> makeDebugOutput(final double[] features, final boolean moveRight,
+			final DistributionPrediction pred) {
+		final List<String> debugValue = Lists.newArrayList(rule.explain(features) + " \u2192 "
+				+ presentPrediction(moveRight ? right.stats : left.stats));
+		final Object childDebug = pred.getDebug();
+		if (childDebug != null) {
+			debugValue.addAll((Collection<? extends String>) childDebug);
+		}
+		return debugValue;
 	}
 
 	Pair<boolean[], boolean[]> split(final ISplit split, final TreeNode leftNode, final TreeNode rightNode,
@@ -124,7 +143,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
 			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true, true));
+					true,
+					true));
 		}
 		return builder.toString();
 	}
