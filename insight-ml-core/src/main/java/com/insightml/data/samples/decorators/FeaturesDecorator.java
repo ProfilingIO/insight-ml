@@ -15,18 +15,12 @@
  */
 package com.insightml.data.samples.decorators;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Normalization;
-import com.insightml.utils.Compare;
-import com.insightml.utils.StrictComparator;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
@@ -99,22 +93,11 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 					final int size = size();
 					final int[][] ordered = new int[featureNames.length][];
 					ParallelFor.run(f -> {
-						final List<OrderItem> order = new ArrayList<>(size);
-						for (int i = 0; i < size; ++i) {
-							order.add(new OrderItem(i));
-						}
-						Collections.sort(order, new StrictComparator<OrderItem>() {
-							@Override
-							public int comp(final OrderItem o1, final OrderItem o2) {
-								final int comp = Compare.compareDouble(features[o1.index][f], features[o2.index][f]);
-								return comp == 0 ? Compare.compareInt(o1.index, o2.index) : comp;
-							}
-						});
 						ordered[f] = new int[size];
-						int i = -1;
-						for (final OrderItem tuple : order) {
-							ordered[f][++i] = tuple.index;
+						for (int i = 0; i < size; ++i) {
+							ordered[f][i] = i;
 						}
+						quickSort(ordered[f], 0, size - 1, f);
 						return "";
 					}, 0, featureNames.length, 1);
 					orderedByFeatures = ordered;
@@ -124,11 +107,33 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 		return orderedByFeatures;
 	}
 
-	private static final class OrderItem {
-		final int index;
+	private void quickSort(final int[] idx, final int lo, final int hi, final int f) {
+		final int partition = partition(idx, lo, hi, f);
+		if (lo < partition) {
+			quickSort(idx, lo, partition, f);
+		}
+		if (partition + 1 < hi) {
+			quickSort(idx, partition + 1, hi, f);
+		}
+	}
 
-		OrderItem(final int index) {
-			this.index = index;
+	private int partition(final int[] idx, final int lo, final int hi, final int f) {
+		final double pivot = features[idx[lo + (hi - lo) / 2]][f];
+		int i = lo - 1;
+		int j = hi + 1;
+		while (true) {
+			do {
+				++i;
+			} while (features[idx[i]][f] < pivot);
+			do {
+				--j;
+			} while (features[idx[j]][f] > pivot);
+			if (i >= j) {
+				return j;
+			}
+			final int tmp = idx[i];
+			idx[i] = idx[j];
+			idx[j] = tmp;
 		}
 	}
 
