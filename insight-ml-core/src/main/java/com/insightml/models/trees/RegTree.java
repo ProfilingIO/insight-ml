@@ -130,11 +130,26 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 			final ThresholdSplitFinder thresholdSplitFinder = new ThresholdSplitFinder(context, subset, samplesF,
 					labelSumF, weightSumF);
 
+			return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
+		}
+
+		private ISplit findBestSplit(final ThresholdSplitFinder thresholdSplitFinder) {
+			ISplit bestSplit = null;
+			for (int i = 0; i < context.orderedInstances.length; ++i) {
+				final ISplit split = thresholdSplitFinder.compute(i);
+				if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
+					bestSplit = split;
+				}
+			}
+			return bestSplit;
+		}
+
+		private ISplit findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
 			ISplit bestSplit = null;
 			for (final ISplit split : ParallelFor.run(thresholdSplitFinder::compute,
 					0,
 					context.orderedInstances.length,
-					parallelize ? 1 : Integer.MAX_VALUE)) {
+					1)) {
 				if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
 					bestSplit = split;
 				}

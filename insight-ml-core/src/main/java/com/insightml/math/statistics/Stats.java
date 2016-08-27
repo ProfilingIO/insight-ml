@@ -46,9 +46,7 @@ public final class Stats extends AbstractClass implements IStats {
 		add(value, 1.0);
 	}
 
-	public synchronized void add(final double value, final double weight) {
-		Preconditions.checkArgument(!Double.isNaN(value));
-		Preconditions.checkArgument(weight > 0);
+	public void add(final double value, final double weight) {
 		++n;
 		sum += value;
 		sumWeighted += value * weight;

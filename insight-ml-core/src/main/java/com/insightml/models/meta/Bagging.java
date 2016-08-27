@@ -68,7 +68,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 					new LearnerInput(sub.getFirst().sampleFeatures(featureSample, random), null, null, labelIndex));
 			weights[i] = 1;
 			return 1;
-		}, 0, bags, 9999999);
+		}, 0, bags, 3);
 		return new VoteModel<>(models, weights, strategy);
 	}
 
