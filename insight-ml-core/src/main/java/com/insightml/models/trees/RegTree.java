@@ -69,6 +69,21 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 		return new TreeModel(root, train.featureNames());
 	}
 
+	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
+			final boolean[] subset) {
+		int samples = 0;
+		double weightSum = 0;
+		double labelSum = 0;
+		for (int i = 0; i < context.weights.length; ++i) {
+			if (subset == null || subset[i]) {
+				++samples;
+				weightSum += context.weights[i];
+				labelSum += context.expected[i] * context.weights[i];
+			}
+		}
+		return new ThresholdSplitFinder(context, subset, samples, labelSum, weightSum);
+	}
+
 	static final class GrowJob extends RecursiveAction {
 		private static final long serialVersionUID = 1788913869138107684L;
 
@@ -112,24 +127,7 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 		}
 
 		private ISplit findBestSplit() {
-			int samples = 0;
-			double weightSum = 0;
-			double labelSum = 0;
-			for (int i = 0; i < context.weights.length; ++i) {
-				if (subset[i]) {
-					++samples;
-					weightSum += context.weights[i];
-					labelSum += context.expected[i] * context.weights[i];
-				}
-			}
-
-			final int samplesF = samples;
-			final double labelSumF = labelSum;
-			final double weightSumF = weightSum;
-
-			final ThresholdSplitFinder thresholdSplitFinder = new ThresholdSplitFinder(context, subset, samplesF,
-					labelSumF, weightSumF);
-
+			final ThresholdSplitFinder thresholdSplitFinder = createThresholdSplitFinder(context, subset);
 			return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 		}
 

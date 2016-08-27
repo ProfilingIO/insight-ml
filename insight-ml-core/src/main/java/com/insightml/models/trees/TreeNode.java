@@ -68,10 +68,10 @@ public final class TreeNode extends AbstractClass implements Serializable {
 			return new DistributionPrediction(stats, null);
 		}
 		final boolean moveRight = rule.moveRight(features);
-		final DistributionPrediction pred = moveRight ? right.predictDistribution(features, debug) : left
-				.predictDistribution(features, debug);
-		return new DistributionPrediction(pred.getPrediction(), debug ? makeDebugOutput(features, moveRight, pred)
-				: null);
+		final DistributionPrediction pred = moveRight ? right.predictDistribution(features, debug)
+				: left.predictDistribution(features, debug);
+		return new DistributionPrediction(pred.getPrediction(),
+				debug ? makeDebugOutput(features, moveRight, pred) : null);
 	}
 
 	private Stats predictDistributionNoDebug(final double[] features) {
@@ -84,8 +84,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 
 	private List<String> makeDebugOutput(final double[] features, final boolean moveRight,
 			final DistributionPrediction pred) {
-		final List<String> debugValue = Lists.newArrayList(rule.explain(features) + " \u2192 "
-				+ presentPrediction(moveRight ? right.stats : left.stats));
+		final List<String> debugValue = Lists.newArrayList(
+				rule.explain(features) + " \u2192 " + presentPrediction(moveRight ? right.stats : left.stats));
 		final Object childDebug = pred.getDebug();
 		if (childDebug != null) {
 			debugValue.addAll((Collection<? extends String>) childDebug);
@@ -99,7 +99,12 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		left = leftNode;
 		right = rightNode;
 
-		final int[] ordered = orderedIndexes[rule.getFeature()];
+		return calculateSplit(split, orderedIndexes, subset);
+	}
+
+	public static Pair<boolean[], boolean[]> calculateSplit(final ISplit split, final int[][] orderedIndexes,
+			final boolean[] subset) {
+		final int[] ordered = orderedIndexes[split.getFeature()];
 		final int index = split.getLastIndexLeft();
 		final boolean[] leftI = new boolean[subset.length];
 		final boolean[] rightI = new boolean[subset.length];

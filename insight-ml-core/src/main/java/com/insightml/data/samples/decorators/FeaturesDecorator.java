@@ -92,14 +92,13 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 				if (orderedByFeatures == null) {
 					final int size = size();
 					final int[][] ordered = new int[featureNames.length][];
-					ParallelFor.run(f -> {
+					for (int f = 0; f < featureNames.length; ++f) {
 						ordered[f] = new int[size];
 						for (int i = 0; i < size; ++i) {
 							ordered[f][i] = i;
 						}
 						quickSort(ordered[f], 0, size - 1, f);
-						return "";
-					}, 0, featureNames.length, 1);
+					}
 					orderedByFeatures = ordered;
 				}
 			}

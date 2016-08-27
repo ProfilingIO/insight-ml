@@ -20,31 +20,31 @@ import com.insightml.utils.Utils;
 
 public final class SplitFinderContext {
 
-    public final double[] expected;
-    public final double[] weights;
-    final String[] featureNames;
-    final double[][] features;
-    final int[][] orderedInstances;
+	public final double[] expected;
+	public final double[] weights;
+	public final String[] featureNames;
+	final double[][] features;
+	public final int[][] orderedInstances;
 
-    final int maxDepth;
-    final int minObs;
-    final int labelIndex;
+	public final int maxDepth;
+	final int minObs;
+	final int labelIndex;
 
-    public SplitFinderContext(final ISamples<?, Double> instances, final int maxDepth,
-            final int minObs, final int labelIndex) {
-        final Object[] exp = instances.expected(labelIndex);
-        expected = new double[exp.length];
-        for (int i = 0; i < exp.length; ++i) {
-            expected[i] = Utils.toDouble(exp[i]);
-        }
-        weights = instances.weights(labelIndex);
-        featureNames = instances.featureNames();
-        features = instances.features();
-        orderedInstances = instances.orderedIndexes();
+	public SplitFinderContext(final ISamples<?, Double> instances, final int maxDepth, final int minObs,
+			final int labelIndex) {
+		final Object[] exp = instances.expected(labelIndex);
+		expected = new double[exp.length];
+		for (int i = 0; i < exp.length; ++i) {
+			expected[i] = Utils.toDouble(exp[i]);
+		}
+		weights = instances.weights(labelIndex);
+		featureNames = instances.featureNames();
+		features = instances.features();
+		orderedInstances = instances.orderedIndexes();
 
-        this.maxDepth = maxDepth;
-        this.minObs = minObs;
-        this.labelIndex = labelIndex;
-    }
+		this.maxDepth = maxDepth;
+		this.minObs = minObs;
+		this.labelIndex = labelIndex;
+	}
 
 }

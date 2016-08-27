@@ -35,6 +35,14 @@ public final class ThresholdSplitFinder {
 		this.weightSum = weightSum;
 	}
 
+	public double getLabelSum() {
+		return labelSum;
+	}
+
+	public double getWeightSum() {
+		return weightSum;
+	}
+
 	public ISplit compute(final int feature) {
 		double curThr = -9999999;
 		final int[] ordered = context.orderedInstances[feature];
@@ -81,7 +89,7 @@ public final class ThresholdSplitFinder {
 			}
 			statsR.add(context.expected[idx], context.weights[idx]);
 		}
-		if (!false) {
+		if (false) {
 			Check.equals(bestSplitL.getSumOfWeights() + statsR.getSumOfWeights(), weightSum, "weight sum");
 		}
 		return new Split(bestThreshold, bestSplitL, statsR, bestImprovement, bestLastIndexLeft, feature,
