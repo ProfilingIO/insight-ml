@@ -155,7 +155,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	}
 
 	private void print(final String prefix, final boolean isTail, final StringBuilder builder) {
-		builder.append(prefix + (isTail ? "└── " : "├── ") + (rule != null ? rule : presentPrediction(stats)) + "\n");
+		builder.append(prefix + (isTail ? "└── " : "├── ") + (rule != null ? rule + " / " : "")
+				+ presentPrediction(stats) + "\n");
 		if (rule != null) {
 			left.print(prefix + (isTail ? "    " : "│   "), false, builder);
 			right.print(prefix + (isTail ? "    " : "│   "), true, builder);
