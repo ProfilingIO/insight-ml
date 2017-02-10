@@ -15,6 +15,7 @@
  */
 package com.insightml.utils.ui.reports;
 
+import javax.annotation.Nullable;
 import com.insightml.data.features.stats.FeaturesCorrelation;
 import com.insightml.data.features.stats.FeaturesDistribution;
 import com.insightml.data.features.stats.FeaturesImportance;
@@ -61,9 +62,37 @@ public final class FeaturesReport extends AbstractModule
 	}
 
 	private String append(final IUiProvider provider, final ISamples<?, Double> instances) {
-		return provider.getClass().getSimpleName()
+		final String reportClass = provider.getClass().getSimpleName();
+		return reportClass
+                                + getLegendWithLB(true, reportClass)
 				+ "\n------------------------------------------------------------------------------------------------\n"
 				+ provider.getText(instances, labelIndex);
+	}
+
+	private static String getLegendWithLB(final boolean showLegend, final String reportClass) {
+		final String res = getLegend(showLegend, reportClass);
+		return res == null ? "" : "\n" + res + "\n";
+	}
+
+	@Nullable
+	private static String getLegend(final boolean showLegend, final String reportClass) {
+		if (!showLegend) {
+			return null;
+		}
+		switch (reportClass) {
+		case "FeaturesSummary":
+			return "Every row contains one feature, the min/max number of times this feature was seen per sample, how often the feature was null, the median and the mean of the feature over all samples and how many distinct values we have seen.";
+		case "FeaturesImportance":
+			return null;
+		case "SplitGain":
+			return "Every row contains one feature, the value shows how good a feature would be to split your data into 2 groups, one having it and one not having it. The higher the better the split would be.";
+		case "FeaturesCorrelation":
+			return "Every row contains one feature, the correlation (Spearman/Pearson) show how good your feature on its own is to predicts the results. Values close to +/-1 are good.";
+		case "FeaturesDistribution":
+			return "Work in progress ...";
+		default:
+			return null;
+		}
 	}
 
 }
