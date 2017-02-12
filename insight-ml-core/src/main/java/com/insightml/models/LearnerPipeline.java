@@ -115,7 +115,6 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		}
 		valid = null;
 
-		return new Pair<>((IModel<S, O>) learner.run(new LearnerInput(train, valid2, labelIndex, origConfig, pipe)),
-				pipe);
+		return new Pair<>(learner.run(new LearnerInput(train, valid2, labelIndex, origConfig, pipe)), pipe);
 	}
 }
