@@ -23,7 +23,6 @@ import com.insightml.data.samples.Sample;
 import com.insightml.models.Predictions;
 
 public abstract class AbstractIndependentLabelsObjectiveFunction<E, T> extends AbstractObjectiveFunction<E, T> {
-
 	private static final long serialVersionUID = 2875681349138131200L;
 
 	@Override
@@ -45,8 +44,8 @@ public abstract class AbstractIndependentLabelsObjectiveFunction<E, T> extends A
 	}
 
 	@Override
-	public final double instance(final T pred, final E exp, final Sample sample) {
-		throw new IllegalAccessError();
+	public double instance(final T pred, final E exp, final Sample sample) {
+		throw new UnsupportedOperationException();
 	}
 
 }
