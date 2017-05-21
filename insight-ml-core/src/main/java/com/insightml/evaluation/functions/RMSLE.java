@@ -21,7 +21,7 @@ public final class RMSLE extends AbstractObjectiveFunctionFrame<Object, Object> 
 	private static final long serialVersionUID = -6151302549655675505L;
 
 	@Override
-	public double instance(final Object prediction, final Object label, final Sample sample) {
+	public double instance(final Object prediction, final Object label, final Sample sample, final int labelIndex) {
 		final double[] predAndAct = toDouble(prediction, label);
 		final double logPred = predAndAct[0] <= -1 ? 0 : log(predAndAct[0]);
 		final double logAct = log(predAndAct[1]);

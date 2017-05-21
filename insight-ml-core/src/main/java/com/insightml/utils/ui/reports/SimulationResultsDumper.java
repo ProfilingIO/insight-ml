@@ -29,8 +29,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationResult;
 import com.insightml.models.Predictions;
@@ -53,10 +53,10 @@ public final class SimulationResultsDumper {
 	}
 
 	public static void createReports(final String datasetName, final IDatabase db) {
-		final List<SimulationResult> results = db.findAll(SimulationResult.class, "e._data LIKE '" + datasetName
-				+ "%' ORDER BY e.mean DESC");
-		final String[] columns = columns(results, new String[] { "MA-R-Prec", "MAP@5", "MAP@7", "MAP@8", "MAP@14",
-				"MA-New", });
+		final List<SimulationResult> results = db.findAll(SimulationResult.class,
+				"e._data LIKE '" + datasetName + "%' ORDER BY e.mean DESC");
+		final String[] columns = columns(results,
+				new String[] { "MA-R-Prec", "MAP@5", "MAP@7", "MAP@8", "MAP@14", "MA-New", });
 		final String file = "reports/simulations/" + datasetName.replace(' ', '_');
 		new File("reports/simulations/").mkdirs();
 		createCsvReport(results, columns, file);
@@ -78,7 +78,8 @@ public final class SimulationResultsDumper {
 		return columns;
 	}
 
-	private static void createCsvReport(final List<SimulationResult> results, final String[] columns, final String file) {
+	private static void createCsvReport(final List<SimulationResult> results, final String[] columns,
+			final String file) {
 		final CsvWriter writer = new CsvWriter(new File(file + ".csv"), ';', true, columns);
 		for (final SimulationResult row : results) {
 			final Map<CharSequence, Object> ro = Maps.create(16);
@@ -105,13 +106,13 @@ public final class SimulationResultsDumper {
 			for (int j = 1; j < columns.length; ++j) {
 				final Float value = metrics.get(columns[j]);
 				cols[j] = (value != null && Math.abs(value - max.get(columns[j])) < 0.01 ? "\\bf " : "")
-						+ (value == null ? "-" : new SimpleFormatter(j == columns.length - 1 ? 1 : 4, true)
-								.format(value));
+						+ (value == null ? "-"
+								: new SimpleFormatter(j == columns.length - 1 ? 1 : 4, true).format(value));
 			}
 			cells.add(cols);
 		}
-		IoUtils.write(LaTeX.table("Simulation Results for " + datasetName, columns, cells, true, 5.5, 10), new File(
-				file + ".tex"));
+		IoUtils.write(LaTeX.table("Simulation Results for " + datasetName, columns, cells, true, 5.5, 10),
+				new File(file + ".tex"));
 	}
 
 	private static Map<String, Float> getMax(final List<SimulationResult> results, final String[] columns) {
@@ -155,7 +156,7 @@ public final class SimulationResultsDumper {
 					}
 					final P pred = run[label].getPredictions()[i];
 					try {
-						predictions.add(instance, pred, objective.instance(pred, exp, run[label].getSample(i)));
+						predictions.add(instance, pred, objective.instance(pred, exp, run[label].getSample(i), label));
 					} catch (final IllegalAccessError e) {
 						predictions.add(instance, pred, null);
 					}

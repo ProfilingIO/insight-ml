@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Predictions;
 
 public interface ObjectiveFunction<E, P> extends Serializable {
@@ -34,7 +34,7 @@ public interface ObjectiveFunction<E, P> extends Serializable {
 
 	DescriptiveStatistics label(P[] preds, E[] expected, double[] weights, ISamples<?, ?> samples, int labelIndex);
 
-	double instance(P pred, E expected, Sample sample);
+	double instance(P pred, E expected, Sample sample, int labelIndex);
 
 	double normalize(double score);
 

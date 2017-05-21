@@ -19,8 +19,8 @@ import java.io.Serializable;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.Maths;
 import com.insightml.math.distributions.IDiscreteDistribution;
 import com.insightml.utils.Check;
@@ -36,7 +36,7 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 	}
 
 	@Override
-	public double instance(final Object prediction, final Object label, final Sample sample) {
+	public double instance(final Object prediction, final Object label, final Sample sample, final int labelIndex) {
 		if (label instanceof String) {
 			final String pred = ((IDiscreteDistribution<String>) prediction).getMax().getFirst();
 			return label.equals(pred) ? 1.0 : 0.0;
@@ -207,11 +207,8 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		@Override
 		public DescriptiveStatistics label(final Serializable[] preds, final Object[] expected, final double[] weights,
 				final ISamples<?, ?> samples, final int labelIndex) {
-			return new DescriptiveStatistics(new double[] { Maths.fScore(new Precision(thresholdTrue).label(preds,
-					expected,
-					weights,
-					samples,
-					labelIndex).getMean(),
+			return new DescriptiveStatistics(new double[] { Maths.fScore(
+					new Precision(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
 					new Recall(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
 					beta), });
 		}

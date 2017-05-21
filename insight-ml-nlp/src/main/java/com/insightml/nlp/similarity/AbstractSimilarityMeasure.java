@@ -107,7 +107,7 @@ public abstract class AbstractSimilarityMeasure<K>
 
 	@Override
 	public final double instance(final Iterable<? extends ISentence> prediction, final ISentence[] expected,
-			final Sample sample) {
+			final Sample sample, final int labelIndex) {
 		return similarity(prediction, Arrays.asList(expected));
 	}
 

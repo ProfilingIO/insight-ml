@@ -23,7 +23,8 @@ public class MSE extends AbstractObjectiveFunctionFrame<Object, Object> {
 	private static final long serialVersionUID = -4611891533888902754L;
 
 	@Override
-	public final double instance(final Object prediction, final Object label, final Sample sample) {
+	public final double instance(final Object prediction, final Object label, final Sample sample,
+			final int labelIndex) {
 		final double[] predAndAct = toDouble(prediction, label);
 		return Maths.pow(predAndAct[1] - predAndAct[0], 2);
 	}

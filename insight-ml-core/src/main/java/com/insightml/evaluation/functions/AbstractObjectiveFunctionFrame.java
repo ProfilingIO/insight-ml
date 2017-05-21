@@ -40,7 +40,7 @@ public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjec
 						continue;
 					}
 					final double weight = weights[i];
-					sum += instance(preds.getPredictions()[i], exp[i], preds.getSample(i)) * weight;
+					sum += instance(preds.getPredictions()[i], exp[i], preds.getSample(i), labelIndex) * weight;
 					weightSum += weight;
 				}
 			}
@@ -55,7 +55,7 @@ public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjec
 		double weightSum = 0;
 		for (int i = 0; i < preds.length; ++i) {
 			if (expectd[i] != null) {
-				sum += instance(preds[i], expectd[i], samples == null ? null : samples.get(i)) * weights[i];
+				sum += instance(preds[i], expectd[i], samples == null ? null : samples.get(i), labelIndex) * weights[i];
 				weightSum += weights[i];
 			}
 		}

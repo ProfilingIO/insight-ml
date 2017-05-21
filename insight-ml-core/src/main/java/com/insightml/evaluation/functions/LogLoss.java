@@ -28,7 +28,7 @@ public final class LogLoss extends AbstractObjectiveFunctionFrame<Object, Object
 	}
 
 	@Override
-	public double instance(final Object prediction, final Object label, final Sample sample) {
+	public double instance(final Object prediction, final Object label, final Sample sample, final int labelIndex) {
 		final boolean act = label instanceof Boolean ? (Boolean) label : ((Number) label).doubleValue() == 1;
 		final double capped = Math.min(0.99999999, Math.max(0.00000001, (Double) prediction));
 		final double score = act ? capped : 1 - capped;

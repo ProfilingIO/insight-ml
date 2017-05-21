@@ -42,9 +42,10 @@ public final class MeanAbsoluteError extends AbstractObjectiveFunctionFrame<Numb
 			for (final Predictions<? extends Number, ? extends Number> preds : predz) {
 				final Number[] pred = preds.getPredictions();
 				final Number[] exp = preds.getExpected();
+				final int labelIndex = preds.getLabelIndex();
 				for (int i = 0; i < pred.length; ++i) {
 					if (exp[i] != null) {
-						stats.addValue(instance(pred[i], exp[i], preds.getSample(i)));
+						stats.addValue(instance(pred[i], exp[i], preds.getSample(i), labelIndex));
 					}
 				}
 			}
@@ -53,7 +54,7 @@ public final class MeanAbsoluteError extends AbstractObjectiveFunctionFrame<Numb
 	}
 
 	@Override
-	public double instance(final Number prediction, final Number label, final Sample sample) {
+	public double instance(final Number prediction, final Number label, final Sample sample, final int labelIndex) {
 		final double pred = Math.min(max, Math.max(min, prediction.doubleValue()));
 		return Math.abs(label.doubleValue() - pred);
 	}

@@ -44,7 +44,7 @@ public abstract class AbstractIndependentLabelsObjectiveFunction<E, T> extends A
 	}
 
 	@Override
-	public double instance(final T pred, final E exp, final Sample sample) {
+	public double instance(final T pred, final E exp, final Sample sample, final int labelIndex) {
 		throw new UnsupportedOperationException();
 	}
 
