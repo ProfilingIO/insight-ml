@@ -160,7 +160,7 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 					}
 				}
 			}
-			return new DescriptiveStatistics(new double[] { correct * 1.0 / count });
+			return new DescriptiveStatistics(new double[] { correct == 0 ? 0 : correct * 1.0 / count });
 		}
 	}
 
@@ -209,8 +209,7 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 				final ISamples<?, ?> samples, final int labelIndex) {
 			return new DescriptiveStatistics(new double[] { Maths.fScore(
 					new Precision(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
-					new Recall(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
-					beta), });
+					new Recall(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(), beta), });
 		}
 	}
 }
