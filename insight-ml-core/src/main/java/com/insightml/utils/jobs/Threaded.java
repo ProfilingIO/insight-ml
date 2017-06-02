@@ -31,21 +31,25 @@ public abstract class Threaded<I, O> extends AbstractClass {
 	}
 
 	public final List<Pair<I, O>> run(final Iterable<? extends I> queue, final int directThreshold) {
+		return run(queue, directThreshold, Integer.MAX_VALUE);
+	}
+
+	public final List<Pair<I, O>> run(final Iterable<? extends I> queue, final int directThreshold, final int limit) {
 		final List<Callable<Pair<I, O>>> tasks = new LinkedList<>();
 		int i = -1;
 		for (final I it : queue) {
 			final int j = ++i;
-			tasks.add(new Callable<Pair<I, O>>() {
-				@Override
-				public Pair<I, O> call() {
-					try {
-						return new Pair<>(it, exec(j, it));
-					} catch (final Exception e) {
-						e.printStackTrace();
-						throw new IllegalStateException(e);
-					}
+			tasks.add(() -> {
+				try {
+					return new Pair<>(it, exec(j, it));
+				} catch (final Exception e) {
+					e.printStackTrace();
+					throw new IllegalStateException(e);
 				}
 			});
+			if (i + 1 >= limit) {
+				break;
+			}
 		}
 		return new LinkedList<>(JobPool.invokeAll(tasks, directThreshold));
 	}
