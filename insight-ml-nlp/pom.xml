@@ -3,19 +3,19 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>insight-ml-nlp</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.3</version>
 
 	<parent>
 		<groupId>com.insightml</groupId>
 		<artifactId>insight-ml-parent</artifactId>
-		<version>1.1-SNAPSHOT</version>
+		<version>1.1</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.insightml</groupId>
 			<artifactId>insight-ml-core</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.10</version>
 		</dependency>
 	</dependencies>
 </project>
