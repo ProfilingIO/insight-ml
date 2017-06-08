@@ -20,7 +20,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 
-import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.utils.types.AbstractClass;
 
@@ -55,6 +55,6 @@ public class BasicSimulationResult extends AbstractClass implements SimulationRe
 
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(this).add("model", model).add("metrics", metrics).toString();
+		return Objects.toStringHelper(this).add("model", model).add("metrics", metrics).toString();
 	}
 }
