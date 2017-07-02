@@ -24,13 +24,13 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.ISamples;
 
-final class Gini extends AbstractIndependentLabelsObjectiveFunction<Object, Object> {
+public final class Gini extends AbstractIndependentLabelsObjectiveFunction<Object, Object> {
 
 	private static final long serialVersionUID = -3739867099887892986L;
 
 	private final boolean normalize;
 
-	Gini(final boolean normalize) {
+	public Gini(final boolean normalize) {
 		this.normalize = normalize;
 	}
 
@@ -52,9 +52,9 @@ final class Gini extends AbstractIndependentLabelsObjectiveFunction<Object, Obje
 				if (isBinary) {
 					return ((Boolean) o1.getFirst()).booleanValue() ? -1 : 1;
 				}
-				return (Double) o1.getFirst() >= (Double) o2.getFirst() ? -1 : 1;
+				return ((Number) o1.getFirst()).doubleValue() >= ((Number) o2.getFirst()).doubleValue() ? -1 : 1;
 			}
-			return (Double) o1.getSecond() >= (Double) o2.getSecond() ? -1 : 1;
+			return ((Number) o1.getSecond()).doubleValue() >= ((Number) o2.getSecond()).doubleValue() ? -1 : 1;
 		});
 
 		double sum = 0;
