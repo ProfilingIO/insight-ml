@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 
-public final class LineReader implements Iterator<String>, Iterable<String> {
+public final class LineReader implements Iterator<String>, Iterable<String>, AutoCloseable {
 	private final BufferedReader br;
 
 	private boolean calledNext;
@@ -81,7 +81,8 @@ public final class LineReader implements Iterator<String>, Iterable<String> {
 		return this;
 	}
 
-	private void close() {
+	@Override
+	public void close() {
 		try {
 			br.close();
 		} catch (final IOException e) {
