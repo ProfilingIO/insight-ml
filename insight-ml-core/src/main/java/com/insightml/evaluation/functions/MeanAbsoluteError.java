@@ -29,6 +29,10 @@ public final class MeanAbsoluteError extends AbstractObjectiveFunctionFrame<Numb
 	private final double min;
 	private final double max;
 
+	public MeanAbsoluteError() {
+		this(-99999999, 9999999);
+	}
+
 	public MeanAbsoluteError(final double min, final double max) {
 		this.min = min;
 		this.max = max;

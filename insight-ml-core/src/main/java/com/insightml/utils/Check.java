@@ -18,6 +18,8 @@ package com.insightml.utils;
 import java.util.Calendar;
 import java.util.Collection;
 
+import javax.annotation.Nonnull;
+
 public final class Check {
 	private Check() {
 	}
@@ -30,6 +32,7 @@ public final class Check {
 		Check.state(object == null, output == null ? object : output);
 	}
 
+	@Nonnull
 	public static <T> T notNull(final T val) {
 		if (val == null) {
 			throw new NullPointerException();
@@ -37,6 +40,7 @@ public final class Check {
 		return val;
 	}
 
+	@Nonnull
 	public static <T> T notNull(final T val, final Object output) {
 		if (val == null) {
 			throw new NullPointerException(output.toString());
@@ -44,6 +48,7 @@ public final class Check {
 		return val;
 	}
 
+	@Nonnull
 	public static String notEmpty(final String val, final Object output) {
 		state(!val.isEmpty(), output);
 		return val;

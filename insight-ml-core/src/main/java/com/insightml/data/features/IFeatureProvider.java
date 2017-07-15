@@ -15,6 +15,8 @@
  */
 package com.insightml.data.features;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.data.samples.Sample;
 import com.insightml.models.Features;
 import com.insightml.utils.ui.reports.IReporter;
@@ -27,6 +29,6 @@ public interface IFeatureProvider<I extends Sample> extends IReporter {
 
 	double[] features(I sample, CharSequence[] features, boolean isTraining);
 
-	Features features(I sample, boolean isTraining);
+	Features features(@Nonnull I sample, boolean isTraining);
 
 }

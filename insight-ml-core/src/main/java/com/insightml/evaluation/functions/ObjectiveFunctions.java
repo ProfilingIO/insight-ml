@@ -15,6 +15,8 @@
  */
 package com.insightml.evaluation.functions;
 
+import javax.annotation.Nonnull;
+
 public class ObjectiveFunctions {
 
 	public static final ObjectiveFunction[] METRICS_NOMIAL = new ObjectiveFunction[] { new Accuracy(0.5), new RMSE(),
@@ -23,8 +25,9 @@ public class ObjectiveFunctions {
 	public static final ObjectiveFunction[] METRICS_BINARY = new ObjectiveFunction[] { new Accuracy(0.5), new RMSE(),
 			new Gini(false), };
 
+	@Nonnull
 	public static final ObjectiveFunction[] METRICS_NUMERIC = new ObjectiveFunction[] { new RMSE(), new RMSLE(),
-			new MeanAbsoluteError(-99999999, 9999999), new MedianError(), };
+			new MeanAbsoluteError(), new MedianError(), };
 
 	private ObjectiveFunctions() {
 	}

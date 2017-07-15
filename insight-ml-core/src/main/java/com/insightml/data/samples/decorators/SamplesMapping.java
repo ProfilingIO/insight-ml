@@ -17,8 +17,8 @@ package com.insightml.data.samples.decorators;
 
 import java.lang.reflect.Array;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 
 public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator<S, E> {
 
@@ -46,10 +46,10 @@ public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator
 			}
 
 			for (int i = 0; i < map.length; ++i) {
-				if (features != null) {
+				if (features != null && refFeats != null) {
 					features[i] = refFeats[map[i]];
 				}
-				if (exp != null) {
+				if (exp != null && refExpected != null) {
 					exp[labelIndex][i] = refExpected[map[i]];
 				}
 				weights[labelIndex][i] = weightsRef[map[i]];
