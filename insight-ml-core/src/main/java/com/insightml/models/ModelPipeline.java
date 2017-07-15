@@ -35,14 +35,14 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 	private static final long serialVersionUID = 5471706800666990790L;
 
 	private IModel<I, P> model;
-	private PreprocessingPipeline<I, ?> pipe;
+	private PreprocessingPipeline<I> pipe;
 	private Function<P, P> postProcessor;
 	private int labelIndex;
 
 	ModelPipeline() {
 	}
 
-	public ModelPipeline(final IModel<? super I, P> model, final PreprocessingPipeline<I, ?> pipe,
+	public ModelPipeline(final IModel<? super I, P> model, final PreprocessingPipeline<I> pipe,
 			final Function<P, P> postProcessor, final int labelIndex) {
 		this.model = (IModel<I, P>) Preconditions.checkNotNull(model);
 		this.pipe = pipe;

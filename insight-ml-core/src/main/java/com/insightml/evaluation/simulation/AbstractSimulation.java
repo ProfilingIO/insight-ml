@@ -50,7 +50,7 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 	}
 
 	@Override
-	public final <E, P> ISimulationResults<E, P> simulate(final IDataset<I, E, P> dataset, final IArguments arguments,
+	public final <E, P> ISimulationResults<E, P> simulate(final IDataset<I, P> dataset, final IArguments arguments,
 			final double[][] blendingParams, final boolean delayInit, final boolean report,
 			final IModelTask<I, E, P> task) {
 		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
@@ -62,9 +62,8 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 	}
 
 	@Override
-	public <E, P> ISimulationResults<E, P>[] run(final ILearnerPipeline<I, P>[] learner,
-			final IDataset<I, E, P> dataset, final IArguments arguments, final boolean report,
-			final IModelTask<I, E, P> task) {
+	public <E, P> ISimulationResults<E, P>[] run(final ILearnerPipeline<I, P>[] learner, final IDataset<I, P> dataset,
+			final IArguments arguments, final boolean report, final IModelTask<I, E, P> task) {
 		return run(Preconditions.checkNotNull(dataset.loadTraining(null)),
 				task.getSimulationSetup(learner, dataset, arguments, report, null));
 	}

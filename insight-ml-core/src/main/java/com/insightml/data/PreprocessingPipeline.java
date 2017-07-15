@@ -29,33 +29,41 @@ import com.insightml.math.Normalization;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 
-public final class PreprocessingPipeline<S extends Sample, E> extends AbstractConfigurable
-		implements Serializable, IPreprocessingPipeline<S, E> {
+public final class PreprocessingPipeline<S extends Sample> extends AbstractConfigurable
+		implements Serializable, IPreprocessingPipeline<S> {
 
 	private static final long serialVersionUID = 3411531030881000331L;
 
 	private IFeatureProvider<S> provider;
-	private IFeatureFilter filter;
+	private String[] featureNames;
 	private Normalization normalization;
 
 	PreprocessingPipeline() {
 	}
 
-	public PreprocessingPipeline(final IFeatureProvider<S> provider, final IFeatureFilter filter,
+	private PreprocessingPipeline(final IFeatureProvider<S> provider, final String[] featureNames,
 			final Normalization normalization) {
 		this.provider = Preconditions.checkNotNull(provider);
-		this.filter = Preconditions.checkNotNull(filter);
+		this.featureNames = Preconditions.checkNotNull(featureNames);
 		this.normalization = normalization;
 	}
 
-	public static <S extends Sample, E> PreprocessingPipeline<S, E> create(final FeaturesConfig<S, ?> config) {
-		return new PreprocessingPipeline<>(config.newFeatureProvider(), config.newFeatureFilter(),
+	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
+			final IFeatureProvider<S> provider, final IFeatureFilter filter, final Normalization normalization) {
+		return new PreprocessingPipeline<>(provider,
+				filter.allowedFeatures(provider.featureNames(new Samples<>(trainingSamples))), normalization);
+	}
+
+	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
+			final FeaturesConfig<S, ?> config) {
+		return create(trainingSamples, config.newFeatureProvider(), config.newFeatureFilter(),
 				config.getNormalization());
 	}
 
 	@Override
-	public ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
-		return new FeaturesDecorator<>(new Samples<S, E>(input), provider, filter, normalization, isTraining);
+	public <E> ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
+		final Samples<S, E> samples = new Samples<>(input);
+		return new FeaturesDecorator<>(samples, provider, featureNames, normalization, isTraining);
 	}
 
 	public IFeatureProvider<S> getProvider() {
@@ -69,15 +77,14 @@ public final class PreprocessingPipeline<S extends Sample, E> extends AbstractCo
 
 	@Override
 	public boolean equals(final Object obj) {
-		final PreprocessingPipeline<?, ?> oth = (PreprocessingPipeline<?, ?>) obj;
+		final PreprocessingPipeline<?> oth = (PreprocessingPipeline<?>) obj;
 		Check.state(provider.equals(oth.provider), provider);
-		Check.state(filter.equals(oth.filter));
 		return Objects.equals(normalization, oth.normalization);
 	}
 
 	@Override
 	public Object[] getComponents() {
-		return new Object[] { provider, filter, normalization };
+		return new Object[] { provider, normalization };
 	}
 
 }

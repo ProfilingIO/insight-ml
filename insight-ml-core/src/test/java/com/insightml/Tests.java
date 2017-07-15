@@ -41,7 +41,7 @@ public final class Tests {
 	private Tests() {
 	}
 
-	public static <I extends Sample, E, P> SimulationSetupImpl<I, E, P> simulationSetup(final IDataset<I, E, P> dataset,
+	public static <I extends Sample, E, P> SimulationSetupImpl<I, E, P> simulationSetup(final IDataset<I, P> dataset,
 			final LearnerPipeline<? super I, E, P> learner, final ObjectiveFunction<? super E, ? super P>... metrics) {
 		return new SimulationSetupImpl<>(dataset.getName(), dataset.getFeaturesConfig(null), null,
 				new LearnerPipeline[] { learner }, new ThreadedClient(), false, metrics);
@@ -51,7 +51,7 @@ public final class Tests {
 		return new CrossValidation<>(5, 1, null);
 	}
 
-	public static <I extends Sample, E, P> SimulationResults<E, P> cv(final IDataset<I, E, P> instances,
+	public static <I extends Sample, E, P> SimulationResults<E, P> cv(final IDataset<I, P> instances,
 			final LearnerPipeline learner, final ObjectiveFunction<E, P>[] objective) {
 		final SimulationResultConsumer resultConsumer = (simulation, learn, result, setup) -> LOG
 				.info(BasicSimulationResult.of(learn, result).toString());

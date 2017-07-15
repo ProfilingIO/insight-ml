@@ -17,7 +17,6 @@ package com.insightml.data.samples.decorators;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
-import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Normalization;
@@ -35,17 +34,17 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 		this.featureNames = featureNames;
 	}
 
-	public FeaturesDecorator(final ISamples<S, E> orig, final IFeatureProvider prov, final IFeatureFilter featureFilter,
+	public FeaturesDecorator(final ISamples<S, E> orig, final IFeatureProvider prov, final String[] featureNames,
 			final Normalization normalization, final boolean isTraining) {
 		super(orig);
 
-		featureNames = featureFilter.allowedFeatures(prov.featureNames(orig));
+		this.featureNames = featureNames;
 
 		features = new double[orig.size()][];
 		ParallelFor.run(i -> {
 			final S sample = orig.get(i);
 			features[i] = sample == null ? null
-					: Preconditions.checkNotNull(prov.features(sample, featureNames(), isTraining));
+					: Preconditions.checkNotNull(prov.features(sample, featureNames, isTraining));
 			return 1;
 		}, 0, features.length, 100);
 	}

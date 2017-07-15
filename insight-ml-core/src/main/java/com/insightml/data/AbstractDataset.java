@@ -23,7 +23,7 @@ import org.apache.commons.math3.util.Pair;
 import com.insightml.data.samples.Sample;
 import com.insightml.utils.types.AbstractModule;
 
-public abstract class AbstractDataset<I extends Sample, E, P> extends AbstractModule implements IDataset<I, E, P> {
+public abstract class AbstractDataset<I extends Sample, P> extends AbstractModule implements IDataset<I, P> {
 
 	public AbstractDataset() {
 	}
@@ -48,8 +48,8 @@ public abstract class AbstractDataset<I extends Sample, E, P> extends AbstractMo
 	}
 
 	@Override
-	public final PreprocessingPipeline<I, E> pipeline() {
-		return PreprocessingPipeline.create(getFeaturesConfig(null));
+	public final PreprocessingPipeline<I> pipeline(final Iterable<I> train) {
+		return PreprocessingPipeline.create(train, getFeaturesConfig(null));
 	}
 
 	@Override

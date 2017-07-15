@@ -21,7 +21,7 @@ import com.insightml.data.samples.SimpleSample;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 
-public final class SimpleDataset<I extends Sample, E, O> extends AbstractDataset<I, E, O> {
+public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I, O> {
 
 	private final Iterable<I> training;
 	private final FeaturesConfig<I, O> config;
@@ -32,7 +32,7 @@ public final class SimpleDataset<I extends Sample, E, O> extends AbstractDataset
 		this.config = config;
 	}
 
-	public static <S extends SimpleSample, E, O> SimpleDataset<S, E, O> create(final Iterable<S> instances) {
+	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final Iterable<S> instances) {
 		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances,
 				SimpleSample::loadFeatures, -9999999.0, false, new IgnoreFeatureFilter()));
 	}

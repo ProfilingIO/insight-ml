@@ -22,11 +22,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.insightml.data.IDataset;
-import com.insightml.data.samples.SimpleSample;
 import com.insightml.data.samples.Sample;
+import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.Accuracy;
-import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.functions.LogLoss;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.math.distributions.IDiscreteDistribution;
 import com.insightml.models.ILearner;
@@ -48,8 +48,7 @@ public abstract class AbstractModelTest {
 		test(getNominal(), TestDatasets.createNominal(), new Accuracy(0.5));
 	}
 
-	private static void test(final Pair<? extends ILearner, Double> tuple,
-			final IDataset<SimpleSample, Double, ?> instances,
+	private static void test(final Pair<? extends ILearner, Double> tuple, final IDataset<SimpleSample, ?> instances,
 			final ObjectiveFunction<? super SimpleSample, ? super Serializable> objective) {
 		if (tuple != null) {
 			final double expected = tuple.getSecond();

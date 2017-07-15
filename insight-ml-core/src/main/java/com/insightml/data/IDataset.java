@@ -19,7 +19,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.ui.reports.IReporter;
 
-public interface IDataset<S extends Sample, E, O> extends IReporter {
+public interface IDataset<S extends Sample, O> extends IReporter {
 
 	String getName();
 
@@ -33,7 +33,7 @@ public interface IDataset<S extends Sample, E, O> extends IReporter {
 
 	Iterable<S> loadTest(Integer labelIndex);
 
-	IPreprocessingPipeline<S, E> pipeline();
+	IPreprocessingPipeline<S> pipeline(Iterable<S> train);
 
 	FeaturesConfig<S, O> getFeaturesConfig(IArguments arguments);
 

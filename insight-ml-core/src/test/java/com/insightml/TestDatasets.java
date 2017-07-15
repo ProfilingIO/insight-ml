@@ -33,8 +33,8 @@ import com.insightml.utils.types.collections.PairList;
 
 public final class TestDatasets {
 
-	public static PairList<IDataset<?, ?, ?>, ObjectiveFunction[]> createInstances() {
-		final PairList<IDataset<?, ?, ?>, ObjectiveFunction[]> instances = new PairList<>(true);
+	public static PairList<IDataset<?, ?>, ObjectiveFunction[]> createInstances() {
+		final PairList<IDataset<?, ?>, ObjectiveFunction[]> instances = new PairList<>(true);
 		instances.add(createNumeric(), ObjectiveFunctions.METRICS_NUMERIC);
 		instances.add(createNominal(), ObjectiveFunctions.METRICS_NOMIAL);
 		instances.add(createBoolean(), ObjectiveFunctions.METRICS_BINARY);
@@ -43,7 +43,7 @@ public final class TestDatasets {
 		return instances;
 	}
 
-	public static SimpleDataset<SimpleSample, Double, Double> createNumeric() {
+	public static SimpleDataset<SimpleSample, Double> createNumeric() {
 		try {
 			return createNumeric(
 					IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/winequality-white.csv.gz")), ';',
@@ -53,7 +53,7 @@ public final class TestDatasets {
 		}
 	}
 
-	public static SimpleDataset<SimpleSample, Double, Double> numericCommunities() {
+	public static SimpleDataset<SimpleSample, Double> numericCommunities() {
 		try {
 			return createNumeric(
 					IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/communities.data.gz")), ';', 102,
@@ -63,14 +63,14 @@ public final class TestDatasets {
 		}
 	}
 
-	public static SimpleDataset<SimpleSample, Double, Double> createNumeric(final Reader reader, final char split,
+	public static SimpleDataset<SimpleSample, Double> createNumeric(final Reader reader, final char split,
 			final int numColumns, final int labelIndex) {
 		return SimpleDataset
 				.create(new AnonymousSamplesReader<>(null, labelIndex, split, numColumns, false, SimpleSample.class)
 						.run(reader));
 	}
 
-	public static SimpleDataset<SimpleSample, Double, ?> createNumeric(final int numSamples, final int numFeatures) {
+	public static SimpleDataset<SimpleSample, ?> createNumeric(final int numSamples, final int numFeatures) {
 		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		final String[] names = new String[numFeatures];
@@ -88,7 +88,7 @@ public final class TestDatasets {
 		return SimpleDataset.create(list);
 	}
 
-	public static SimpleDataset<SimpleSample, Double, Double> createNominal() {
+	public static SimpleDataset<SimpleSample, Double> createNominal() {
 		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		for (int i = 0; i < 400; ++i) {
@@ -100,7 +100,7 @@ public final class TestDatasets {
 		return SimpleDataset.create(list);
 	}
 
-	public static SimpleDataset<SimpleSample, Double, Double> createBoolean() {
+	public static SimpleDataset<SimpleSample, Double> createBoolean() {
 		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		for (int i = 0; i < 2000; ++i) {

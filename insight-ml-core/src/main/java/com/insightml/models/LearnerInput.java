@@ -46,7 +46,7 @@ public final class LearnerInput<S extends Sample, E> {
 	}
 
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
-			final FeaturesConfig<S, ?> config, final PreprocessingPipeline<S, E> pipe) {
+			final FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe) {
 		this.train = Suppliers.memoize(() -> pipe == null ? new Samples<>(train) : pipe.run(train, true));
 		this.valid = valid;
 		this.config = config;
@@ -56,7 +56,7 @@ public final class LearnerInput<S extends Sample, E> {
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
 			final FeaturesConfig<S, O> config) {
 		return new LearnerInput<>(Suppliers.memoize(() -> {
-			final PreprocessingPipeline<S, E> pipe = PreprocessingPipeline.create(config);
+			final PreprocessingPipeline<S> pipe = PreprocessingPipeline.create(data, config);
 			return pipe == null ? new Samples<>(data) : pipe.run(data, true);
 		}), null, config, 0);
 	}

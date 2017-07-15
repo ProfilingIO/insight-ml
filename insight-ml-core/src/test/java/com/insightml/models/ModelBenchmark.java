@@ -31,7 +31,7 @@ public final class ModelBenchmark<I extends SimpleSample, E extends Serializable
 	private final ObjectiveFunction objective;
 	private final PairList<ILearner, Double> learners = new PairList<>(true);
 
-	public ModelBenchmark(final IDataset<I, ?, ?> instances, final ObjectiveFunction<? super I, ? super E> objective) {
+	public ModelBenchmark(final IDataset<I, ?> instances, final ObjectiveFunction<? super I, ? super E> objective) {
 		this.instances = instances;
 		this.objective = objective;
 	}

@@ -26,14 +26,12 @@ import com.insightml.utils.types.IModule;
 
 public interface ISimulation<I extends Sample> extends IModule, Serializable {
 
-    <E, P> ISimulationResults<E, P>[] run(final Iterable<I> instances,
-            SimulationSetup<I, E, P> setup);
+	<E, P> ISimulationResults<E, P>[] run(final Iterable<I> instances, SimulationSetup<I, E, P> setup);
 
-    <E, P> ISimulationResults<E, P> simulate(IDataset<I, E, P> dataset, IArguments arguments,
-            double[][] blendingParams, boolean delayInit, boolean report, IModelTask<I, E, P> task);
+	<E, P> ISimulationResults<E, P> simulate(IDataset<I, P> dataset, IArguments arguments, double[][] blendingParams,
+			boolean delayInit, boolean report, IModelTask<I, E, P> task);
 
-    <E, P> ISimulationResults<E, P>[] run(ILearnerPipeline<I, P>[] learner,
-            IDataset<I, E, P> dataset, IArguments arguments, boolean report,
-            IModelTask<I, E, P> task);
+	<E, P> ISimulationResults<E, P>[] run(ILearnerPipeline<I, P>[] learner, IDataset<I, P> dataset,
+			IArguments arguments, boolean report, IModelTask<I, E, P> task);
 
 }
