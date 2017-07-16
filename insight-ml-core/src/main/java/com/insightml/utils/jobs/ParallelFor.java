@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.function.IntFunction;
 
 import com.insightml.utils.Check;
@@ -35,6 +36,16 @@ public final class ParallelFor {
 			tasks.add(new Execution<>(i, function));
 		}
 		return JobPool.invokeAll(tasks, directThreshold);
+	}
+
+	public static <R> Queue<R> run(final IntFunction<R> function, final int start, final int end,
+			final int directThreshold, final ExecutorService executor) {
+		final List<Callable<R>> tasks = new LinkedList<>();
+		Check.num(end, start + 1, 99999999);
+		for (int i = start; i < end; ++i) {
+			tasks.add(new Execution<>(i, function));
+		}
+		return JobPool.execute(tasks, directThreshold, executor);
 	}
 
 	private static final class Execution<R> implements Callable<R> {

@@ -25,7 +25,7 @@ import com.insightml.utils.IArguments;
 public final class RandomForest extends Bagging<Sample> {
 
 	public RandomForest(final IArguments arguments) {
-		super(arguments, GBRT.getLearner(arguments));
+		super(arguments, GBRT.getLearner(arguments, false));
 	}
 
 	public RandomForest(final int trees, final int depth, final int minObs, final double isample, final double fsample,

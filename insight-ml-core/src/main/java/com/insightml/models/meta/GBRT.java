@@ -23,23 +23,27 @@ import com.insightml.utils.IArguments;
 public final class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments) {
-		super(arguments, new MSE(), getLearner(arguments));
+		super(arguments, new MSE(), getLearner(arguments, true));
 	}
 
 	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
 			final int minObs) {
-		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs));
+		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, true));
 	}
 
-	public static ILearner[] getLearner(final IArguments arguments) {
+	public static ILearner[] getLearner(final IArguments arguments, final boolean parallelize) {
 		// TODO: Change back to min/max params
-		return getLearner(arguments.toInt("depth", 4), arguments.toInt("depth", 4), arguments.toInt("minObs", 10));
+		return getLearner(arguments.toInt("depth", 4),
+				arguments.toInt("depth", 4),
+				arguments.toInt("minObs", 10),
+				parallelize);
 	}
 
-	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs) {
+	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs,
+			final boolean parallelize) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
-			learner[i] = new RegTree(i + minDepth, minObs, true);
+			learner[i] = new RegTree(i + minDepth, minObs, parallelize);
 		}
 		return learner;
 	}

@@ -32,7 +32,6 @@ import com.insightml.math.types.SumMap;
 import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DoubleModel;
 import com.insightml.models.ILearner;
-import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerInput;
 import com.insightml.models.regression.SimpleRegression;
@@ -120,9 +119,9 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 				.sampleFeatures(argument("fbag"), random);
 	}
 
-	private Pair<Double, double[]> fitGamma(final IModel<Sample, Double> fit, final double[] preds,
+	private Pair<Double, double[]> fitGamma(final DoubleModel fit, final double[] preds,
 			final ISamples<Sample, Object> instances, final int it, final int labelIndex) {
-		final double[] optim = Arrays.cast(fit.apply(instances));
+		final double[] optim = fit.predictDouble(instances);
 		final double gamma = findGamma(instances
 				.expected(labelIndex), instances.weights(labelIndex), preds, optim, 0.000000001, labelIndex);
 		final double[] update = updatePredictions(preds, optim, gamma * argument("shrink"));

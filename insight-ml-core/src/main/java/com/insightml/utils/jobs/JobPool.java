@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
@@ -49,20 +50,25 @@ public final class JobPool {
 
 	public static <T> Queue<T> invokeAll(final List<Callable<T>> tasks, final int directThreshold) {
 		Check.state(directThreshold >= 1);
-		if (tasks.size() <= directThreshold) {
-			return runDirectly(tasks);
-		}
 		final ForkJoinPool pol = getPool();
 		if (pol.getParallelism() <= 1) {
 			return runDirectly(tasks);
 		}
+		return execute(tasks, directThreshold, pol);
+	}
+
+	public static <T> Queue<T> execute(final List<Callable<T>> tasks, final int directThreshold,
+			final ExecutorService executor) {
+		if (tasks.size() <= directThreshold) {
+			return runDirectly(tasks);
+		}
 		final Queue<T> results = new LinkedList<>();
-		for (final Future<T> result : pol.invokeAll(tasks)) {
-			try {
+		try {
+			for (final Future<T> result : executor.invokeAll(tasks)) {
 				results.add(result.get());
-			} catch (InterruptedException | ExecutionException e) {
-				throw new IllegalStateException(e);
 			}
+		} catch (InterruptedException | ExecutionException e) {
+			throw new IllegalStateException(e);
 		}
 		return results;
 	}
