@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.base.Preconditions;
 
 public final class LineReader implements Iterator<String>, Iterable<String>, AutoCloseable {
@@ -58,6 +60,7 @@ public final class LineReader implements Iterator<String>, Iterable<String>, Aut
 	}
 
 	@Override
+	@Nonnull
 	public String next() {
 		if (calledNext) {
 			calledNext = false;

@@ -32,10 +32,23 @@ public final class ParallelFor {
 		final List<Callable<R>> tasks = new LinkedList<>();
 		Check.num(end, start + 1, 99999999);
 		for (int i = start; i < end; ++i) {
-			final int it = i;
-			tasks.add(() -> function.apply(it));
+			tasks.add(new Execution<>(i, function));
 		}
 		return JobPool.invokeAll(tasks, directThreshold);
 	}
 
+	private static final class Execution<R> implements Callable<R> {
+		private final int iteration;
+		private final IntFunction<R> function;
+
+		public Execution(final int iteration, final IntFunction<R> function) {
+			this.iteration = iteration;
+			this.function = function;
+		}
+
+		@Override
+		public R call() {
+			return function.apply(iteration);
+		}
+	}
 }

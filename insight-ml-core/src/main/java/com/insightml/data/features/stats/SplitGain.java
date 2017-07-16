@@ -28,7 +28,7 @@ public final class SplitGain extends AbstractIndependentFeatureStatistic {
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		final ISplit split = RegTree.createThresholdSplitFinder(context, subset).compute(feature);
+		final ISplit split = RegTree.createThresholdSplitFinder(context, subset).apply(feature);
 		return split == null ? 0 : split.getImprovement() / split.getWeightSum();
 	}
 }

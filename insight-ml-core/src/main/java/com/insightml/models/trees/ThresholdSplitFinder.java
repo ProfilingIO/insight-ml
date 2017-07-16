@@ -15,11 +15,13 @@
  */
 package com.insightml.models.trees;
 
+import java.util.function.IntFunction;
+
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
 import com.insightml.utils.ui.UiUtils;
 
-public final class ThresholdSplitFinder {
+public final class ThresholdSplitFinder implements IntFunction<ISplit> {
 	private final SplitFinderContext context;
 	private final boolean[] subset;
 	private final int samples;
@@ -43,7 +45,8 @@ public final class ThresholdSplitFinder {
 		return weightSum;
 	}
 
-	public ISplit compute(final int feature) {
+	@Override
+	public ISplit apply(final int feature) {
 		double curThr = -9999999;
 		final int[] ordered = context.orderedInstances[feature];
 
