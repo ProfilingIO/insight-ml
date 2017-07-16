@@ -104,7 +104,7 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 
 		@Override
 		protected void compute() {
-			final ISplit best = findBestSplit();
+			final Split best = findBestSplit();
 			// TODO: Do crossval here to reject split, if necessary
 			if (best == null || best.getImprovement() < 0.00000000001) {
 				return;
@@ -126,15 +126,15 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 			}
 		}
 
-		private ISplit findBestSplit() {
+		private Split findBestSplit() {
 			final ThresholdSplitFinder thresholdSplitFinder = createThresholdSplitFinder(context, subset);
 			return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 		}
 
-		private ISplit findBestSplit(final ThresholdSplitFinder thresholdSplitFinder) {
-			ISplit bestSplit = null;
+		private Split findBestSplit(final ThresholdSplitFinder thresholdSplitFinder) {
+			Split bestSplit = null;
 			for (int i = 0; i < context.orderedInstances.length; ++i) {
-				final ISplit split = thresholdSplitFinder.apply(i);
+				final Split split = thresholdSplitFinder.apply(i);
 				if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
 					bestSplit = split;
 				}
@@ -142,9 +142,9 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 			return bestSplit;
 		}
 
-		private ISplit findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
-			ISplit bestSplit = null;
-			for (final ISplit split : ParallelFor.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1)) {
+		private Split findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
+			Split bestSplit = null;
+			for (final Split split : ParallelFor.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1)) {
 				if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
 					bestSplit = split;
 				}

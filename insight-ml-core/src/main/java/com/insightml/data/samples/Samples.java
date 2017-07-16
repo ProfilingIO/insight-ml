@@ -40,19 +40,26 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> im
 	}
 
 	public Samples(final Iterable<S> samples) {
-		this.samples = Preconditions.checkNotNull(Arrays.of(samples));
-		final E[] labelExample = labelExample(this.samples);
-		this.expected = labelExample == null ? null
-				: (E[][]) Array.newInstance(labelExample[0].getClass(), labelExample.length, this.samples.length);
-		this.weights = new double[expected == null ? 1 : expected.length][this.samples.length];
+		this(samples, true);
+	}
 
-		for (int i = 0; i < this.samples.length; ++i) {
-			final E[] exp = this.samples[i].getExpected();
-			for (int j = 0; j < weights.length; ++j) {
-				if (expected != null) {
-					expected[j][i] = exp[j];
+	public Samples(final Iterable<S> samples, final boolean storeLabels) {
+		this.samples = Preconditions.checkNotNull(Arrays.of(samples));
+
+		if (storeLabels) {
+			final E[] labelExample = labelExample(this.samples);
+			this.expected = labelExample == null ? null
+					: (E[][]) Array.newInstance(labelExample[0].getClass(), labelExample.length, this.samples.length);
+			this.weights = new double[expected == null ? 1 : expected.length][this.samples.length];
+
+			for (int i = 0; i < this.samples.length; ++i) {
+				final E[] exp = this.samples[i].getExpected();
+				for (int j = 0; j < weights.length; ++j) {
+					if (expected != null) {
+						expected[j][i] = exp[j];
+					}
+					weights[j][i] = this.samples[i].getWeight(j);
 				}
-				weights[j][i] = this.samples[i].getWeight(j);
 			}
 		}
 	}

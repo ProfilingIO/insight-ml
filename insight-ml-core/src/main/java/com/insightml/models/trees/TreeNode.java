@@ -23,14 +23,10 @@ import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.insightml.data.samples.ISamples;
 import com.insightml.math.statistics.Stats;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
-import com.insightml.models.AbstractDoubleLearner;
-import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DistributionPrediction;
-import com.insightml.models.LearnerInput;
 import com.insightml.utils.Collections;
 import com.insightml.utils.Collections.SortOrder;
 import com.insightml.utils.types.AbstractClass;
@@ -39,18 +35,19 @@ import com.insightml.utils.ui.UiUtils;
 public final class TreeNode extends AbstractClass implements Serializable {
 	private static final long serialVersionUID = -4612424838699629485L;
 
-	ISplit rule;
+	Split rule;
 	TreeNode left;
 	TreeNode right;
 
+	double mean;
 	Stats stats;
-	AbstractIndependentFeaturesModel model;
 
 	TreeNode() {
 	}
 
 	TreeNode(final Stats stats) {
 		this.stats = stats;
+		mean = stats.getMean();
 	}
 
 	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
@@ -86,7 +83,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return debugValue;
 	}
 
-	Pair<boolean[], boolean[]> split(final ISplit split, final TreeNode leftNode, final TreeNode rightNode,
+	Pair<boolean[], boolean[]> split(final Split split, final TreeNode leftNode, final TreeNode rightNode,
 			final int[][] orderedIndexes, final boolean[] subset) {
 		rule = Preconditions.checkNotNull(split);
 		left = leftNode;
@@ -112,10 +109,6 @@ public final class TreeNode extends AbstractClass implements Serializable {
 			}
 		}
 		return new Pair<>(leftI, rightI);
-	}
-
-	public void setLeafModel(final AbstractDoubleLearner learner, final ISamples<?, Double> instances) {
-		model = (AbstractIndependentFeaturesModel) learner.run(new LearnerInput<>(instances, null, null, 0));
 	}
 
 	public SumMap<String> featureImportance(final boolean normalize) {

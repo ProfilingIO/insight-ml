@@ -20,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.base.Preconditions;
 import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.samples.ISamples;
@@ -54,6 +56,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return pipe == null ? new Samples<>((Iterable<I>) test) : (ISamples<I, E>) pipe.run((Iterable<I>) test, false);
 	}
 
+	@Nonnull
 	public P[] run(final Iterable<? extends I> test) {
 		final P[] output = model.apply(preprocess(test));
 		if (postProcessor == null) {

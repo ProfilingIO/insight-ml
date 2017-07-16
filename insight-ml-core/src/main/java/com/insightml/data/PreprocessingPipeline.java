@@ -56,13 +56,15 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 
 	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
 			final FeaturesConfig<S, ?> config) {
-		return create(trainingSamples, config.newFeatureProvider(), config.newFeatureFilter(),
+		return create(trainingSamples,
+				config.newFeatureProvider(),
+				config.newFeatureFilter(),
 				config.getNormalization());
 	}
 
 	@Override
 	public <E> ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
-		final Samples<S, E> samples = new Samples<>(input);
+		final Samples<S, E> samples = new Samples<>(input, isTraining);
 		return new FeaturesDecorator<>(samples, provider, featureNames, normalization, isTraining);
 	}
 

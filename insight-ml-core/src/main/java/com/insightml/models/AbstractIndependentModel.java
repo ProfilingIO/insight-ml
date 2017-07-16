@@ -53,6 +53,11 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 	protected int[] constractFeaturesFilter(final ISamples<? extends I, ?> instances) {
 		final CharSequence[] ref = features();
 		final String[] names = instances.featureNames();
+		if (ref == names || java.util.Arrays.deepEquals(ref, names)) {
+			// model features and data features are identical, no filtering needed
+			return null;
+		}
+
 		final int[] featuresFilter = new int[ref == null ? names.length : ref.length];
 
 		if (ref == null) {

@@ -19,9 +19,8 @@ import java.util.function.IntFunction;
 
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
-import com.insightml.utils.ui.UiUtils;
 
-public final class ThresholdSplitFinder implements IntFunction<ISplit> {
+public final class ThresholdSplitFinder implements IntFunction<Split> {
 	private final SplitFinderContext context;
 	private final boolean[] subset;
 	private final int samples;
@@ -46,7 +45,7 @@ public final class ThresholdSplitFinder implements IntFunction<ISplit> {
 	}
 
 	@Override
-	public ISplit apply(final int feature) {
+	public Split apply(final int feature) {
 		double curThr = -9999999;
 		final int[] ordered = context.orderedInstances[feature];
 
@@ -97,56 +96,6 @@ public final class ThresholdSplitFinder implements IntFunction<ISplit> {
 		}
 		return new Split(bestThreshold, bestSplitL, statsR, bestImprovement, bestLastIndexLeft, feature,
 				context.featureNames);
-	}
-
-	public static final class Split extends AbstractSplit implements Cloneable {
-		private static final long serialVersionUID = -8060176890051949338L;
-
-		private double thresh;
-		private String fname;
-
-		Split() {
-		}
-
-		Split(final double threshold, final Stats statsL, final Stats statsR, final double improvement,
-				final int lastIndexLeft, final int feature, final String[] featureNames) {
-			super(statsL, statsR, improvement, lastIndexLeft, feature);
-			thresh = threshold;
-			fname = featureNames[feature];
-		}
-
-		@Override
-		public String getFeatureName() {
-			return fname;
-		}
-
-		@Override
-		public boolean moveRight(final double[] features) {
-			return features[feature] > thresh;
-		}
-
-		@Override
-		public String explain(final double[] features) {
-			if (moveRight(features)) {
-				return fname + " (" + UiUtils.format(features[feature]) + ") > " + UiUtils.format(thresh);
-			}
-			return fname + " (" + UiUtils.format(features[feature]) + ") \u2264 " + UiUtils.format(thresh);
-		}
-
-		@Override
-		protected Object clone() {
-			try {
-				return super.clone();
-			} catch (final CloneNotSupportedException e) {
-				throw new IllegalStateException(e);
-			}
-		}
-
-		@Override
-		public String toString() {
-			return fname + " \u2264 " + UiUtils.format(thresh) + " (" + UiUtils.format(improve) + "/"
-					+ UiUtils.format(getWeightSum()) + '=' + UiUtils.format(improve / getWeightSum()) + ")";
-		}
 	}
 
 }

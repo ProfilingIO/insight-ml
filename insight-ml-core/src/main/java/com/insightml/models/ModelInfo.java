@@ -15,21 +15,18 @@
  */
 package com.insightml.models;
 
-import java.io.Serializable;
+import com.insightml.math.types.SumMap;
+import com.insightml.utils.ui.UiUtils;
 
-import com.insightml.data.samples.ISamples;
-import com.insightml.data.samples.Sample;
+public interface ModelInfo {
 
-public interface IModel<I extends Sample, E> extends Serializable, ModelInfo {
+	SumMap<String> featureImportance();
 
-	String getName();
-
-	String[] features();
-
-	E[] apply(ISamples<? extends I, ?> samples);
-
-	double logLikelihood(I sample, E result);
-
-	void close();
-
+	default String info() {
+		final SumMap<String> importance = featureImportance();
+		if (importance != null) {
+			return "\n" + UiUtils.format(importance.distribution(), 0).toString();
+		}
+		return "No model info for " + getClass().toString();
+	}
 }

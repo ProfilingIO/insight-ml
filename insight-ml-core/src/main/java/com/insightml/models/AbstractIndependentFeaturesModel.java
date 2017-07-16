@@ -15,11 +15,14 @@
  */
 package com.insightml.models;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 
-public abstract class AbstractIndependentFeaturesModel extends AbstractIndependentModel<Sample, Double> {
+public abstract class AbstractIndependentFeaturesModel extends AbstractIndependentModel<Sample, Double>
+		implements DoubleModel {
 
 	private static final long serialVersionUID = -1870885956526569825L;
 
@@ -33,12 +36,31 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 	@Override
 	protected final Double predict(final int instance, final ISamples<? extends Sample, ?> instances,
 			final int[] featuresFilter) {
-		return predict(selectFeatures(instance, instances, featuresFilter));
+		return _predict(instance, instances.features(), featuresFilter);
 	}
 
-	protected static double[] selectFeatures(final int instance, final ISamples<? extends Sample, ?> instances,
+	@Override
+	public final double[] predictDouble(final ISamples<? extends Sample, ?> instances) {
+		final int[] featuresFilter = constractFeaturesFilter(instances);
+		final double[][] instancesFeatures = instances.features();
+		final double[] result = new double[instancesFeatures.length];
+		for (int i = 0; i < result.length; ++i) {
+			result[i] = _predict(i, instancesFeatures, featuresFilter);
+		}
+		return result;
+	}
+
+	private double _predict(final int instance, final double[][] instancesFeatures,
+			final @Nullable int[] featuresFilter) {
+		if (featuresFilter == null) {
+			return predict(instancesFeatures[instance]);
+		}
+		return predict(selectFeatures(instance, instancesFeatures, featuresFilter));
+	}
+
+	protected static double[] selectFeatures(final int instance, final double[][] instancesFeatures,
 			final int[] featuresFilter) {
-		final double[] features = instances.features()[instance];
+		final double[] features = instancesFeatures[instance];
 		final double[] selection = new double[featuresFilter.length];
 		for (int i = 0; i < selection.length; ++i) {
 			selection[i] = featuresFilter[i] == -1 ? 0 : features[featuresFilter[i]];

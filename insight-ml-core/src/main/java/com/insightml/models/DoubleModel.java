@@ -15,21 +15,11 @@
  */
 package com.insightml.models;
 
-import java.io.Serializable;
-
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 
-public interface IModel<I extends Sample, E> extends Serializable, ModelInfo {
+public interface DoubleModel extends ModelInfo {
 
-	String getName();
-
-	String[] features();
-
-	E[] apply(ISamples<? extends I, ?> samples);
-
-	double logLikelihood(I sample, E result);
-
-	void close();
+	double[] predictDouble(ISamples<? extends Sample, ?> instances);
 
 }

@@ -19,8 +19,8 @@ import java.util.Random;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.samples.AbstractSamples;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 
 public abstract class AbstractDecorator<S extends Sample, E> extends AbstractSamples<S, E> {
 

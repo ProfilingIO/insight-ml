@@ -15,9 +15,8 @@
  */
 package com.insightml.models.meta;
 
+import java.util.List;
 import java.util.Map.Entry;
-
-import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Objects;
 import com.insightml.data.samples.ISamples;
@@ -25,22 +24,22 @@ import com.insightml.data.samples.Sample;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractModel;
-import com.insightml.models.IModel;
+import com.insightml.models.DoubleModel;
 import com.insightml.utils.Arrays;
-import com.insightml.utils.types.collections.PairList;
+import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.ui.UiUtils;
 
 public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	private static final long serialVersionUID = -8115269534209318613L;
 
-	private IModel<Sample, Double> first;
-	private PairList<IModel<Sample, Double>, Double> steps;
+	private DoubleModel first;
+	private List<DoublePair<DoubleModel>> steps;
 
 	BoostingModel() {
 	}
 
-	public BoostingModel(final IModel<Sample, Double> first, final PairList<IModel<Sample, Double>, Double> steps) {
+	public BoostingModel(final DoubleModel first, final List<DoublePair<DoubleModel>> steps) {
 		super(null);
 		this.first = first;
 		this.steps = steps;
@@ -48,10 +47,10 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	@Override
 	public Double[] apply(final ISamples<? extends Sample, ?> instances) {
-		double[] preds = Arrays.cast(first.apply(instances));
-		for (final Pair<IModel<Sample, Double>, Double> step : steps) {
-			final double[] fit = Arrays.cast(step.getFirst().apply(instances));
-			preds = GBM.updatePredictions(preds, fit, step.getSecond());
+		double[] preds = first.predictDouble(instances);
+		for (final DoublePair<DoubleModel> step : steps) {
+			final double[] fit = step.getKey().predictDouble(instances);
+			preds = GBM.updatePredictions(preds, fit, step.getValue());
 		}
 		return Arrays.cast(preds);
 	}
@@ -59,8 +58,8 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 	@Override
 	public SumMap<String> featureImportance() {
 		final SumMapBuilder<String> builder = SumMap.builder(false);
-		for (final Pair<IModel<Sample, Double>, Double> step : steps) {
-			for (final Entry<String, Double> imp : step.getFirst().featureImportance()) {
+		for (final DoublePair<DoubleModel> step : steps) {
+			for (final Entry<String, Double> imp : step.getKey().featureImportance()) {
 				builder.increment(imp.getKey(), imp.getValue());
 			}
 		}
@@ -69,9 +68,12 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	@Override
 	public String info() {
-		return steps.size() > 1 ? "First model:\n" + steps.get(1).getFirst().info() + "Last model:\n"
-				+ steps.getLast().getFirst().info() + "\nFeature importance overall:\n"
-				+ UiUtils.format(featureImportance().distribution(), 0) : "No training data";
+		if (steps.size() > 1) {
+			final DoublePair<DoubleModel> last = steps.get(steps.size() - 1);
+			return "First model:\n" + steps.get(1).getKey().info() + "Last model:\n" + last.getKey().info()
+					+ "\nFeature importance overall:\n" + UiUtils.format(featureImportance().distribution(), 0);
+		}
+		return "No training data";
 	}
 
 	@Override

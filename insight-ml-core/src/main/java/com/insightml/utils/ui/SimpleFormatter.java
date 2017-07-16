@@ -17,27 +17,36 @@ package com.insightml.utils.ui;
 
 import java.text.DecimalFormat;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.utils.Strings;
 
 public final class SimpleFormatter extends AbstractNumberPrinter {
 
-    private final DecimalFormat format;
+	private final DecimalFormat format;
 
-    public SimpleFormatter() {
-        this(5, true);
-    }
+	public SimpleFormatter() {
+		this(5, true);
+	}
 
-    public SimpleFormatter(final int precision, final boolean removeFirstZero) {
-        format =
-                new DecimalFormat((removeFirstZero ? "" : "0") + "."
-                        + Strings.repeat("0", precision));
-    }
+	public SimpleFormatter(final int precision, final boolean removeFirstZero) {
+		format = createDecimalFormatter(precision, removeFirstZero);
+	}
 
-    @Override
-    public String format(final double number) {
-        String str = format.format(number).replaceFirst("0+$", "");
-        str = Strings.removeEnd(Strings.removeEnd(str, '.'), ',');
-        return str.isEmpty() ? "0" : str;
-    }
+	@Nonnull
+	public static DecimalFormat createDecimalFormatter(final int precision) {
+		return createDecimalFormatter(precision, false);
+	}
+
+	public static DecimalFormat createDecimalFormatter(final int precision, final boolean removeFirstZero) {
+		return new DecimalFormat((removeFirstZero ? "" : "0") + "." + Strings.repeat("0", precision));
+	}
+
+	@Override
+	public String format(final double number) {
+		String str = format.format(number).replaceFirst("0+$", "");
+		str = Strings.removeEnd(Strings.removeEnd(str, '.'), ',');
+		return str.isEmpty() ? "0" : str;
+	}
 
 }

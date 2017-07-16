@@ -15,6 +15,8 @@
  */
 package com.insightml.models.meta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.math3.exception.ConvergenceException;
@@ -26,17 +28,19 @@ import com.insightml.data.samples.decorators.LabelDecorator;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.AbstractOptimizable;
+import com.insightml.math.types.SumMap;
+import com.insightml.models.AbstractIndependentFeaturesModel;
+import com.insightml.models.DoubleModel;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerInput;
-import com.insightml.models.general.ConstantModel;
 import com.insightml.models.regression.SimpleRegression;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.Utils;
-import com.insightml.utils.types.collections.PairList;
+import com.insightml.utils.types.DoublePair;
 
 public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
@@ -73,22 +77,22 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	protected final BoostingModel createModel(final ISamples<Sample, Object> samples,
 			final ILearner<Sample, ? extends Object, Double>[] learner, final int labelIndex) {
 		final Object[] expected = samples.expected(labelIndex);
-		final IModel<Sample, Double> first = f0(expected, samples.weights(labelIndex), labelIndex);
-		final PairList<IModel<Sample, Double>, Double> steps = new PairList<>(true);
-		double[] preds = Arrays.cast(first.apply(samples));
+		final DoubleModel first = f0(expected, samples.weights(labelIndex), labelIndex);
+		double[] preds = first.predictDouble(samples);
 		final Random random = Utils.random();
 		final int iterations = (int) argument("it");
 		final double shrinkage = argument("shrink");
+		final List<DoublePair<DoubleModel>> steps = new ArrayList<>(iterations);
 		for (int i = 0; i < iterations; ++i) {
 			final ISamples<Sample, Object> subset = subset(samples, preds, expected, random, labelIndex);
 			if (subset == null) {
 				continue;
 			}
 			try {
-				final IModel<Sample, Double> fit = learner[i % learner.length]
-						.run(new LearnerInput(subset, null, null, labelIndex));
+				final AbstractIndependentFeaturesModel fit = (AbstractIndependentFeaturesModel) learner[i
+						% learner.length].run(new LearnerInput(subset, null, null, labelIndex));
 				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, i + 1, labelIndex);
-				steps.add(fit, shrinkage * update.getFirst());
+				steps.add(new DoublePair<>(fit, shrinkage * update.getFirst()));
 				preds = update.getSecond();
 			} catch (final ConvergenceException e) {
 				logger.error("{}", e);
@@ -97,7 +101,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 		return new BoostingModel(first, steps);
 	}
 
-	private ConstantModel<Double> f0(final Object[] exp, final double[] weights, final int labelIndex) {
+	private DoubleModel f0(final Object[] exp, final double[] weights, final int labelIndex) {
 		final double[] preds = new double[exp.length];
 		final double[] optim = new double[preds.length];
 		for (int i = 0; i < optim.length; ++i) {
@@ -106,7 +110,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 		final double result = findGamma(exp, weights, preds, optim, 0.0000000001, labelIndex);
 		logger.info("[0] " + objective
 				.label(Arrays.cast(updatePredictions(preds, optim, result)), exp, weights, null, labelIndex).getMean());
-		return new ConstantModel<>(result);
+		return new Baseline(result);
 	}
 
 	private ISamples<Sample, Object> subset(final ISamples<Sample, Object> instances, final double[] preds,
@@ -119,12 +123,16 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	private Pair<Double, double[]> fitGamma(final IModel<Sample, Double> fit, final double[] preds,
 			final ISamples<Sample, Object> instances, final int it, final int labelIndex) {
 		final double[] optim = Arrays.cast(fit.apply(instances));
-		final double gamma = findGamma(instances.expected(labelIndex), instances.weights(labelIndex), preds, optim,
-				0.000000001, labelIndex);
+		final double gamma = findGamma(instances
+				.expected(labelIndex), instances.weights(labelIndex), preds, optim, 0.000000001, labelIndex);
 		final double[] update = updatePredictions(preds, optim, gamma * argument("shrink"));
 		if (it % 100 == 0) {
-			logger.info("[" + it + "] " + objective.label(Arrays.cast(update), instances.expected(labelIndex),
-					instances.weights(labelIndex), instances, labelIndex).getMean());
+			logger.info("[" + it + "] "
+					+ objective.label(Arrays.cast(update),
+							instances.expected(labelIndex),
+							instances.weights(labelIndex),
+							instances,
+							labelIndex).getMean());
 		}
 		return new Pair<>(gamma, update);
 	}
@@ -164,4 +172,25 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 		return preds;
 	}
 
+	private static final class Baseline implements DoubleModel {
+		private final double value;
+
+		public Baseline(final double value) {
+			this.value = value;
+		}
+
+		@Override
+		public double[] predictDouble(final ISamples<? extends Sample, ?> instances) {
+			final double[] preds = new double[instances.size()];
+			for (int i = 0; i < preds.length; ++i) {
+				preds[i] = value;
+			}
+			return preds;
+		}
+
+		@Override
+		public SumMap<String> featureImportance() {
+			return null;
+		}
+	}
 }

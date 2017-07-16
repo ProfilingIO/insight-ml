@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.math3.util.Pair;
 
 import com.insightml.utils.types.AbstractClass;
@@ -54,6 +56,6 @@ public abstract class Threaded<I, O> extends AbstractClass {
 		return new LinkedList<>(JobPool.invokeAll(tasks, directThreshold));
 	}
 
-	protected abstract O exec(int i, I input) throws Exception;
+	protected abstract O exec(int i, @Nonnull I input) throws Exception;
 
 }
