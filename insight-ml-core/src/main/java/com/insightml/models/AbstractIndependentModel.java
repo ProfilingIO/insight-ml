@@ -15,6 +15,8 @@
  */
 package com.insightml.models;
 
+import java.lang.reflect.Array;
+
 import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
@@ -35,10 +37,17 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 	@Override
 	public final E[] apply(final ISamples<? extends I, ?> instances) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);
-		return Arrays.of(ParallelFor.run(i -> Preconditions.checkNotNull(predict(i, instances, featuresFilter)),
-				0,
-				instances.size(),
-				1));
+		if (instances.size() < 10) {
+			final E first = predict(0, instances, featuresFilter);
+			final E[] result = (E[]) Array.newInstance(first.getClass(), instances.size());
+			result[0] = first;
+			for (int i = 1; i < result.length; ++i) {
+				result[i] = predict(i, instances, featuresFilter);
+			}
+			return result;
+		}
+		return Arrays.of(ParallelFor
+				.run(i -> Preconditions.checkNotNull(predict(i, instances, featuresFilter)), 0, instances.size(), 1));
 	}
 
 	protected int[] constractFeaturesFilter(final ISamples<? extends I, ?> instances) {
