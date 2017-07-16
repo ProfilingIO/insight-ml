@@ -39,25 +39,18 @@ import com.insightml.utils.ui.UiUtils;
 public final class TreeNode extends AbstractClass implements Serializable {
 	private static final long serialVersionUID = -4612424838699629485L;
 
-	private ISplit rule;
-	private TreeNode left;
-	private TreeNode right;
+	ISplit rule;
+	TreeNode left;
+	TreeNode right;
 
-	private Stats stats;
-	private AbstractIndependentFeaturesModel model;
+	Stats stats;
+	AbstractIndependentFeaturesModel model;
 
 	TreeNode() {
 	}
 
 	TreeNode(final Stats stats) {
 		this.stats = stats;
-	}
-
-	public double predict(final double[] features) {
-		if (rule == null) {
-			return model == null ? stats.getMean() : model.predict(features) * 0.5 + stats.getMean() * 0.5;
-		}
-		return rule.moveRight(features) ? right.predict(features) : left.predict(features);
 	}
 
 	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
@@ -147,9 +140,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		print("", true, builder);
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
-			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true,
-					true));
+			builder.append(UiUtils
+					.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING), true, true));
 		}
 		return builder.toString();
 	}

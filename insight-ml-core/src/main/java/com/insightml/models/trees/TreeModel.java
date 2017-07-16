@@ -40,7 +40,16 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 
 	@Override
 	public double predict(final double[] features) {
-		return root.predict(features);
+		TreeNode node = root;
+		for (;;) {
+			if (node.rule == null) {
+				if (node.model == null) {
+					return node.stats.getMean();
+				}
+				return node.model.predict(features) * 0.5 + node.stats.getMean() * 0.5;
+			}
+			node = node.rule.moveRight(features) ? node.right : node.left;
+		}
 	}
 
 	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
