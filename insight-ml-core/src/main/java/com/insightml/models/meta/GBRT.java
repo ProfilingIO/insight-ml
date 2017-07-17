@@ -21,7 +21,7 @@ import com.insightml.models.ILearner;
 import com.insightml.models.trees.RegTree;
 import com.insightml.utils.IArguments;
 
-public final class GBRT extends GBM {
+public class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments) {
 		super(arguments, new MSE(), getLearner(arguments, true));
