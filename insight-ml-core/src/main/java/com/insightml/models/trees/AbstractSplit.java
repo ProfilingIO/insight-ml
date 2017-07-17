@@ -56,14 +56,6 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 		return lastIndexLeft;
 	}
 
-	static final double improvement(final Stats sumL, final double labelSum, final double weightSum) {
-		final double labelSumL = sumL.getWeightedSum();
-		final double weightSumL = sumL.getSumOfWeights();
-		final double weightSumR = weightSum - weightSumL;
-		final double dTemp = labelSumL / weightSumL - (labelSum - labelSumL) / weightSumR;
-		return weightSumL * weightSumR * dTemp * dTemp / weightSum;
-	}
-
 	@Override
 	public final double getImprovement() {
 		return improve;

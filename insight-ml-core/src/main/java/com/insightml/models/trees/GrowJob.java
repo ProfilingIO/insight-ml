@@ -21,7 +21,6 @@ import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.models.AbstractDoubleLearner;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.ParallelFor;
 
@@ -39,14 +38,16 @@ final class GrowJob extends RecursiveAction {
 	final SplitFinderContext context;
 	final boolean[] subset;
 	private final int depth;
+	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
 
 	public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth,
-			final boolean parallelize) {
+			final SplitCriterionFactory splitCriterionFactory, final boolean parallelize) {
 		parent = left;
 		this.context = context;
 		this.subset = subset;
 		this.depth = depth;
+		this.splitCriterionFactory = splitCriterionFactory;
 		this.parallelize = parallelize;
 	}
 
@@ -62,20 +63,17 @@ final class GrowJob extends RecursiveAction {
 		final Pair<boolean[], boolean[]> split = parent.split(best, left, right, context.orderedInstances, subset);
 		if (depth < context.maxDepth) {
 			if (split.getFirst().length >= context.minObs * 2) {
-				new GrowJob(left, context, split.getFirst(), depth + 1, parallelize).compute();
+				new GrowJob(left, context, split.getFirst(), depth + 1, splitCriterionFactory, parallelize).compute();
 			}
 			if (split.getSecond().length >= context.minObs * 2) {
-				new GrowJob(right, context, split.getSecond(), depth + 1, parallelize).compute();
+				new GrowJob(right, context, split.getSecond(), depth + 1, splitCriterionFactory, parallelize).compute();
 			}
-		} else if (false) {
-			final AbstractDoubleLearner learner = null;
-			// left.setLeafModel(learner, split.getFirst());
-			// right.setLeafModel(learner, split.getSecond());
 		}
 	}
 
 	private Split findBestSplit() {
-		final ThresholdSplitFinder thresholdSplitFinder = RegTree.createThresholdSplitFinder(context, subset);
+		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder.createThresholdSplitFinder(context,
+				subset, splitCriterionFactory);
 		return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 	}
 
@@ -92,8 +90,8 @@ final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
 		Split bestSplit = null;
-		for (final Split split : ParallelFor
-				.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1, executor)) {
+		for (final Split split : ParallelFor.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1,
+				executor)) {
 			if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
 				bestSplit = split;
 			}

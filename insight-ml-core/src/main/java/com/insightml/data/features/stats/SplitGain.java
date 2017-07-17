@@ -16,8 +16,9 @@
 package com.insightml.data.features.stats;
 
 import com.insightml.models.trees.ISplit;
-import com.insightml.models.trees.RegTree;
+import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.SplitFinderContext;
+import com.insightml.models.trees.ThresholdSplitFinder;
 
 public final class SplitGain extends AbstractIndependentFeatureStatistic {
 
@@ -28,7 +29,8 @@ public final class SplitGain extends AbstractIndependentFeatureStatistic {
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		final ISplit split = RegTree.createThresholdSplitFinder(context, subset).apply(feature);
+		final ISplit split = ThresholdSplitFinder.createThresholdSplitFinder(context, subset, MseSplitCriterion::create)
+				.apply(feature);
 		return split == null ? 0 : split.getImprovement() / split.getWeightSum();
 	}
 }

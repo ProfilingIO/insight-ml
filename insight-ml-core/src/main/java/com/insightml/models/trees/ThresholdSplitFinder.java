@@ -18,30 +18,30 @@ package com.insightml.models.trees;
 import java.util.function.IntFunction;
 
 import com.insightml.math.statistics.Stats;
-import com.insightml.utils.Check;
 
 public final class ThresholdSplitFinder implements IntFunction<Split> {
 	private final SplitFinderContext context;
 	private final boolean[] subset;
 	private final int samples;
-	private final double labelSum;
-	private final double weightSum;
+	private final SplitCriterion splitCriterion;
 
 	public ThresholdSplitFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
-			final double labelSum, final double weightSum) {
+			final SplitCriterion splitCriterion) {
 		this.context = context;
 		this.subset = subset;
 		this.samples = samples;
-		this.labelSum = labelSum;
-		this.weightSum = weightSum;
+		this.splitCriterion = splitCriterion;
 	}
 
-	public double getLabelSum() {
-		return labelSum;
-	}
-
-	public double getWeightSum() {
-		return weightSum;
+	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
+			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory) {
+		int samples = 0;
+		for (int i = 0; i < context.weights.length; ++i) {
+			if (subset == null || subset[i]) {
+				++samples;
+			}
+		}
+		return new ThresholdSplitFinder(context, subset, samples, splitCriterionFactory.create(context, subset));
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 
 		Stats bestSplitL = null;
 		double bestThreshold = 0;
-		double bestImprovement = -999;
+		double bestImprovement = 0;
 		int bestLastIndexLeft = -1;
 
 		int left = 0;
@@ -66,8 +66,8 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			}
 			final double value = context.features[idx][feature];
 			if (left >= context.minObs && value != curThr) {
-				final double improvement = AbstractSplit.improvement(currentSplitL, labelSum, weightSum);
-				if (!AbstractSplit.isFirstBetter(bestImprovement, improvement, feature, feature)) {
+				final double improvement = splitCriterion.improvement(currentSplitL, feature, i - 1);
+				if (improvement > bestImprovement) {
 					bestSplitL = currentSplitL.copy();
 					bestThreshold = curThr;
 					bestImprovement = improvement;
@@ -83,7 +83,15 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		if (bestLastIndexLeft == -1) {
 			return null;
 		}
+		final Stats statsR = createStatsRight(ordered, bestLastIndexLeft, context, subset);
+		return new Split(bestThreshold, bestSplitL, statsR, bestImprovement, bestLastIndexLeft, feature,
+				context.featureNames);
+	}
+
+	static Stats createStatsRight(final int[] ordered, final int bestLastIndexLeft, final SplitFinderContext context,
+			final boolean[] subset) {
 		final Stats statsR = new Stats();
+		final int bla = ordered.length;
 		for (int i = bestLastIndexLeft + 1; i < bla; ++i) {
 			final int idx = ordered[i];
 			if (!subset[idx]) {
@@ -91,11 +99,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			}
 			statsR.add(context.expected[idx], context.weights[idx]);
 		}
-		if (false) {
-			Check.equals(bestSplitL.getSumOfWeights() + statsR.getSumOfWeights(), weightSum, "weight sum");
-		}
-		return new Split(bestThreshold, bestSplitL, statsR, bestImprovement, bestLastIndexLeft, feature,
-				context.featureNames);
+		return statsR;
 	}
 
 }

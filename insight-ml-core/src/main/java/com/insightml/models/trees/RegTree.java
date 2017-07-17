@@ -15,9 +15,6 @@
  */
 package com.insightml.models.trees;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Vectors;
@@ -29,19 +26,29 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 
-public final class RegTree extends AbstractDoubleLearner<Double> {
+public class RegTree extends AbstractDoubleLearner<Double> {
+	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
 
-	private static final ExecutorService executor = Executors.newFixedThreadPool(16);
-
 	public RegTree(final IArguments arguments) {
+		this(arguments, MseSplitCriterion::create);
+	}
+
+	public RegTree(final IArguments arguments, final SplitCriterionFactory splitCriterionFactory) {
 		super(arguments);
+		this.splitCriterionFactory = splitCriterionFactory;
 		parallelize = true;
 	}
 
 	public RegTree(final int depth, final int minobs, final boolean parallelize) {
+		this(depth, minobs, MseSplitCriterion::create, parallelize);
+	}
+
+	public RegTree(final int depth, final int minobs, final SplitCriterionFactory splitCriterionFactory,
+			final boolean parallelize) {
 		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs)));
 		this.parallelize = parallelize;
+		this.splitCriterionFactory = splitCriterionFactory;
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 	}
 
 	@Override
-	public TreeModel run(final LearnerInput<? extends Sample, ? extends Double> input) {
+	public final TreeModel run(final LearnerInput<? extends Sample, ? extends Double> input) {
 		Check.state(input.valid == null);
 		final ISamples<Sample, Double> train = (ISamples<Sample, Double>) input.getTrain();
 		final Stats sRoot = new Stats();
@@ -65,23 +72,8 @@ public final class RegTree extends AbstractDoubleLearner<Double> {
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		new GrowJob(root, context, subset, 1, parallelize).compute();
+		new GrowJob(root, context, subset, 1, splitCriterionFactory, parallelize).compute();
 		return new TreeModel(root, train.featureNames());
-	}
-
-	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
-			final boolean[] subset) {
-		int samples = 0;
-		double weightSum = 0;
-		double labelSum = 0;
-		for (int i = 0; i < context.weights.length; ++i) {
-			if (subset == null || subset[i]) {
-				++samples;
-				weightSum += context.weights[i];
-				labelSum += context.expected[i] * context.weights[i];
-			}
-		}
-		return new ThresholdSplitFinder(context, subset, samples, labelSum, weightSum);
 	}
 
 }
