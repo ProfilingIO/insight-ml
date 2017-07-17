@@ -43,16 +43,16 @@ import com.insightml.utils.types.DoublePair;
 
 public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
-	final ObjectiveFunction<Object, ? super Double> objective;
+	private final ObjectiveFunction<Object, ? super Double> objective;
 
-	public GBM(final IArguments arguments, final ObjectiveFunction<Object, ? super Double> objective,
+	public GBM(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final ILearner<Sample, Double, Double>[] learner) {
 		super(arguments, learner);
-		this.objective = objective;
+		this.objective = (ObjectiveFunction<Object, ? super Double>) objective;
 	}
 
 	public GBM(final int it, final double shrink, final double bag,
-			final ObjectiveFunction<Object, ? super Double> objective,
+			final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final ILearner<Sample, Double, Double>[] learner) {
 		this(new Arguments("it", it, "shrink", shrink, "bag", bag), objective, learner);
 	}

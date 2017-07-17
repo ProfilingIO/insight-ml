@@ -16,6 +16,7 @@
 package com.insightml.models.meta;
 
 import com.insightml.evaluation.functions.MSE;
+import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearner;
 import com.insightml.models.trees.RegTree;
 import com.insightml.utils.IArguments;
@@ -24,6 +25,10 @@ public final class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments) {
 		super(arguments, new MSE(), getLearner(arguments, true));
+	}
+
+	public GBRT(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective) {
+		super(arguments, objective, getLearner(arguments, true));
 	}
 
 	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
