@@ -29,7 +29,6 @@ import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.evaluation.functions.MSE;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.AbstractOptimizable;
-import com.insightml.math.types.SumMap;
 import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DoubleModel;
 import com.insightml.models.ILearner;
@@ -45,17 +44,19 @@ import com.insightml.utils.types.DoublePair;
 public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
 	private final ObjectiveFunction<Object, ? super Double> objective;
+	private final Baseline predefinedBaseline;
 
 	public GBM(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective,
-			final ILearner<Sample, Double, Double>[] learner) {
+			final ILearner<Sample, Double, Double>[] learner, final Baseline predefinedBaseline) {
 		super(arguments, learner);
 		this.objective = (ObjectiveFunction<Object, ? super Double>) objective;
+		this.predefinedBaseline = predefinedBaseline;
 	}
 
 	public GBM(final int it, final double shrink, final double bag,
 			final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final ILearner<Sample, Double, Double>[] learner) {
-		this(new Arguments("it", it, "shrink", shrink, "bag", bag), objective, learner);
+		this(new Arguments("it", it, "shrink", shrink, "bag", bag), objective, learner, null);
 	}
 
 	@Override
@@ -102,6 +103,9 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	}
 
 	private DoubleModel f0(final Object[] exp, final double[] weights, final int labelIndex) {
+		if (predefinedBaseline != null) {
+			return predefinedBaseline;
+		}
 		final double[] preds = new double[exp.length];
 		final double[] optim = new double[preds.length];
 		for (int i = 0; i < optim.length; ++i) {
@@ -123,16 +127,12 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	private Pair<Double, double[]> fitGamma(final DoubleModel fit, final double[] preds,
 			final ISamples<Sample, Object> instances, final int it, final int labelIndex) {
 		final double[] optim = fit.predictDouble(instances);
-		final double gamma = findGamma(instances
-				.expected(labelIndex), instances.weights(labelIndex), preds, optim, 0.000000001, labelIndex);
+		final double gamma = findGamma(instances.expected(labelIndex), instances.weights(labelIndex), preds, optim,
+				0.000000001, labelIndex);
 		final double[] update = updatePredictions(preds, optim, gamma * argument("shrink"));
 		if (it % 100 == 0) {
-			logger.info("[" + it + "] "
-					+ objective.label(Arrays.cast(update),
-							instances.expected(labelIndex),
-							instances.weights(labelIndex),
-							instances,
-							labelIndex).getMean());
+			logger.info("[" + it + "] " + objective.label(Arrays.cast(update), instances.expected(labelIndex),
+					instances.weights(labelIndex), instances, labelIndex).getMean());
 		}
 		return new Pair<>(gamma, update);
 	}
@@ -171,27 +171,5 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 			preds[i] += gamma * update[i];
 		}
 		return preds;
-	}
-
-	private static final class Baseline implements DoubleModel {
-		private final double value;
-
-		public Baseline(final double value) {
-			this.value = value;
-		}
-
-		@Override
-		public double[] predictDouble(final ISamples<? extends Sample, ?> instances) {
-			final double[] preds = new double[instances.size()];
-			for (int i = 0; i < preds.length; ++i) {
-				preds[i] = value;
-			}
-			return preds;
-		}
-
-		@Override
-		public SumMap<String> featureImportance() {
-			return null;
-		}
 	}
 }

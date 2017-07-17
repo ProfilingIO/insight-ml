@@ -24,11 +24,12 @@ import com.insightml.utils.IArguments;
 public class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments) {
-		super(arguments, new MSE(), getLearner(arguments, true));
+		super(arguments, new MSE(), getLearner(arguments, true), null);
 	}
 
-	public GBRT(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective) {
-		super(arguments, objective, getLearner(arguments, true));
+	public GBRT(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective,
+			final Baseline predefinedBaseline) {
+		super(arguments, objective, getLearner(arguments, true), predefinedBaseline);
 	}
 
 	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
@@ -38,9 +39,7 @@ public class GBRT extends GBM {
 
 	public static ILearner[] getLearner(final IArguments arguments, final boolean parallelize) {
 		// TODO: Change back to min/max params
-		return getLearner(arguments.toInt("depth", 4),
-				arguments.toInt("depth", 4),
-				arguments.toInt("minObs", 10),
+		return getLearner(arguments.toInt("depth", 4), arguments.toInt("depth", 4), arguments.toInt("minObs", 10),
 				parallelize);
 	}
 
