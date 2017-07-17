@@ -60,7 +60,7 @@ public abstract class AbstractOptimizable implements Optimizable {
 	}
 
 	public AbstractOptimizable(final int maxIt, final double precision, final double lower, final double upper) {
-		this(maxIt, precision, new double[] { lower }, new double[] { upper }, null, true);
+		this(maxIt, precision, new double[] { lower }, new double[] { upper }, null, false);
 	}
 
 	public AbstractOptimizable(final int maxIt, final double precision, final double[] lower, final double[] upper) {
@@ -138,8 +138,8 @@ public abstract class AbstractOptimizable implements Optimizable {
 	}
 
 	private PointValuePair select(final String method, final PointValuePair newResult, final PointValuePair oldResult) {
-		if (newResult.getValue() < oldResult.getValue() || convergence.trainMax != null
-				&& newResult.getValue() > convergence.trainMax) {
+		if (newResult.getValue() < oldResult.getValue()
+				|| convergence.trainMax != null && newResult.getValue() > convergence.trainMax) {
 			log(method + " (rejc.)", newResult);
 			return oldResult;
 		}

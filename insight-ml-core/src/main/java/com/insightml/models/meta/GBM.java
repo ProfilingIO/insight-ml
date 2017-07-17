@@ -26,6 +26,7 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.LabelDecorator;
 import com.insightml.data.samples.decorators.SamplesMapping;
+import com.insightml.evaluation.functions.MSE;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.AbstractOptimizable;
 import com.insightml.math.types.SumMap;
@@ -138,7 +139,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
 	private double findGamma(final Object[] exp, final double[] weights, final double[] preds, final double[] optim,
 			final double prec, final int labelIndex) {
-		return true ? fitSquares(exp, weights, preds, optim)
+		return objective instanceof MSE ? fitSquares(exp, weights, preds, optim)
 				: fitObjective(exp, weights, preds, optim, prec, labelIndex);
 	}
 
@@ -153,6 +154,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
 	private double fitObjective(final Object[] exp, final double[] weights, final double[] preds, final double[] optim,
 			final double prec, final int labelIndex) {
+		// TODO: add analytical solutions for more objectives
 		return new AbstractOptimizable(10000, prec, -9999, 9999) {
 			@Override
 			public double value(final double[] point) {
