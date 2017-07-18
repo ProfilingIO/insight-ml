@@ -17,25 +17,28 @@ package com.insightml.utils.types.collections;
 
 import java.util.Arrays;
 
+import javax.annotation.Nonnull;
+
 public final class IntArray {
 
-    private int i = -1;
-    private final int[] arr;
+	private int i = -1;
+	private final int[] arr;
 
-    public IntArray(final int capacity) {
-        arr = new int[capacity];
-    }
+	public IntArray(final int capacity) {
+		arr = new int[capacity];
+	}
 
-    public void add(final int value) {
-        arr[++i] = value;
-    }
+	public void add(final int value) {
+		arr[++i] = value;
+	}
 
-    public int size() {
-        return i + 1;
-    }
+	public int size() {
+		return i + 1;
+	}
 
-    public int[] toArray() {
-        return Arrays.copyOf(arr, i + 1);
-    }
+	@Nonnull
+	public int[] toArray() {
+		return Arrays.copyOf(arr, i + 1);
+	}
 
 }

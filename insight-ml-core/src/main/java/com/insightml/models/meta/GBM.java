@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.util.Pair;
 
@@ -75,7 +77,8 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	}
 
 	@Override
-	protected final BoostingModel createModel(final ISamples<Sample, Object> samples,
+	@Nonnull
+	protected BoostingModel createModel(final ISamples<Sample, Object> samples,
 			final ILearner<Sample, ? extends Object, Double>[] learner, final int labelIndex) {
 		final Object[] expected = samples.expected(labelIndex);
 		final DoubleModel first = f0(expected, samples.weights(labelIndex), labelIndex);
