@@ -81,7 +81,9 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	protected BoostingModel createModel(final ISamples<Sample, Object> samples,
 			final ILearner<Sample, ? extends Object, Double>[] learner, final int labelIndex) {
 		final Object[] expected = samples.expected(labelIndex);
-		final DoubleModel first = f0(expected, samples.weights(labelIndex), labelIndex);
+		final double[] weights = weightSamples(samples, labelIndex);
+
+		final DoubleModel first = f0(expected, weights, labelIndex);
 		double[] preds = first.predictDouble(samples);
 		final Random random = Utils.random();
 		final int iterations = (int) argument("it");
@@ -95,7 +97,8 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 			try {
 				final AbstractIndependentFeaturesModel fit = (AbstractIndependentFeaturesModel) learner[i
 						% learner.length].run(new LearnerInput(subset, null, null, labelIndex));
-				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, i + 1, labelIndex);
+				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, expected, weights, i + 1,
+						labelIndex);
 				steps.add(new DoublePair<>(fit, shrinkage * update.getFirst()));
 				preds = update.getSecond();
 			} catch (final ConvergenceException e) {
@@ -103,6 +106,10 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 			}
 		}
 		return new BoostingModel(first, steps);
+	}
+
+	protected double[] weightSamples(final ISamples<Sample, Object> samples, final int labelIndex) {
+		return samples.weights(labelIndex);
 	}
 
 	private DoubleModel f0(final Object[] exp, final double[] weights, final int labelIndex) {
@@ -128,14 +135,14 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	}
 
 	private Pair<Double, double[]> fitGamma(final DoubleModel fit, final double[] preds,
-			final ISamples<Sample, Object> instances, final int it, final int labelIndex) {
+			final ISamples<Sample, Object> instances, final Object[] expected, final double[] weights, final int it,
+			final int labelIndex) {
 		final double[] optim = fit.predictDouble(instances);
-		final double gamma = findGamma(instances.expected(labelIndex), instances.weights(labelIndex), preds, optim,
-				0.000000001, labelIndex);
+		final double gamma = findGamma(expected, weights, preds, optim, 0.000000001, labelIndex);
 		final double[] update = updatePredictions(preds, optim, gamma * argument("shrink"));
 		if (it % 100 == 0) {
-			logger.info("[" + it + "] " + objective.label(Arrays.cast(update), instances.expected(labelIndex),
-					instances.weights(labelIndex), instances, labelIndex).getMean());
+			logger.info("[" + it + "] "
+					+ objective.label(Arrays.cast(update), expected, weights, instances, labelIndex).getMean());
 		}
 		return new Pair<>(gamma, update);
 	}
