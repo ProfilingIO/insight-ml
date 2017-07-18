@@ -17,8 +17,6 @@ package com.insightml.models.meta;
 
 import java.util.Random;
 
-import org.apache.commons.math3.util.Pair;
-
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
@@ -47,7 +45,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 	@Override
 	public LearnerArguments arguments() {
 		final LearnerArguments args = new LearnerArguments();
-		args.add("bags", 10.0, 5, 1000);
+		args.add("bags", 10.0, 2, 1000);
 		args.add("isample", 0.8, 0.1, 1.0);
 		args.add("fsample", 0.9, 0.05, 1.0);
 		return args;
@@ -63,9 +61,10 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 		final double[] weights = new double[bags];
 		ParallelFor.run(i -> {
 			final Random random = new Random((long) Math.pow(i + 2, 2));
-			final Pair<ISamples<I, Object>, ISamples<I, Object>> sub = instances.sample(instancesSample, random);
-			models[i] = learner[i % learner.length].run(
-					new LearnerInput(sub.getFirst().sampleFeatures(featureSample, random), null, null, labelIndex));
+			final ISamples<I, Object> sub = instancesSample < 1 ? instances.sample(instancesSample, random).getFirst()
+					: instances;
+			models[i] = learner[i % learner.length].run(new LearnerInput(
+					featureSample < 1 ? sub.sampleFeatures(featureSample, random) : sub, null, null, labelIndex));
 			weights[i] = 1;
 			return 1;
 		}, 0, bags, 3);
