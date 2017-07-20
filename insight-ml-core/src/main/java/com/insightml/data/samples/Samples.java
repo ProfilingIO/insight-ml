@@ -100,7 +100,7 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> im
 
 	@Override
 	public double[] weights(final int labelIndex) {
-		return weights[labelIndex];
+		return weights == null ? null : weights[labelIndex];
 	}
 
 	@Override
