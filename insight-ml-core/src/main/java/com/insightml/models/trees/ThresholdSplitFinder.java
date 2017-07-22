@@ -20,6 +20,8 @@ import java.util.function.IntFunction;
 import com.insightml.math.statistics.Stats;
 
 public final class ThresholdSplitFinder implements IntFunction<Split> {
+	public static final double VALUE_MISSING = Double.NEGATIVE_INFINITY;
+
 	private final SplitFinderContext context;
 	private final boolean[] subset;
 	private final int samples;
@@ -54,35 +56,56 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		double bestImprovement = 0;
 		int bestLastIndexLeft = -1;
 
-		int seen = 0;
-		int left = 0;
 		final Stats currentSplitL = new Stats();
-		final Stats statsNaN = new Stats();
+		Stats statsNaN = new Stats();
+		int lastIndexNaN = -1;
 
 		final int max = samples - context.minObs;
 		final int bla = ordered.length;
-		for (int i = 0; i < bla; ++i) {
+
+		for (int i = 0; i < -bla; ++i) {
 			final int idx = ordered[i];
 			if (!subset[idx]) {
 				continue;
 			}
 			final double value = context.features[idx][feature];
-			if (Double.isNaN(value)) {
+			if (value == VALUE_MISSING) {
 				statsNaN.add(context.expected[idx], context.weights[idx]);
+				lastIndexNaN = i;
 			} else {
-				if (left >= context.minObs && value != curThr) {
-					final double improvement = splitCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
-					if (improvement > bestImprovement) {
-						bestSplitL = currentSplitL.copy();
-						bestThreshold = curThr;
-						bestImprovement = improvement;
-						bestLastIndexLeft = i - 1;
-					}
-				}
-				currentSplitL.add(context.expected[idx], context.weights[idx]);
-				curThr = value;
-				++left;
+				break;
 			}
+		}
+
+		// there are too few observations of missing values, or too many such no further split can be made
+		// TODO: also allow missing vs non-missing splits
+		if (lastIndexNaN + 1 < context.minObs || lastIndexNaN + 1 > samples - context.minObs * 2) {
+			statsNaN = new Stats();
+			lastIndexNaN = -1;
+			// if there are not enough observations of missing values, count them to the left subtree
+		}
+
+		int left = 0;
+		int seen = lastIndexNaN + 1;
+
+		for (int i = lastIndexNaN + 1; i < bla; ++i) {
+			final int idx = ordered[i];
+			if (!subset[idx]) {
+				continue;
+			}
+			final double value = context.features[idx][feature];
+			if (left >= context.minObs && value != curThr) {
+				final double improvement = splitCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
+				if (improvement > bestImprovement) {
+					bestSplitL = currentSplitL.copy();
+					bestThreshold = curThr;
+					bestImprovement = improvement;
+					bestLastIndexLeft = i - 1;
+				}
+			}
+			currentSplitL.add(context.expected[idx], context.weights[idx]);
+			curThr = value;
+			++left;
 			if (seen++ == max) {
 				break;
 			}
@@ -91,8 +114,8 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			return null;
 		}
 		final Stats statsR = createStatsRight(ordered, bestLastIndexLeft, context, subset);
-		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, bestImprovement, bestLastIndexLeft, feature,
-				context.featureNames);
+		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, bestImprovement, lastIndexNaN, bestLastIndexLeft,
+				feature, context.featureNames);
 	}
 
 	static Stats createStatsRight(final int[] ordered, final int bestLastIndexLeft, final SplitFinderContext context,

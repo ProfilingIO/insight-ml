@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.math3.util.Pair;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.insightml.math.statistics.Stats;
@@ -36,8 +34,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	private static final long serialVersionUID = -4612424838699629485L;
 
 	Split rule;
-	TreeNode left;
-	TreeNode right;
+	TreeNode[] children;
 
 	double mean;
 	Stats stats;
@@ -57,9 +54,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		if (rule == null) {
 			return new DistributionPrediction(stats, null);
 		}
-		final boolean moveRight = rule.moveRight(features);
-		final DistributionPrediction pred = moveRight ? right.predictDistribution(features, debug)
-				: left.predictDistribution(features, debug);
+		final int moveRight = rule.selectChild(features);
+		final DistributionPrediction pred = children[moveRight].predictDistribution(features, debug);
 		return new DistributionPrediction(pred.getPrediction(),
 				debug ? makeDebugOutput(features, moveRight, pred) : null);
 	}
@@ -68,14 +64,13 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		if (rule == null) {
 			return stats;
 		}
-		final boolean moveRight = rule.moveRight(features);
-		return moveRight ? right.predictDistributionNoDebug(features) : left.predictDistributionNoDebug(features);
+		return children[rule.selectChild(features)].predictDistributionNoDebug(features);
 	}
 
-	private List<String> makeDebugOutput(final double[] features, final boolean moveRight,
+	private List<String> makeDebugOutput(final double[] features, final int moveRight,
 			final DistributionPrediction pred) {
-		final List<String> debugValue = Lists.newArrayList(
-				rule.explain(features) + " \u2192 " + presentPrediction(moveRight ? right.stats : left.stats));
+		final List<String> debugValue = Lists
+				.newArrayList(rule.explain(features) + " \u2192 " + presentPrediction(children[moveRight].stats));
 		final Object childDebug = pred.getDebug();
 		if (childDebug != null) {
 			debugValue.addAll((Collection<? extends String>) childDebug);
@@ -83,32 +78,32 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return debugValue;
 	}
 
-	Pair<boolean[], boolean[]> split(final Split split, final TreeNode leftNode, final TreeNode rightNode,
-			final int[][] orderedIndexes, final boolean[] subset) {
+	boolean[][] split(final Split split, final TreeNode[] childrenn, final int[][] orderedIndexes,
+			final boolean[] subset) {
 		rule = Preconditions.checkNotNull(split);
-		left = leftNode;
-		right = rightNode;
+		children = childrenn;
 
 		return calculateSplit(split, orderedIndexes, subset);
 	}
 
-	public static Pair<boolean[], boolean[]> calculateSplit(final ISplit split, final int[][] orderedIndexes,
-			final boolean[] subset) {
+	public static boolean[][] calculateSplit(final Split split, final int[][] orderedIndexes, final boolean[] subset) {
 		final int[] ordered = orderedIndexes[split.getFeature()];
+		final int indexNaN = split.getLastIndexNaN();
 		final int index = split.getLastIndexLeft();
-		final boolean[] leftI = new boolean[subset.length];
-		final boolean[] rightI = new boolean[subset.length];
+		final boolean[][] splits = new boolean[3][subset.length];
 		for (int i = 0; i < ordered.length; ++i) {
 			final int idx = ordered[i];
 			if (subset[idx]) {
-				if (i <= index) {
-					leftI[idx] = true;
+				if (i <= indexNaN) {
+					splits[2][idx] = true;
+				} else if (i <= index) {
+					splits[0][idx] = true;
 				} else {
-					rightI[idx] = true;
+					splits[1][idx] = true;
 				}
 			}
 		}
-		return new Pair<>(leftI, rightI);
+		return splits;
 	}
 
 	public SumMap<String> featureImportance(final boolean normalize) {
@@ -122,8 +117,9 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		if (crit != null) {
 			sum.increment(crit.getFeatureName(),
 					normalize ? crit.getImprovement() / crit.getWeightSum() : crit.getImprovement());
-			importance(node.left, sum, normalize);
-			importance(node.right, sum, normalize);
+			for (final TreeNode child : node.children) {
+				importance(child, sum, normalize);
+			}
 		}
 	}
 
@@ -143,8 +139,11 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		builder.append(prefix + (isTail ? "└── " : "├── ") + (rule != null ? rule + " / " : "")
 				+ presentPrediction(stats) + "\n");
 		if (rule != null) {
-			left.print(prefix + (isTail ? "    " : "│   "), false, builder);
-			right.print(prefix + (isTail ? "    " : "│   "), true, builder);
+			for (int i = 0; i < children.length; ++i) {
+				if (children[i] != null) {
+					children[i].print(prefix + (isTail ? "    " : "│   "), i == children.length - 1, builder);
+				}
+			}
 		}
 	}
 

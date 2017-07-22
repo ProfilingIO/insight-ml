@@ -15,6 +15,7 @@
  */
 package com.insightml.models.trees;
 
+import com.google.common.base.Preconditions;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.ui.UiUtils;
 
@@ -23,15 +24,19 @@ public final class Split extends AbstractSplit implements Cloneable {
 
 	private double thresh;
 	private String fname;
+	private int lastIndexNaN;
 
 	Split() {
 	}
 
 	Split(final double threshold, final Stats statsL, final Stats statsR, final Stats statsNaN,
-			final double improvement, final int lastIndexLeft, final int feature, final String[] featureNames) {
+			final double improvement, final int lastIndexNaN, final int lastIndexLeft, final int feature,
+			final String[] featureNames) {
 		super(statsL, statsR, statsNaN, improvement, lastIndexLeft, feature);
+		Preconditions.checkArgument(lastIndexNaN < lastIndexLeft);
 		thresh = threshold;
 		fname = featureNames[feature];
+		this.lastIndexNaN = lastIndexNaN;
 	}
 
 	@Override
@@ -39,19 +44,24 @@ public final class Split extends AbstractSplit implements Cloneable {
 		return fname;
 	}
 
-	public boolean isNaN(final double[] features) {
-		return Double.isNaN(features[feature]);
+	public int getLastIndexNaN() {
+		return lastIndexNaN;
 	}
 
 	@Override
-	public boolean moveRight(final double[] features) {
-		return features[feature] > thresh;
+	public int selectChild(final double[] features) {
+		return features[feature] > thresh ? 1
+				: lastIndexNaN >= 0 && features[feature] == ThresholdSplitFinder.VALUE_MISSING ? 2 : 0;
 	}
 
 	@Override
 	public String explain(final double[] features) {
-		if (moveRight(features)) {
+		final int child = selectChild(features);
+		if (child == 1) {
 			return fname + " (" + UiUtils.format(features[feature]) + ") > " + UiUtils.format(thresh);
+		}
+		if (child == 2) {
+			return fname + " (" + UiUtils.format(features[feature]) + ") missing";
 		}
 		return fname + " (" + UiUtils.format(features[feature]) + ") \u2264 " + UiUtils.format(thresh);
 	}

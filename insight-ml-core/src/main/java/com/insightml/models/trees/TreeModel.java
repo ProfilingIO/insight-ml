@@ -19,7 +19,6 @@ import java.util.Arrays;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
-import com.insightml.math.statistics.Stats;
 import com.insightml.math.types.SumMap;
 import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DistributionModel;
@@ -46,11 +45,7 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 			if (node.rule == null) {
 				return node.mean;
 			}
-			if (node.rule.isNaN(features)) {
-				final Stats statsNaN = node.rule.getStatsNaN();
-				return statsNaN.getN() == 0 ? node.mean : statsNaN.getMean();
-			}
-			node = node.rule.moveRight(features) ? node.right : node.left;
+			node = node.children[node.rule.selectChild(features)];
 		}
 	}
 
