@@ -37,6 +37,8 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Charsets;
@@ -85,6 +87,7 @@ public final class IoUtils {
 		return readFile(Check.notNull(IoUtils.class.getResourceAsStream(file), file), charset);
 	}
 
+	@Nonnull
 	public static LineReader lines(final File file) {
 		try {
 			return new LineReader(inputStream(file));

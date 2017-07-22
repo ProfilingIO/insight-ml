@@ -15,6 +15,9 @@
  */
 package com.insightml.data.samples.decorators;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.samples.ISamples;
@@ -23,6 +26,7 @@ import com.insightml.math.Normalization;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
+	private static final Logger LOG = LoggerFactory.getLogger(FeaturesDecorator.class);
 
 	private String[] featureNames;
 	double[][] features;
@@ -42,10 +46,15 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 
 		features = new double[orig.size()][];
 		ParallelFor.run(i -> {
-			final S sample = orig.get(i);
-			features[i] = sample == null ? null
-					: Preconditions.checkNotNull(prov.features(sample, featureNames, isTraining));
-			return 1;
+			try {
+				final S sample = orig.get(i);
+				features[i] = sample == null ? null
+						: Preconditions.checkNotNull(prov.features(sample, featureNames, isTraining));
+				return 1;
+			} catch (final Throwable e) {
+				LOG.error("{}", e, e);
+				throw e;
+			}
 		}, 0, features.length, 100);
 	}
 
