@@ -24,6 +24,7 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 
 	private Stats statsL;
 	private Stats statsR;
+	private Stats statsNaN;
 	private transient int lastIndexLeft;
 	double improve;
 
@@ -32,10 +33,11 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 	AbstractSplit() {
 	}
 
-	AbstractSplit(final Stats statsL, final Stats statsR, final double improvement, final int lastIndexLeft,
-			final int feature) {
+	AbstractSplit(final Stats statsL, final Stats statsR, final Stats statsNaN, final double improvement,
+			final int lastIndexLeft, final int feature) {
 		this.statsL = statsL;
 		this.statsR = statsR;
+		this.statsNaN = statsNaN;
 		improve = improvement;
 		this.lastIndexLeft = lastIndexLeft;
 		this.feature = feature;
@@ -86,6 +88,10 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 	@Override
 	public final Stats getStatsR() {
 		return statsR;
+	}
+
+	public Stats getStatsNaN() {
+		return statsNaN;
 	}
 
 }

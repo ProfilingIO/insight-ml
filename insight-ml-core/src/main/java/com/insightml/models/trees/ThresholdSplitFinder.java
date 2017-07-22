@@ -54,8 +54,10 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		double bestImprovement = 0;
 		int bestLastIndexLeft = -1;
 
+		int seen = 0;
 		int left = 0;
 		final Stats currentSplitL = new Stats();
+		final Stats statsNaN = new Stats();
 
 		final int max = samples - context.minObs;
 		final int bla = ordered.length;
@@ -65,18 +67,23 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 				continue;
 			}
 			final double value = context.features[idx][feature];
-			if (left >= context.minObs && value != curThr) {
-				final double improvement = splitCriterion.improvement(currentSplitL, feature, i - 1);
-				if (improvement > bestImprovement) {
-					bestSplitL = currentSplitL.copy();
-					bestThreshold = curThr;
-					bestImprovement = improvement;
-					bestLastIndexLeft = i - 1;
+			if (Double.isNaN(value)) {
+				statsNaN.add(context.expected[idx], context.weights[idx]);
+			} else {
+				if (left >= context.minObs && value != curThr) {
+					final double improvement = splitCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
+					if (improvement > bestImprovement) {
+						bestSplitL = currentSplitL.copy();
+						bestThreshold = curThr;
+						bestImprovement = improvement;
+						bestLastIndexLeft = i - 1;
+					}
 				}
+				currentSplitL.add(context.expected[idx], context.weights[idx]);
+				curThr = value;
+				++left;
 			}
-			currentSplitL.add(context.expected[idx], context.weights[idx]);
-			curThr = value;
-			if (left++ == max) {
+			if (seen++ == max) {
 				break;
 			}
 		}
@@ -84,7 +91,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			return null;
 		}
 		final Stats statsR = createStatsRight(ordered, bestLastIndexLeft, context, subset);
-		return new Split(bestThreshold, bestSplitL, statsR, bestImprovement, bestLastIndexLeft, feature,
+		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, bestImprovement, bestLastIndexLeft, feature,
 				context.featureNames);
 	}
 

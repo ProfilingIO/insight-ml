@@ -51,7 +51,7 @@ public final class MaeSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
-	public double improvement(final Stats sumL, final int feature, final int lastIndexLeft) {
+	public double improvement(final Stats sumL, final Stats sumNaN, final int feature, final int lastIndexLeft) {
 		final int[] ordered = context.orderedInstances[feature];
 
 		final double meanLeft = sumL.getMean();

@@ -39,15 +39,23 @@ public final class MseSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
-	public double improvement(final Stats sumL, final int feature, final int lastIndexLeft) {
-		return improvement(sumL, labelSum, weightSum);
+	public double improvement(final Stats sumL, final Stats sumNaN, final int feature, final int lastIndexLeft) {
+		return improvement(sumL, sumNaN, labelSum, weightSum);
 	}
 
-	static final double improvement(final Stats sumL, final double labelSum, final double weightSum) {
+	static final double improvement(final Stats sumL, final Stats sumNaN, final double labelSum,
+			final double weightSum) {
 		final double labelSumL = sumL.getWeightedSum();
 		final double weightSumL = sumL.getSumOfWeights();
-		final double weightSumR = weightSum - weightSumL;
-		final double dTemp = labelSumL / weightSumL - (labelSum - labelSumL) / weightSumR;
-		return weightSumL * weightSumR * dTemp * dTemp / weightSum;
+
+		final double labelSumNaN = sumNaN.getWeightedSum();
+		final double weightSumNaN = sumNaN.getSumOfWeights();
+
+		final double weightSumR = weightSum - weightSumL - weightSumNaN;
+		final double labelSumR = labelSum - labelSumL - labelSumNaN;
+
+		final double dTemp = labelSumL / weightSumL - (labelSumNaN == 0 ? 0 : labelSumNaN / weightSumNaN)
+				- labelSumR / weightSumR;
+		return weightSumL * weightSumR * (weightSumNaN > 0 ? weightSumNaN : 1) * dTemp * dTemp / weightSum;
 	}
 }

@@ -19,6 +19,6 @@ import com.insightml.math.statistics.Stats;
 
 public interface SplitCriterion {
 
-	double improvement(Stats sumL, int featureIndex, int lastIndexLeft);
+	double improvement(Stats sumL, Stats sumNaN, int featureIndex, int lastIndexLeft);
 
 }

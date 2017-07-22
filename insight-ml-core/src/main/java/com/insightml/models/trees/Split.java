@@ -27,9 +27,9 @@ public final class Split extends AbstractSplit implements Cloneable {
 	Split() {
 	}
 
-	Split(final double threshold, final Stats statsL, final Stats statsR, final double improvement,
-			final int lastIndexLeft, final int feature, final String[] featureNames) {
-		super(statsL, statsR, improvement, lastIndexLeft, feature);
+	Split(final double threshold, final Stats statsL, final Stats statsR, final Stats statsNaN,
+			final double improvement, final int lastIndexLeft, final int feature, final String[] featureNames) {
+		super(statsL, statsR, statsNaN, improvement, lastIndexLeft, feature);
 		thresh = threshold;
 		fname = featureNames[feature];
 	}
@@ -37,6 +37,10 @@ public final class Split extends AbstractSplit implements Cloneable {
 	@Override
 	public String getFeatureName() {
 		return fname;
+	}
+
+	public boolean isNaN(final double[] features) {
+		return Double.isNaN(features[feature]);
 	}
 
 	@Override
