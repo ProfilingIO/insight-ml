@@ -15,12 +15,20 @@
  */
 package com.insightml.data;
 
+import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
+import com.insightml.math.Normalization;
 import com.insightml.utils.ui.reports.IReporter;
 
 public interface IPreprocessingPipeline<S extends Sample> extends IReporter {
 
 	<E> ISamples<S, E> run(Iterable<S> input, boolean isTraining);
+
+	IFeatureProvider<S> getProvider();
+
+	String[] getFeatureNames();
+
+	Normalization getNormalization();
 
 }

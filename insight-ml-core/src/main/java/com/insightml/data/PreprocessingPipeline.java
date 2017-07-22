@@ -68,8 +68,19 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 		return new FeaturesDecorator<>(samples, provider, featureNames, normalization, isTraining);
 	}
 
+	@Override
 	public IFeatureProvider<S> getProvider() {
 		return provider;
+	}
+
+	@Override
+	public String[] getFeatureNames() {
+		return featureNames;
+	}
+
+	@Override
+	public Normalization getNormalization() {
+		return normalization;
 	}
 
 	@Override
