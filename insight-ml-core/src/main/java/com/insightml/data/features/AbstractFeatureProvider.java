@@ -25,7 +25,7 @@ import com.insightml.utils.types.Parameter;
 public abstract class AbstractFeatureProvider<I extends Sample> extends AbstractConfigurable
 		implements IFeatureProvider<I> {
 
-	private double defaultValue;
+	protected double defaultValue;
 
 	protected AbstractFeatureProvider() {
 	}
@@ -41,9 +41,13 @@ public abstract class AbstractFeatureProvider<I extends Sample> extends Abstract
 		final Map<String, Double> feats = features(instance, isTraining).asMap();
 		for (int i = 0; i < features.length; ++i) {
 			final Double feat = feats.get(features[i]);
-			array[i] = feat == null ? defaultValue : feat.doubleValue();
+			array[i] = feat == null ? handleMissingValue((String) features[i]) : feat.doubleValue();
 		}
 		return array;
+	}
+
+	protected double handleMissingValue(final String featureName) {
+		return defaultValue;
 	}
 
 	@Override
