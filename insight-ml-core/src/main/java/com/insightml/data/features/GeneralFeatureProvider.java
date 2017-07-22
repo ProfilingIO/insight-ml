@@ -16,11 +16,13 @@
 package com.insightml.data.features;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
 
 public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 
@@ -32,14 +34,14 @@ public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractF
 	}
 
 	@Override
-	public final String[] featureNames(final Iterable<I> samples) {
+	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples) {
 		final List<Pair<String, String>> features = getFeatures();
 		final String[] names = new String[features.size()];
 		int i = -1;
 		for (final Pair<String, String> feature : features) {
 			names[++i] = Preconditions.checkNotNull(feature.getFirst());
 		}
-		return names;
+		return new Pair<>(names, null);
 	}
 
 	protected abstract List<Pair<String, String>> getFeatures();

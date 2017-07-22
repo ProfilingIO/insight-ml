@@ -16,7 +16,10 @@
 package com.insightml.data;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Objects;
+
+import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
@@ -26,6 +29,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
 import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.math.Normalization;
+import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 
@@ -36,22 +40,26 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 
 	private IFeatureProvider<S> provider;
 	private String[] featureNames;
+	private Map<String, Stats> featureStats;
 	private Normalization normalization;
 
 	PreprocessingPipeline() {
 	}
 
 	private PreprocessingPipeline(final IFeatureProvider<S> provider, final String[] featureNames,
-			final Normalization normalization) {
+			final Map<String, Stats> featureStats, final Normalization normalization) {
 		this.provider = Preconditions.checkNotNull(provider);
 		this.featureNames = Preconditions.checkNotNull(featureNames);
+		this.featureStats = featureStats;
 		this.normalization = normalization;
 	}
 
 	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
 			final IFeatureProvider<S> provider, final IFeatureFilter filter, final Normalization normalization) {
-		return new PreprocessingPipeline<>(provider,
-				filter.allowedFeatures(provider.featureNames(new Samples<>(trainingSamples))), normalization);
+		final Pair<String[], Map<String, Stats>> featureSelection = provider
+				.featureNames(new Samples<>(trainingSamples));
+		return new PreprocessingPipeline<>(provider, filter.allowedFeatures(featureSelection.getFirst()),
+				featureSelection.getSecond(), normalization);
 	}
 
 	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
@@ -65,7 +73,7 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	@Override
 	public <E> ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
 		final Samples<S, E> samples = new Samples<>(input, isTraining);
-		return new FeaturesDecorator<>(samples, provider, featureNames, normalization, isTraining);
+		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, normalization, isTraining);
 	}
 
 	@Override
@@ -76,6 +84,11 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	@Override
 	public String[] getFeatureNames() {
 		return featureNames;
+	}
+
+	@Override
+	public Map<String, Stats> getFeatureStats() {
+		return featureStats;
 	}
 
 	@Override

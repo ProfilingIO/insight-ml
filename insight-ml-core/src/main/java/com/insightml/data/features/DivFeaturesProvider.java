@@ -17,8 +17,12 @@ package com.insightml.data.features;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
 import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
@@ -33,8 +37,8 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 	}
 
 	@Override
-	public String[] featureNames(final Iterable<I> samples) {
-		final CharSequence[] baseNames = baseProvider.featureNames(samples);
+	public Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples) {
+		final CharSequence[] baseNames = baseProvider.featureNames(samples).getFirst();
 		final List<String> names = new LinkedList<>();
 		for (int i = 0; i < baseNames.length; ++i) {
 			if (!baseNames[i].toString().contains("/")) {
@@ -45,7 +49,7 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 				}
 			}
 		}
-		return Arrays.of(names, String.class);
+		return new Pair<>(Arrays.of(names, String.class), null);
 	}
 
 	@Override

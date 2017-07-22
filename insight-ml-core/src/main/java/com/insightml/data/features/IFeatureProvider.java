@@ -15,9 +15,14 @@
  */
 package com.insightml.data.features;
 
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
+import org.apache.commons.math3.util.Pair;
+
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
 import com.insightml.models.Features;
 import com.insightml.utils.ui.reports.IReporter;
 
@@ -25,9 +30,9 @@ public interface IFeatureProvider<I extends Sample> extends IReporter {
 
 	String getName();
 
-	String[] featureNames(Iterable<I> samples);
+	Pair<String[], Map<String, Stats>> featureNames(Iterable<I> samples);
 
-	double[] features(I sample, CharSequence[] features, boolean isTraining);
+	double[] features(I sample, CharSequence[] features, Map<String, Stats> featureStats, boolean isTraining);
 
 	Features features(@Nonnull I sample, boolean isTraining);
 

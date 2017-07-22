@@ -15,10 +15,13 @@
  */
 package com.insightml.data;
 
+import java.util.Map;
+
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Normalization;
+import com.insightml.math.statistics.Stats;
 import com.insightml.utils.ui.reports.IReporter;
 
 public interface IPreprocessingPipeline<S extends Sample> extends IReporter {
@@ -28,6 +31,8 @@ public interface IPreprocessingPipeline<S extends Sample> extends IReporter {
 	IFeatureProvider<S> getProvider();
 
 	String[] getFeatureNames();
+
+	Map<String, Stats> getFeatureStats();
 
 	Normalization getNormalization();
 

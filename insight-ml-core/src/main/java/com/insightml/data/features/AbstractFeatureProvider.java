@@ -18,6 +18,7 @@ package com.insightml.data.features;
 import java.util.Map;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.types.Parameter;
@@ -36,17 +37,18 @@ public abstract class AbstractFeatureProvider<I extends Sample> extends Abstract
 	}
 
 	@Override
-	public final double[] features(final I instance, final CharSequence[] features, final boolean isTraining) {
+	public final double[] features(final I instance, final CharSequence[] features,
+			final Map<String, Stats> featureStats, final boolean isTraining) {
 		final double[] array = new double[Check.size(features, 1, 5000).length];
 		final Map<String, Double> feats = features(instance, isTraining).asMap();
 		for (int i = 0; i < features.length; ++i) {
 			final Double feat = feats.get(features[i]);
-			array[i] = feat == null ? handleMissingValue((String) features[i]) : feat.doubleValue();
+			array[i] = feat == null ? handleMissingValue((String) features[i], featureStats) : feat.doubleValue();
 		}
 		return array;
 	}
 
-	protected double handleMissingValue(final String featureName) {
+	protected double handleMissingValue(final String featureName, final Map<String, Stats> featureStats) {
 		return defaultValue;
 	}
 

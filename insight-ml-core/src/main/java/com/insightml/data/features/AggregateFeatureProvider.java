@@ -17,8 +17,12 @@ package com.insightml.data.features;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
 import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
@@ -35,14 +39,14 @@ public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureP
 	}
 
 	@Override
-	public final String[] featureNames(final Iterable<I> samples) {
+	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples) {
 		final List<String> names = new LinkedList<>();
 		for (final IFeatureProvider<I> provider : providers) {
-			for (final String namee : provider.featureNames(samples)) {
+			for (final String namee : provider.featureNames(samples).getFirst()) {
 				names.add(namee);
 			}
 		}
-		return Arrays.of(names, String.class);
+		return new Pair<>(Arrays.of(names, String.class), null);
 	}
 
 	@Override
