@@ -62,7 +62,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 	}
 
 	@Override
-	public final LearnerArguments arguments() {
+	public LearnerArguments arguments() {
 		final LearnerArguments args = new LearnerArguments();
 		args.add("it", 400.0, 20, 20000);
 		args.add("shrink", 0.01, 0.0001, 0.2);
@@ -97,7 +97,12 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 			try {
 				final AbstractIndependentFeaturesModel fit = (AbstractIndependentFeaturesModel) learner[i
 						% learner.length].run(new LearnerInput(subset, null, null, labelIndex));
-				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, expected, weights, i + 1,
+				final Pair<Double, double[]> update = fitGamma(fit,
+						preds,
+						samples,
+						expected,
+						weights,
+						i + 1,
 						labelIndex);
 				steps.add(new DoublePair<>(fit, shrinkage * update.getFirst()));
 				preds = update.getSecond();
