@@ -41,12 +41,17 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 	}
 
 	public RegTree(final int depth, final int minobs, final boolean parallelize) {
-		this(depth, minobs, MseSplitCriterion::create, parallelize);
+		this(depth, minobs, 1, MseSplitCriterion::create, parallelize);
 	}
 
-	public RegTree(final int depth, final int minobs, final SplitCriterionFactory splitCriterionFactory,
-			final boolean parallelize) {
-		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs)));
+	public RegTree(final int depth, final int minobs, final int nodePred, final boolean parallelize) {
+		this(depth, minobs, nodePred, MseSplitCriterion::create, parallelize);
+	}
+
+	public RegTree(final int depth, final int minobs, final int nodePred,
+			final SplitCriterionFactory splitCriterionFactory, final boolean parallelize) {
+		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs), "nodePred",
+				String.valueOf(nodePred)));
 		this.parallelize = parallelize;
 		this.splitCriterionFactory = splitCriterionFactory;
 	}
@@ -56,6 +61,7 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final LearnerArguments args = new LearnerArguments();
 		args.add("depth", 4.0, 1, 24);
 		args.add("minObs", 10.0, 1, 20000);
+		args.add("nodePred", 1.0, 1, 3);
 		return args;
 	}
 
@@ -65,15 +71,28 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final ISamples<Sample, Double> train = (ISamples<Sample, Double>) input.getTrain();
 		final Stats sRoot = new Stats();
 		sRoot.add(0, Vectors.sum(train.weights(input.labelIndex)));
-		final TreeNode root = new TreeNode(sRoot);
+		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
 		final SplitFinderContext context = new SplitFinderContext(train, (int) argument("depth"),
 				(int) argument("minObs"), input.labelIndex);
 		final boolean[] subset = new boolean[train.size()];
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		new GrowJob(root, context, subset, 1, splitCriterionFactory, parallelize).compute();
+		final String nodePrediction = getNodePredictionMode();
+		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, parallelize).compute();
 		return new TreeModel(root, train.featureNames());
+	}
+
+	private String getNodePredictionMode() {
+		final double nodePred = argument("nodePred");
+		if (nodePred == 1) {
+			return "mean";
+		} else if (nodePred == 2) {
+			return "median";
+		} else if (nodePred == 3) {
+			return "meandian";
+		}
+		throw new IllegalArgumentException("Unknown mode: " + nodePred);
 	}
 
 }

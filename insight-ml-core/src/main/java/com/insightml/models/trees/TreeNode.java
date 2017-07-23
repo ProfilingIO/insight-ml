@@ -42,9 +42,9 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	TreeNode() {
 	}
 
-	TreeNode(final Stats stats) {
+	TreeNode(final double prediction, final Stats stats) {
 		this.stats = stats;
-		mean = stats.getMean();
+		mean = prediction;
 	}
 
 	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
@@ -129,8 +129,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		print("", true, builder);
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
-			builder.append(UiUtils
-					.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING), true, true));
+			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
+					true, true));
 		}
 		return builder.toString();
 	}

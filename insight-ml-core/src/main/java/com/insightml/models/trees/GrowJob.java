@@ -19,6 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RecursiveAction;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.ParallelFor;
@@ -37,15 +39,17 @@ final class GrowJob extends RecursiveAction {
 	final SplitFinderContext context;
 	final boolean[] subset;
 	private final int depth;
+	private final String nodePrediction;
 	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
 
 	public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth,
-			final SplitCriterionFactory splitCriterionFactory, final boolean parallelize) {
+			final String nodePrediction, final SplitCriterionFactory splitCriterionFactory, final boolean parallelize) {
 		parent = left;
 		this.context = context;
 		this.subset = subset;
 		this.depth = depth;
+		this.nodePrediction = nodePrediction;
 		this.splitCriterionFactory = splitCriterionFactory;
 		this.parallelize = parallelize;
 	}
@@ -57,27 +61,56 @@ final class GrowJob extends RecursiveAction {
 		if (best == null || best.getImprovement() < 0.00000000001) {
 			return;
 		}
+		final DescriptiveStatistics[] nodeStats = nodeStats(best);
 		final Stats statsNaN = best.getStatsNaN();
 		final TreeNode[] children = new TreeNode[statsNaN.getN() >= context.minObs ? 3 : 2];
-		children[0] = new TreeNode(best.getStatsL());
-		children[1] = new TreeNode(best.getStatsR());
+		children[0] = new TreeNode(prediction(nodeStats[0]), best.getStatsL());
+		children[1] = new TreeNode(prediction(nodeStats[1]), best.getStatsR());
 		if (children.length == 3) {
-			children[2] = new TreeNode(statsNaN);
+			children[2] = new TreeNode(prediction(nodeStats[2]), statsNaN);
 		}
 		final boolean[][] split = parent.split(best, children, context.orderedInstances, subset);
 		if (depth < context.maxDepth) {
 			for (int i = 0; i < children.length; ++i) {
 				if (split[i].length >= context.minObs * 2) {
-					new GrowJob(children[i], context, split[i], depth + 1, splitCriterionFactory, parallelize)
-							.compute();
+					new GrowJob(children[i], context, split[i], depth + 1, nodePrediction, splitCriterionFactory,
+							parallelize).compute();
 				}
 			}
 		}
 	}
 
+	private double prediction(final DescriptiveStatistics stats) {
+		switch (nodePrediction) {
+		case "mean":
+			return stats.getMean();
+		case "median":
+			return stats.getPercentile(50);
+		case "meandian":
+			return (stats.getMean() + stats.getPercentile(50)) / 2;
+		default:
+			throw new IllegalArgumentException(nodePrediction);
+		}
+	}
+
+	private DescriptiveStatistics[] nodeStats(final Split best) {
+		final double[] expected = context.expected;
+		final DescriptiveStatistics[] stats = new DescriptiveStatistics[3];
+		for (int i = 0; i < stats.length; ++i) {
+			stats[i] = new DescriptiveStatistics();
+		}
+		for (int i = 0; i < expected.length; ++i) {
+			if (!subset[i]) {
+				continue;
+			}
+			stats[best.selectChild(context.features[i])].addValue(expected[i]);
+		}
+		return stats;
+	}
+
 	private Split findBestSplit() {
-		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder
-				.createThresholdSplitFinder(context, subset, splitCriterionFactory);
+		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder.createThresholdSplitFinder(context,
+				subset, splitCriterionFactory);
 		return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 	}
 
@@ -94,8 +127,8 @@ final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
 		Split bestSplit = null;
-		for (final Split split : ParallelFor
-				.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1, executor)) {
+		for (final Split split : ParallelFor.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1,
+				executor)) {
 			if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
 				bestSplit = split;
 			}

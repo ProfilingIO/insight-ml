@@ -34,20 +34,25 @@ public class GBRT extends GBM {
 
 	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
 			final int minObs) {
-		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, true));
+		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, 1, true));
+	}
+
+	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
+			final int minObs, final int nodePred) {
+		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, nodePred, true));
 	}
 
 	public static ILearner[] getLearner(final IArguments arguments, final boolean parallelize) {
 		// TODO: Change back to min/max params
 		return getLearner(arguments.toInt("depth", 4), arguments.toInt("depth", 4), arguments.toInt("minObs", 10),
-				parallelize);
+				arguments.toInt("nodePred", 1), parallelize);
 	}
 
-	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs,
+	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs, final int nodePred,
 			final boolean parallelize) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
-			learner[i] = new RegTree(i + minDepth, minObs, parallelize);
+			learner[i] = new RegTree(i + minDepth, minObs, nodePred, parallelize);
 		}
 		return learner;
 	}
