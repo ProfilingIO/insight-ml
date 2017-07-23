@@ -47,7 +47,7 @@ public class Correlation implements Comparable<Correlation> {
 		final DoubleLinkedList x2 = new DoubleLinkedList();
 		final DoubleLinkedList y2 = new DoubleLinkedList();
 		for (int i = 0; i < x.length; ++i) {
-			if (!Double.isNaN(x[i])) {
+			if (!Double.isNaN(x[i]) && x[i] != Double.NEGATIVE_INFINITY) {
 				x2.add(x[i]);
 				y2.add(y[i]);
 			}
