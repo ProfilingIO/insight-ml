@@ -16,6 +16,8 @@
 package com.insightml.models.meta;
 
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Nonnull;
 
@@ -28,9 +30,18 @@ import com.insightml.models.LearnerInput;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
+import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.ParallelFor;
 
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object, Double> {
+
+	private static final ExecutorService executor;
+
+	static {
+		executor = Executors.newFixedThreadPool(16);
+		ResourceCloser.register(executor::shutdown);
+	}
+
 	private final VoteStrategy strategy;
 
 	public Bagging(final IArguments arguments, final ILearner<I, ? extends Object, Double>... learner) {
@@ -68,7 +79,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 			models[i] = learner[i % learner.length].run(new LearnerInput(sampled, null, null, labelIndex));
 			weights[i] = 1;
 			return 1;
-		}, 0, bags, 3);
+		}, 0, bags, 3, executor);
 		return new VoteModel<>(models, weights, strategy);
 	}
 
