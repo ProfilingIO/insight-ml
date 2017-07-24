@@ -17,6 +17,8 @@ package com.insightml.models.meta;
 
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
@@ -54,6 +56,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 	@Override
 	protected IModel<I, Double> createModel(final ISamples<I, Object> instances,
 			final ILearner<I, ? extends Object, Double>[] learner, final int labelIndex) {
+		final ISamples<I, Object> samples = preprocess(instances);
 		final int bags = (int) argument("bags");
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");
@@ -61,14 +64,23 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 		final double[] weights = new double[bags];
 		ParallelFor.run(i -> {
 			final Random random = new Random((long) Math.pow(i + 2, 2));
-			final ISamples<I, Object> sub = instancesSample < 1 ? instances.sample(instancesSample, random).getFirst()
-					: instances;
-			models[i] = learner[i % learner.length].run(new LearnerInput(
-					featureSample < 1 ? sub.sampleFeatures(featureSample, random) : sub, null, null, labelIndex));
+			final ISamples<I, Object> sampled = sample(samples, instancesSample, featureSample, random);
+			models[i] = learner[i % learner.length].run(new LearnerInput(sampled, null, null, labelIndex));
 			weights[i] = 1;
 			return 1;
 		}, 0, bags, 3);
 		return new VoteModel<>(models, weights, strategy);
+	}
+
+	protected ISamples<I, Object> sample(final ISamples<I, Object> samples, final double instancesSample,
+			final double featureSample, final Random random) {
+		final ISamples<I, Object> sub = instancesSample < 1 ? samples.sample(instancesSample, random).getFirst()
+				: samples;
+		return featureSample < 1 ? sub.sampleFeatures(featureSample, random) : sub;
+	}
+
+	protected ISamples<I, Object> preprocess(final @Nonnull ISamples<I, Object> instances) {
+		return instances;
 	}
 
 }
