@@ -15,16 +15,16 @@
  */
 package com.insightml.models.trees;
 
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 import com.insightml.utils.types.AbstractClass;
 
 abstract class AbstractSplit extends AbstractClass implements ISplit {
 
 	private static final long serialVersionUID = -6931400300729153655L;
 
-	private Stats statsL;
-	private Stats statsR;
-	private Stats statsNaN;
+	private IStats statsL;
+	private IStats statsR;
+	private IStats statsNaN;
 	private transient int lastIndexLeft;
 	double improve;
 
@@ -33,7 +33,7 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 	AbstractSplit() {
 	}
 
-	AbstractSplit(final Stats statsL, final Stats statsR, final Stats statsNaN, final double improvement,
+	AbstractSplit(final IStats statsL, final IStats statsR, final IStats statsNaN, final double improvement,
 			final int lastIndexLeft, final int feature) {
 		this.statsL = statsL;
 		this.statsR = statsR;
@@ -81,16 +81,16 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 	}
 
 	@Override
-	public final Stats getStatsL() {
+	public final IStats getStatsL() {
 		return statsL;
 	}
 
 	@Override
-	public final Stats getStatsR() {
+	public final IStats getStatsR() {
 		return statsR;
 	}
 
-	public Stats getStatsNaN() {
+	public IStats getStatsNaN() {
 		return statsNaN;
 	}
 

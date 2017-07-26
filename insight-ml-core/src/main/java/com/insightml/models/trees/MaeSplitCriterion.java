@@ -15,7 +15,7 @@
  */
 package com.insightml.models.trees;
 
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 
 /**
  * Quite naive implementation. Should be revised soon.
@@ -51,7 +51,7 @@ public final class MaeSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
-	public double improvement(final Stats sumL, final Stats sumNaN, final int feature, final int lastIndexLeft) {
+	public double improvement(final IStats sumL, final IStats sumNaN, final int feature, final int lastIndexLeft) {
 		final int[] ordered = context.orderedInstances[feature];
 
 		final double meanLeft = sumL.getMean();

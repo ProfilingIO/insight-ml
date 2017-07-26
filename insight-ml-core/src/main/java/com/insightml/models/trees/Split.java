@@ -16,7 +16,7 @@
 package com.insightml.models.trees;
 
 import com.google.common.base.Preconditions;
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 import com.insightml.utils.ui.UiUtils;
 
 public final class Split extends AbstractSplit implements Cloneable {
@@ -29,7 +29,7 @@ public final class Split extends AbstractSplit implements Cloneable {
 	Split() {
 	}
 
-	Split(final double threshold, final Stats statsL, final Stats statsR, final Stats statsNaN,
+	Split(final double threshold, final IStats statsL, final IStats statsR, final IStats statsNaN,
 			final double improvement, final int lastIndexNaN, final int lastIndexLeft, final int feature,
 			final String[] featureNames) {
 		super(statsL, statsR, statsNaN, improvement, lastIndexLeft, feature);

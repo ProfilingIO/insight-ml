@@ -15,29 +15,22 @@
  */
 package com.insightml.models;
 
-import java.util.List;
-
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 
 public final class DistributionPrediction {
-	private final Stats prediction;
+	private final IStats prediction;
 	private final Object debug;
 
-	public DistributionPrediction(final Stats prediction, final Object debug) {
+	public DistributionPrediction(final IStats prediction, final Object debug) {
 		this.prediction = prediction;
 		this.debug = debug;
 	}
 
-	public Stats getPrediction() {
+	public IStats getPrediction() {
 		return prediction;
 	}
 
 	public Object getDebug() {
 		return debug;
-	}
-
-	public void add(final DistributionPrediction o) {
-		prediction.add(o.prediction);
-		((List) debug).add(o.debug);
 	}
 }

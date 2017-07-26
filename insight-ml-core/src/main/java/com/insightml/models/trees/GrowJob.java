@@ -21,7 +21,7 @@ import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.ParallelFor;
 
@@ -62,7 +62,7 @@ final class GrowJob extends RecursiveAction {
 			return;
 		}
 		final DescriptiveStatistics[] nodeStats = nodeStats(best);
-		final Stats statsNaN = best.getStatsNaN();
+		final IStats statsNaN = best.getStatsNaN();
 		final TreeNode[] children = new TreeNode[statsNaN.getN() >= context.minObs ? 3 : 2];
 		children[0] = new TreeNode(prediction(nodeStats[0]), best.getStatsL());
 		children[1] = new TreeNode(prediction(nodeStats[1]), best.getStatsR());

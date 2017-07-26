@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.DistributionPrediction;
@@ -37,12 +37,12 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	TreeNode[] children;
 
 	double mean;
-	Stats stats;
+	IStats stats;
 
 	TreeNode() {
 	}
 
-	TreeNode(final double prediction, final Stats stats) {
+	TreeNode(final double prediction, final IStats stats) {
 		this.stats = stats;
 		mean = prediction;
 	}
@@ -60,7 +60,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 				debug ? makeDebugOutput(features, moveRight, pred) : null);
 	}
 
-	private Stats predictDistributionNoDebug(final double[] features) {
+	private IStats predictDistributionNoDebug(final double[] features) {
 		if (rule == null) {
 			return stats;
 		}
@@ -147,7 +147,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		}
 	}
 
-	private static String presentPrediction(final Stats stats) {
+	private static String presentPrediction(final IStats stats) {
 		return UiUtils.format(stats.getMean()) + " +/- " + UiUtils.format(stats.getStandardDeviation()) + " ("
 				+ UiUtils.format(stats.getSumOfWeights()) + ")";
 	}

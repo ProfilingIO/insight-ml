@@ -15,7 +15,7 @@
  */
 package com.insightml.models.trees;
 
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 
 public interface ISplit extends IBinarySplit {
 
@@ -23,9 +23,9 @@ public interface ISplit extends IBinarySplit {
 
 	double getWeightSum();
 
-	Stats getStatsL();
+	IStats getStatsL();
 
-	Stats getStatsR();
+	IStats getStatsR();
 
 	boolean isBetterThan(ISplit bestSplit);
 

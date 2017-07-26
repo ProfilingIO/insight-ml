@@ -17,6 +17,7 @@ package com.insightml.models.trees;
 
 import java.util.function.IntFunction;
 
+import com.insightml.math.statistics.IStats;
 import com.insightml.math.statistics.Stats;
 
 public final class ThresholdSplitFinder implements IntFunction<Split> {
@@ -77,12 +78,14 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			}
 		}
 
-		// there are too few observations of missing values, or too many such no further split can be made
+		// there are too few observations of missing values, or too many such no
+		// further split can be made
 		// TODO: also allow missing vs non-missing splits
 		if (lastIndexNaN + 1 < context.minObs || lastIndexNaN + 1 > samples - context.minObs * 2) {
 			statsNaN = new Stats();
 			lastIndexNaN = -1;
-			// if there are not enough observations of missing values, count them to the left subtree
+			// if there are not enough observations of missing values, count
+			// them to the left subtree
 		}
 
 		int left = 0;
@@ -113,12 +116,12 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		if (bestLastIndexLeft == -1) {
 			return null;
 		}
-		final Stats statsR = createStatsRight(ordered, bestLastIndexLeft, context, subset);
+		final IStats statsR = createStatsRight(ordered, bestLastIndexLeft, context, subset);
 		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, bestImprovement, lastIndexNaN, bestLastIndexLeft,
 				feature, context.featureNames);
 	}
 
-	static Stats createStatsRight(final int[] ordered, final int bestLastIndexLeft, final SplitFinderContext context,
+	static IStats createStatsRight(final int[] ordered, final int bestLastIndexLeft, final SplitFinderContext context,
 			final boolean[] subset) {
 		final Stats statsR = new Stats();
 		final int bla = ordered.length;

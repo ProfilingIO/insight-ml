@@ -15,7 +15,7 @@
  */
 package com.insightml.models.trees;
 
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 
 public final class MseSplitCriterion implements SplitCriterion {
 	private final double weightSum;
@@ -39,11 +39,11 @@ public final class MseSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
-	public double improvement(final Stats sumL, final Stats sumNaN, final int feature, final int lastIndexLeft) {
+	public double improvement(final IStats sumL, final IStats sumNaN, final int feature, final int lastIndexLeft) {
 		return improvement(sumL, sumNaN, labelSum, weightSum);
 	}
 
-	static final double improvement(final Stats sumL, final Stats sumNaN, final double labelSum,
+	static final double improvement(final IStats sumL, final IStats sumNaN, final double labelSum,
 			final double weightSum) {
 		final double labelSumL = sumL.getWeightedSum();
 		final double weightSumL = sumL.getSumOfWeights();

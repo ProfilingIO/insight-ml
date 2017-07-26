@@ -15,10 +15,10 @@
  */
 package com.insightml.models.trees;
 
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.IStats;
 
 public interface SplitCriterion {
 
-	double improvement(Stats sumL, Stats sumNaN, int featureIndex, int lastIndexLeft);
+	double improvement(IStats sumL, IStats sumNaN, int featureIndex, int lastIndexLeft);
 
 }
