@@ -21,80 +21,84 @@ import com.insightml.math.distributions.Mixture;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.clusters.GaussianMixtureModels.Point;
 
-public final class GaussianMixtureModels extends ExpectationMaximization<Point, IContDistribution> {
+public final class GaussianMixtureModels extends ExpectationMaximization<Point, GaussianDistribution> {
 
-    @Override
-    protected IContDistribution[] init(final Point[] data, final int numComponents) {
-        final IContDistribution[] comps = new IContDistribution[numComponents];
-        final Stats stats = new Stats();
-        for (final Point val : data) {
-            stats.add(val.val);
-        }
-        final double interval = (stats.getMax() - stats.getMin()) / numComponents;
-        for (int i = 0; i < numComponents; ++i) {
-            comps[i] = new GaussianDistribution(interval * i, interval / 2);
-        }
-        return comps;
-    }
+	@Override
+	protected GaussianDistribution[] init(final Point[] data, final int numComponents) {
+		final GaussianDistribution[] comps = new GaussianDistribution[numComponents];
+		final Stats stats = new Stats();
+		for (final Point val : data) {
+			stats.add(val.val);
+		}
+		final double min = stats.getMin();
+		final double interval = (stats.getMax() - min) / numComponents;
+		for (int i = 0; i < numComponents; ++i) {
+			comps[i] = new GaussianDistribution(min + interval * i, interval / 2);
+		}
+		return comps;
+	}
 
-    @Override
-    protected double likelihood(final Point point, final IContDistribution dist) {
-        return dist.probability(point.val);
-    }
+	@Override
+	protected double likelihood(final Point point, final GaussianDistribution dist) {
+		return dist.probability(point.val);
+	}
 
-    @Override
-    protected IContDistribution maximization(final Point[] data, final double[][] points,
-            final int c) {
-        double mean = 0;
-        double softCount = 0;
-        for (int p = 0; p < points.length; ++p) {
-            if (points[p][c] != 0) {
-                mean += points[p][c] * data[p].val;
-                softCount += points[p][c];
-            }
-        }
-        if (mean != 0) {
-            mean /= softCount;
-        }
-        double var = 0;
-        double diff = 0;
-        for (int j = 0; j < points.length; ++j) {
-            if (points[j][c] != 0) {
-                diff = data[j].val - mean;
-                var += points[j][c] * diff * diff;
-            }
-        }
-        if (var != 0) {
-            var /= softCount;
-        }
+	@Override
+	protected GaussianDistribution maximization(final Point[] data, final double[][] points, final int c) {
+		double mean = 0;
+		double softCount = 0;
+		for (int p = 0; p < points.length; ++p) {
+			if (points[p][c] != 0) {
+				mean += points[p][c] * data[p].val;
+				softCount += points[p][c];
+			}
+		}
+		if (mean != 0) {
+			mean /= softCount;
+		}
+		double var = 0;
+		double diff = 0;
+		for (int j = 0; j < points.length; ++j) {
+			if (points[j][c] != 0) {
+				diff = data[j].val - mean;
+				var += points[j][c] * diff * diff;
+			}
+		}
+		if (var != 0) {
+			var /= softCount;
+		}
 
-        return new GaussianDistribution(mean, Math.sqrt(var));
-    }
+		return new GaussianDistribution(mean, Math.sqrt(var));
+	}
 
-    public static final class Components extends Mixture {
+	public static final class Components extends Mixture {
 
-        public Components(final IContDistribution[] dists, final double[] weights) {
-            super(dists, weights);
-        }
+		public Components(final IContDistribution[] dists, final double[] weights) {
+			super(dists, weights);
+		}
 
-        @Override
-        public String toString() {
-            final StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < dists.length; ++i) {
-                builder.append(",N(" + dists[i].expectedValue() + ","
-                        + dists[i].standardDeviation() + ")," + getWeight(i));
-            }
-            return builder.substring(1);
-        }
-    }
+		public static Components of(final ExpectationMaximizationResult<? extends IContDistribution> result) {
+			return new Components(result.comps, result.compWeights);
+		}
 
-    static final class Point {
+		@Override
+		public String toString() {
+			final StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < dists.length; ++i) {
+				builder.append(
+						",N(" + dists[i].expectedValue() + "," + dists[i].standardDeviation() + ")," + getWeight(i));
+			}
+			return builder.substring(1);
+		}
+	}
 
-        final double val;
+	public static final class Point {
 
-        public Point(final double val) {
-            this.val = val;
-        }
-    }
+		final double val;
+
+		public Point(final double val) {
+			this.val = val;
+		}
+	}
 
 }

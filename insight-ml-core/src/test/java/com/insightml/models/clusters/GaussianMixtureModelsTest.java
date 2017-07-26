@@ -21,29 +21,23 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.insightml.math.Vectors;
-import com.insightml.math.distributions.IContDistribution;
-import com.insightml.models.clusters.GaussianMixtureModels;
 import com.insightml.models.clusters.GaussianMixtureModels.Components;
 import com.insightml.models.clusters.GaussianMixtureModels.Point;
-import com.insightml.utils.types.Triple;
 
 public final class GaussianMixtureModelsTest {
 
-    @Test
-    public void test() {
-        final Well19937c rnd = new Well19937c(0);
-        final double[] data =
-                Vectors.append(new NormalDistribution(rnd, 10, 5).sample(50),
-                        new NormalDistribution(rnd, 4000, 100).sample(75));
-        final Point[] points = new Point[data.length];
-        for (int i = 0; i < points.length; ++i) {
-            points[i] = new Point(data[i]);
-        }
-        final Triple<IContDistribution[], double[], double[][]> out =
-                new GaussianMixtureModels().run(points, 2, 10);
-        final Components result = new Components(out.getFirst(), out.getSecond());
-        System.err.println(result);
-        Assert.assertEquals(-685.3993, result.incompleteLogLikelihood(data), 0.0001);
-        Assert.assertEquals(-690.2276, result.bic(data), 0.0001);
-    }
+	@Test
+	public void test() {
+		final Well19937c rnd = new Well19937c(0);
+		final double[] data = Vectors.append(new NormalDistribution(rnd, 10, 5).sample(50),
+				new NormalDistribution(rnd, 4000, 100).sample(75));
+		final Point[] points = new Point[data.length];
+		for (int i = 0; i < points.length; ++i) {
+			points[i] = new Point(data[i]);
+		}
+		final Components result = Components.of(new GaussianMixtureModels().run(points, 2, 10));
+		System.err.println(result);
+		Assert.assertEquals(-685.3993, result.incompleteLogLikelihood(data), 0.0001);
+		Assert.assertEquals(-690.2276, result.bic(data), 0.0001);
+	}
 }
