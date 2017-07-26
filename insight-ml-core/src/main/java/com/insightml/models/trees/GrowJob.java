@@ -18,10 +18,12 @@ package com.insightml.models.trees;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RecursiveAction;
+import java.util.function.Supplier;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.math.statistics.IStats;
+import com.insightml.math.statistics.MutableStatistics;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.ParallelFor;
 
@@ -42,15 +44,18 @@ final class GrowJob extends RecursiveAction {
 	private final String nodePrediction;
 	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
+	private final Supplier<MutableStatistics> statisticsFactory;
 
 	public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth,
-			final String nodePrediction, final SplitCriterionFactory splitCriterionFactory, final boolean parallelize) {
+			final String nodePrediction, final SplitCriterionFactory splitCriterionFactory,
+			final Supplier<MutableStatistics> statisticsFactory, final boolean parallelize) {
 		parent = left;
 		this.context = context;
 		this.subset = subset;
 		this.depth = depth;
 		this.nodePrediction = nodePrediction;
 		this.splitCriterionFactory = splitCriterionFactory;
+		this.statisticsFactory = statisticsFactory;
 		this.parallelize = parallelize;
 	}
 
@@ -74,7 +79,7 @@ final class GrowJob extends RecursiveAction {
 			for (int i = 0; i < children.length; ++i) {
 				if (split[i].length >= context.minObs * 2) {
 					new GrowJob(children[i], context, split[i], depth + 1, nodePrediction, splitCriterionFactory,
-							parallelize).compute();
+							statisticsFactory, parallelize).compute();
 				}
 			}
 		}
@@ -110,7 +115,7 @@ final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplit() {
 		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder.createThresholdSplitFinder(context,
-				subset, splitCriterionFactory);
+				subset, splitCriterionFactory, statisticsFactory);
 		return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 	}
 

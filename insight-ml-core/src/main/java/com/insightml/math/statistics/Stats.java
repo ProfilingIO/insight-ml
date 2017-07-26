@@ -21,7 +21,7 @@ import com.insightml.math.types.Interval;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.ui.SimpleFormatter;
 
-public final class Stats extends AbstractClass implements IStats {
+public final class Stats extends AbstractClass implements MutableStatistics {
 
 	private int n;
 	private double sum;
@@ -46,6 +46,7 @@ public final class Stats extends AbstractClass implements IStats {
 		add(value, 1.0);
 	}
 
+	@Override
 	public void add(final double value, final double weight) {
 		++n;
 		sum += value;
@@ -157,7 +158,6 @@ public final class Stats extends AbstractClass implements IStats {
 		return m2;
 	}
 
-	@Override
 	public Interval confRange95(final boolean hardMinMax) {
 		final double std = getStandardDeviation();
 		final double confMin = hardMinMax ? Math.max(min, mean - std * 2) : mean - std * 2;
@@ -165,7 +165,6 @@ public final class Stats extends AbstractClass implements IStats {
 		return new Interval(confMin, confMax);
 	}
 
-	@Override
 	public GaussianDistribution asGaussian() {
 		return new GaussianDistribution(getMean(), getStandardDeviation());
 	}
@@ -193,7 +192,10 @@ public final class Stats extends AbstractClass implements IStats {
 		if (getN() == 1) {
 			return "{" + formatter.format(getSum()) + "," + formatter.format(getWeightedSum()) + "}";
 		}
-		return getN() + (getN() > 0 ? ", " + formatter.format(getSum()) + ", " + formatter.format(getMean()) + " ["
-				+ formatter.format(getMin()) + ", " + formatter.format(getMax()) + "]" : "");
+		return getN()
+				+ (getN() > 0
+						? ", " + formatter.format(getSum()) + ", " + formatter.format(getMean()) + " ["
+								+ formatter.format(getMin()) + ", " + formatter.format(getMax()) + "]"
+						: "");
 	}
 }

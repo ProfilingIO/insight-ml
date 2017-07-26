@@ -16,9 +16,10 @@
 package com.insightml.models.trees;
 
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 import com.insightml.math.statistics.IStats;
-import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.MutableStatistics;
 
 public final class ThresholdSplitFinder implements IntFunction<Split> {
 	public static final double VALUE_MISSING = Double.NEGATIVE_INFINITY;
@@ -27,24 +28,28 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 	private final boolean[] subset;
 	private final int samples;
 	private final SplitCriterion splitCriterion;
+	private final Supplier<MutableStatistics> statisticsFactory;
 
 	public ThresholdSplitFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
-			final SplitCriterion splitCriterion) {
+			final SplitCriterion splitCriterion, final Supplier<MutableStatistics> statisticsFactory) {
 		this.context = context;
 		this.subset = subset;
 		this.samples = samples;
 		this.splitCriterion = splitCriterion;
+		this.statisticsFactory = statisticsFactory;
 	}
 
 	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
-			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory) {
+			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory,
+			final Supplier<MutableStatistics> statisticsFactory) {
 		int samples = 0;
 		for (int i = 0; i < context.weights.length; ++i) {
 			if (subset[i]) {
 				++samples;
 			}
 		}
-		return new ThresholdSplitFinder(context, subset, samples, splitCriterionFactory.create(context, subset));
+		return new ThresholdSplitFinder(context, subset, samples, splitCriterionFactory.create(context, subset),
+				statisticsFactory);
 	}
 
 	@Override
@@ -52,13 +57,13 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		double curThr = -9999999;
 		final int[] ordered = context.orderedInstances[feature];
 
-		Stats bestSplitL = null;
+		IStats bestSplitL = null;
 		double bestThreshold = 0;
 		double bestImprovement = 0;
 		int bestLastIndexLeft = -1;
 
-		final Stats currentSplitL = new Stats();
-		Stats statsNaN = new Stats();
+		final MutableStatistics currentSplitL = statisticsFactory.get();
+		MutableStatistics statsNaN = statisticsFactory.get();
 		int lastIndexNaN = -1;
 
 		final int max = samples - context.minObs;
@@ -82,7 +87,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		// further split can be made
 		// TODO: also allow missing vs non-missing splits
 		if (lastIndexNaN + 1 < context.minObs || lastIndexNaN + 1 > samples - context.minObs * 2) {
-			statsNaN = new Stats();
+			statsNaN = statisticsFactory.get();
 			lastIndexNaN = -1;
 			// if there are not enough observations of missing values, count
 			// them to the left subtree
@@ -116,14 +121,13 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		if (bestLastIndexLeft == -1) {
 			return null;
 		}
-		final IStats statsR = createStatsRight(ordered, bestLastIndexLeft, context, subset);
+		final IStats statsR = createStatsRight(ordered, bestLastIndexLeft);
 		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, bestImprovement, lastIndexNaN, bestLastIndexLeft,
 				feature, context.featureNames);
 	}
 
-	static IStats createStatsRight(final int[] ordered, final int bestLastIndexLeft, final SplitFinderContext context,
-			final boolean[] subset) {
-		final Stats statsR = new Stats();
+	private IStats createStatsRight(final int[] ordered, final int bestLastIndexLeft) {
+		final MutableStatistics statsR = statisticsFactory.get();
 		final int bla = ordered.length;
 		for (int i = bestLastIndexLeft + 1; i < bla; ++i) {
 			final int idx = ordered[i];

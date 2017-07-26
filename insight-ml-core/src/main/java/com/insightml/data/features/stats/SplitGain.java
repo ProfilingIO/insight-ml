@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.insightml.data.samples.ISamples;
+import com.insightml.math.statistics.Stats;
 import com.insightml.models.trees.ISplit;
 import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.SplitFinderContext;
@@ -60,7 +61,8 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		return ThresholdSplitFinder.createThresholdSplitFinder(context, subset, MseSplitCriterion::create);
+		return ThresholdSplitFinder.createThresholdSplitFinder(context, subset, MseSplitCriterion::create,
+				() -> new Stats());
 	}
 
 	private static double compute(final int feature, final ThresholdSplitFinder thresholdSplitFinder) {

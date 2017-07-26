@@ -15,14 +15,8 @@
  */
 package com.insightml.math.statistics;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+public interface MutableStatistics extends IStats {
 
-public interface IStats extends StatisticalSummary {
-
-	double getWeightedSum();
-
-	double getSumOfWeights();
-
-	IStats copy();
+	void add(double value, double weight);
 
 }

@@ -15,9 +15,13 @@
  */
 package com.insightml.models.trees;
 
+import java.util.function.Supplier;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Vectors;
+import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.math.statistics.SimpleStatistics;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.AbstractDoubleLearner;
 import com.insightml.models.LearnerArguments;
@@ -29,6 +33,7 @@ import com.insightml.utils.IArguments;
 public class RegTree extends AbstractDoubleLearner<Double> {
 	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
+	private final Supplier<MutableStatistics> statisticsFactory;
 
 	public RegTree(final IArguments arguments) {
 		this(arguments, MseSplitCriterion::create);
@@ -38,22 +43,25 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		super(arguments);
 		this.splitCriterionFactory = splitCriterionFactory;
 		parallelize = true;
+		statisticsFactory = () -> new Stats();
 	}
 
 	public RegTree(final int depth, final int minobs, final boolean parallelize) {
-		this(depth, minobs, 1, MseSplitCriterion::create, parallelize);
+		this(depth, minobs, 1, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred, final boolean parallelize) {
-		this(depth, minobs, nodePred, MseSplitCriterion::create, parallelize);
+		this(depth, minobs, nodePred, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred,
-			final SplitCriterionFactory splitCriterionFactory, final boolean parallelize) {
+			final SplitCriterionFactory splitCriterionFactory, final Supplier<MutableStatistics> statisticsFactory,
+			final boolean parallelize) {
 		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs), "nodePred",
 				String.valueOf(nodePred)));
 		this.parallelize = parallelize;
 		this.splitCriterionFactory = splitCriterionFactory;
+		this.statisticsFactory = statisticsFactory;
 	}
 
 	@Override
@@ -79,7 +87,8 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 			subset[i] = true;
 		}
 		final String nodePrediction = getNodePredictionMode();
-		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, parallelize).compute();
+		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, statisticsFactory, parallelize)
+				.compute();
 		return new TreeModel(root, train.featureNames());
 	}
 
