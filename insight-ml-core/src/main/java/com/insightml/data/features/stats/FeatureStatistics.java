@@ -20,6 +20,7 @@ import java.util.Set;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.types.IntSumMap;
 import com.insightml.math.types.IntSumMap.IntSumMapBuilder;
 import com.insightml.utils.Sets;
@@ -31,7 +32,7 @@ import com.insightml.utils.ui.UiUtils;
 
 public final class FeatureStatistics extends AbstractClass {
 
-	private final ISamples<?, Double> instances;
+	private final ISamples<Sample, Double> instances;
 	private final int labelIndex;
 
 	private final Cache<String, DescriptiveStatistics> stats = new SimpleCache<>(DescriptiveStatistics.class, 500,
@@ -39,7 +40,7 @@ public final class FeatureStatistics extends AbstractClass {
 	private final IntSumMap<CharSequence> nans;
 
 	public FeatureStatistics(final ISamples<?, Double> instances, final int labelIndex) {
-		this.instances = instances;
+		this.instances = (ISamples<Sample, Double>) instances;
 		this.labelIndex = labelIndex;
 		final String[] featureNames = this.instances.featureNames();
 		final double[][] feats = this.instances.features();
@@ -57,7 +58,7 @@ public final class FeatureStatistics extends AbstractClass {
 		nans = nan.build(0);
 	}
 
-	public ISamples<?, Double> getInstances() {
+	public ISamples<Sample, Double> getInstances() {
 		return instances;
 	}
 

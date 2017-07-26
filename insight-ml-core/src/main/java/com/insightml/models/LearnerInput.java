@@ -15,6 +15,8 @@
  */
 package com.insightml.models;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.insightml.data.FeaturesConfig;
@@ -25,20 +27,27 @@ import com.insightml.data.samples.Samples;
 
 public final class LearnerInput<S extends Sample, E> {
 	private final Supplier<ISamples<S, E>> train;
-	public final ISamples<S, E> valid;
-	public final FeaturesConfig<S, ?> config;
+	public final @Nullable ISamples<S, E> valid;
+	public final @Nullable FeaturesConfig<S, ?> config;
 	public final int labelIndex;
 
-	public LearnerInput(final Supplier<ISamples<S, E>> train, final ISamples<S, E> valid,
-			final FeaturesConfig<S, ?> config, final int labelIndex) {
+	public LearnerInput(final ISamples<S, E> train, final int labelIndex) {
+		this.train = () -> train;
+		valid = null;
+		config = null;
+		this.labelIndex = labelIndex;
+	}
+
+	public LearnerInput(final Supplier<ISamples<S, E>> train, final @Nullable ISamples<S, E> valid,
+			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
 		this.train = train;
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
 	}
 
-	public LearnerInput(final ISamples<S, E> train, final ISamples<S, E> valid, final FeaturesConfig<S, ?> config,
-			final int labelIndex) {
+	public LearnerInput(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
+			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
 		this.train = () -> train;
 		this.valid = valid;
 		this.config = config;
@@ -46,7 +55,7 @@ public final class LearnerInput<S extends Sample, E> {
 	}
 
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
-			final FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe) {
+			final @Nullable FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe) {
 		this.train = Suppliers.memoize(() -> pipe == null ? new Samples<>(train) : pipe.run(train, true));
 		this.valid = valid;
 		this.config = config;
