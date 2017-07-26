@@ -18,6 +18,9 @@ package com.insightml.data.features.stats;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.statistics.Correlation;
@@ -30,9 +33,11 @@ import com.insightml.utils.ui.UiUtils;
 import com.insightml.utils.ui.reports.IUiProvider;
 
 public final class FeaturesCorrelation extends AbstractClass implements IUiProvider<ISamples<?, Double>> {
+	private static final Logger LOG = LoggerFactory.getLogger(FeaturesCorrelation.class);
 
 	public static FeatureCorrelation[] correlation(final ISamples<?, ?> table, final int labelIndex) {
-		return Arrays.of(ParallelFor.run(feature -> {
+		final long start = System.currentTimeMillis();
+		final FeatureCorrelation[] result = Arrays.of(ParallelFor.run(feature -> {
 			final double[] feats = new double[table.size()];
 			final double[][] features = table.features();
 			for (int i = 0; i < feats.length; ++i) {
@@ -45,6 +50,8 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 			}
 			return new FeatureCorrelation(feats, expCast, table.featureNames()[feature]);
 		}, 0, table.numFeatures(), 1));
+		LOG.info("Computed correlation in {} ms", Long.valueOf(System.currentTimeMillis() - start));
+		return result;
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 		Collections.sort(features);
 		final StringBuilder builder = new StringBuilder(512);
 		for (final FeatureCorrelation feature : features) {
-			builder.append(UiUtils.fill(feature.feature, 40));
+			builder.append(UiUtils.fill(feature.getFeature(), 40));
 			builder.append(feature.getText() + "\n");
 		}
 		return builder.toString();
@@ -71,8 +78,7 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 	}
 
 	public static final class FeatureCorrelation extends Correlation {
-
-		final String feature;
+		private final String feature;
 
 		FeatureCorrelation(final double[] features, final double[] expected, final String featureName) {
 			super(features, expected);

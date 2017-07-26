@@ -17,6 +17,9 @@ package com.insightml.data.features.stats;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.utils.Arrays;
@@ -29,20 +32,20 @@ import com.insightml.utils.ui.reports.IUiProvider;
 
 public abstract class AbstractIndependentFeatureStatistic
 		implements IFeatureStatistic, IUiProvider<ISamples<?, Double>> {
+	private final Logger LOG = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public final Map<String, Double> run(final FeatureStatistics stats) {
+		final long start = System.currentTimeMillis();
 		final String[] feats = stats.getInstances().featureNames();
-		final Double[] result = true ? new Double[feats.length] : Arrays.of(ParallelFor.run(i -> {
+		final Double[] result = Arrays.of(ParallelFor.run(i -> {
 			return Double.valueOf(compute(stats, i, feats[i]));
 		}, 0, feats.length, 1));
-		for (int i = 0; i < feats.length; ++i) {
-			result[i] = Double.valueOf(compute(stats, i, feats[i]));
-		}
 		final Map<String, Double> map = Maps.create(feats.length);
 		for (int i = 0; i < feats.length; ++i) {
 			map.put(feats[i], result[i]);
 		}
+		LOG.info("Computed statistics in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 		return map;
 	}
 

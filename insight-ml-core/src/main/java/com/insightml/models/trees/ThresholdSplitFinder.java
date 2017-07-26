@@ -39,7 +39,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory) {
 		int samples = 0;
 		for (int i = 0; i < context.weights.length; ++i) {
-			if (subset == null || subset[i]) {
+			if (subset[i]) {
 				++samples;
 			}
 		}
