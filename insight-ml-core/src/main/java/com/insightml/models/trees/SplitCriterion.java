@@ -23,4 +23,6 @@ public interface SplitCriterion {
 
 	SplitCriterion forFeature(int feature);
 
+	double score(int feature, int bestLastIndexLeft, double bestImprovement);
+
 }

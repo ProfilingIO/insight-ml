@@ -124,8 +124,9 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			return null;
 		}
 		final IStats statsR = createStatsRight(ordered, bestLastIndexLeft);
-		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, bestImprovement, lastIndexNaN, bestLastIndexLeft,
-				feature, context.featureNames);
+		final double score = localCriterion.score(feature, bestLastIndexLeft, bestImprovement);
+		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, score, lastIndexNaN, bestLastIndexLeft, feature,
+				context.featureNames);
 	}
 
 	private IStats createStatsRight(final int[] ordered, final int bestLastIndexLeft) {

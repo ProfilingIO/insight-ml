@@ -23,10 +23,7 @@ import org.apache.commons.math3.stat.ranking.NaNStrategy;
 import com.insightml.math.Vectors;
 import com.insightml.math.statistics.IStats;
 
-/**
- * Quite naive implementation. Should be revised soon.
- */
-public final class MaeSplitCriterion implements SplitCriterion {
+public final class ExactMaeSplitCriterion implements SplitCriterion {
 	private static final Median medianCalculator = new Median().withNaNStrategy(NaNStrategy.FAILED);
 
 	private final int samples;
@@ -36,7 +33,7 @@ public final class MaeSplitCriterion implements SplitCriterion {
 
 	private final double[] expectedForFeature;
 
-	private MaeSplitCriterion(final int samples, final double totalError, final SplitFinderContext context,
+	private ExactMaeSplitCriterion(final int samples, final double totalError, final SplitFinderContext context,
 			final boolean[] subset, final double[] expectedForFeature) {
 		this.samples = samples;
 		this.totalError = totalError;
@@ -45,7 +42,7 @@ public final class MaeSplitCriterion implements SplitCriterion {
 		this.expectedForFeature = expectedForFeature;
 	}
 
-	public static MaeSplitCriterion create(final SplitFinderContext context, final boolean[] subset) {
+	public static ExactMaeSplitCriterion create(final SplitFinderContext context, final boolean[] subset) {
 		// TODO: merge filter step with median calculation, if possible
 		final double median = medianCalculator.evaluate(Vectors.filter(context.expected, subset));
 		int samples = 0;
@@ -56,7 +53,7 @@ public final class MaeSplitCriterion implements SplitCriterion {
 				totalError += Math.abs(context.expected[i] - median) * context.weights[i];
 			}
 		}
-		return new MaeSplitCriterion(samples, totalError, context, subset, null);
+		return new ExactMaeSplitCriterion(samples, totalError, context, subset, null);
 	}
 
 	@Override
@@ -75,7 +72,7 @@ public final class MaeSplitCriterion implements SplitCriterion {
 			values[insIdx] = context.expected[idx];
 			++insIdx;
 		}
-		return new MaeSplitCriterion(samples, totalError, context, subset, values);
+		return new ExactMaeSplitCriterion(samples, totalError, context, subset, values);
 	}
 
 	@Override
@@ -120,6 +117,11 @@ public final class MaeSplitCriterion implements SplitCriterion {
 		}
 
 		return totalError - error;
+	}
+
+	@Override
+	public double score(final int feature, final int bestLastIndexLeft, final double bestImprovement) {
+		return bestImprovement;
 	}
 
 }

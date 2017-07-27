@@ -21,7 +21,7 @@ public final class MseSplitCriterion implements SplitCriterion {
 	private final double weightSum;
 	private final double labelSum;
 
-	private MseSplitCriterion(final double weightSum, final double labelSum) {
+	MseSplitCriterion(final double weightSum, final double labelSum) {
 		this.weightSum = weightSum;
 		this.labelSum = labelSum;
 	}
@@ -62,5 +62,10 @@ public final class MseSplitCriterion implements SplitCriterion {
 		final double dTemp = labelSumL / weightSumL - (labelSumNaN == 0 ? 0 : labelSumNaN / weightSumNaN)
 				- labelSumR / weightSumR;
 		return weightSumL * weightSumR * (weightSumNaN > 0 ? weightSumNaN : 1) * dTemp * dTemp / weightSum;
+	}
+
+	@Override
+	public double score(final int feature, final int bestLastIndexLeft, final double bestImprovement) {
+		return bestImprovement;
 	}
 }
