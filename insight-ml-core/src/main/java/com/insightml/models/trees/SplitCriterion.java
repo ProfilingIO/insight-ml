@@ -21,4 +21,6 @@ public interface SplitCriterion {
 
 	double improvement(IStats sumL, IStats sumNaN, int featureIndex, int lastIndexLeft);
 
+	SplitCriterion forFeature(int feature);
+
 }

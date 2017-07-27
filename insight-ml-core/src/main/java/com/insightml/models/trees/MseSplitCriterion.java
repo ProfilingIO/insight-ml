@@ -39,6 +39,11 @@ public final class MseSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
+	public SplitCriterion forFeature(final int feature) {
+		return this;
+	}
+
+	@Override
 	public double improvement(final IStats sumL, final IStats sumNaN, final int feature, final int lastIndexLeft) {
 		return improvement(sumL, sumNaN, labelSum, weightSum);
 	}

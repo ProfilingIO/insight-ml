@@ -227,4 +227,15 @@ public final class Vectors {
 		return result;
 	}
 
+	public static double[] filter(final double[] a, final boolean[] mask) {
+		final double[] result = new double[sum(mask)];
+		int j = -1;
+		for (int i = 0; i < a.length; ++i) {
+			if (mask[i]) {
+				result[++j] = a[i];
+			}
+		}
+		return result;
+	}
+
 }

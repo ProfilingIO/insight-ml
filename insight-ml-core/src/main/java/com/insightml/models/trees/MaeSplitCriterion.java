@@ -15,59 +15,95 @@
  */
 package com.insightml.models.trees;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.math3.stat.descriptive.rank.Median;
+import org.apache.commons.math3.stat.ranking.NaNStrategy;
+
+import com.insightml.math.Vectors;
 import com.insightml.math.statistics.IStats;
 
 /**
  * Quite naive implementation. Should be revised soon.
  */
 public final class MaeSplitCriterion implements SplitCriterion {
+	private static final Median medianCalculator = new Median().withNaNStrategy(NaNStrategy.FAILED);
+
+	private final int samples;
 	private final double totalError;
 	private final SplitFinderContext context;
 	private final boolean[] subset;
 
-	private MaeSplitCriterion(final double totalError, final SplitFinderContext context, final boolean[] subset) {
+	private final double[] expectedForFeature;
+
+	private MaeSplitCriterion(final int samples, final double totalError, final SplitFinderContext context,
+			final boolean[] subset, final double[] expectedForFeature) {
+		this.samples = samples;
 		this.totalError = totalError;
 		this.context = context;
 		this.subset = subset;
+		this.expectedForFeature = expectedForFeature;
 	}
 
 	public static MaeSplitCriterion create(final SplitFinderContext context, final boolean[] subset) {
-		double weightSum = 0;
-		double labelSum = 0;
-		for (int i = 0; i < context.weights.length; ++i) {
-			if (subset == null || subset[i]) {
-				weightSum += context.weights[i];
-				labelSum += context.expected[i] * context.weights[i];
-			}
-		}
-		final double mean = labelSum / weightSum;
+		// TODO: merge filter step with median calculation, if possible
+		final double median = medianCalculator.evaluate(Vectors.filter(context.expected, subset));
+		int samples = 0;
 		double totalError = 0;
 		for (int i = 0; i < context.weights.length; ++i) {
 			if (subset == null || subset[i]) {
-				totalError += Math.abs(context.expected[i] - mean) * context.weights[i];
+				++samples;
+				totalError += Math.abs(context.expected[i] - median) * context.weights[i];
 			}
 		}
-		return new MaeSplitCriterion(totalError, context, subset);
+		return new MaeSplitCriterion(samples, totalError, context, subset, null);
 	}
 
 	@Override
-	public double improvement(final IStats sumL, final IStats sumNaN, final int feature, final int lastIndexLeft) {
+	public SplitCriterion forFeature(final int feature) {
 		final int[] ordered = context.orderedInstances[feature];
 
-		final double meanLeft = sumL.getMean();
-
 		final int bla = ordered.length;
-		double labelSumR = 0;
-		double weightSumR = 0;
-		for (int i = lastIndexLeft + 1; i < bla; ++i) {
+
+		final double[] values = new double[samples];
+		for (int i = 0, insIdx = 0; i < bla; ++i) {
 			final int idx = ordered[i];
 			if (!subset[idx]) {
 				continue;
 			}
-			labelSumR += context.expected[idx] * context.weights[idx];
-			weightSumR += context.expected[idx] * context.weights[idx];
+
+			values[insIdx] = context.expected[idx];
+			++insIdx;
 		}
-		final double meanRight = labelSumR / weightSumR;
+		return new MaeSplitCriterion(samples, totalError, context, subset, values);
+	}
+
+	@Override
+	public double improvement(final @Nullable IStats sumL, final @Nullable IStats sumNaN, final int feature,
+			final int lastIndexLeft) {
+		final int[] ordered = context.orderedInstances[feature];
+
+		final int bla = ordered.length;
+
+		int insIdx = 0;
+		int splitIndex = -1;
+
+		for (int i = 0; i < bla; ++i) {
+			final int idx = ordered[i];
+			if (!subset[idx]) {
+				continue;
+			}
+
+			if (i == lastIndexLeft) {
+				splitIndex = insIdx;
+				break;
+			}
+			++insIdx;
+		}
+
+		final double medianLeft = medianCalculator.evaluate(expectedForFeature, 0, splitIndex + 1);
+		final double medianRight = medianCalculator
+				.evaluate(expectedForFeature, splitIndex + 1, samples - splitIndex - 1);
 
 		double error = 0;
 		for (int i = 0; i < bla; ++i) {
@@ -77,9 +113,9 @@ public final class MaeSplitCriterion implements SplitCriterion {
 			}
 
 			if (i <= lastIndexLeft) {
-				error += Math.abs(meanLeft - context.expected[idx]) * context.weights[idx];
+				error += Math.abs(medianLeft - context.expected[idx]) * context.weights[idx];
 			} else {
-				error += Math.abs(meanRight - context.expected[idx]) * context.weights[idx];
+				error += Math.abs(medianRight - context.expected[idx]) * context.weights[idx];
 			}
 		}
 

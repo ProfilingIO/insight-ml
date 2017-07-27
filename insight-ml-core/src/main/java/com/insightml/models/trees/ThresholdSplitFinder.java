@@ -57,6 +57,8 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		double curThr = -9999999;
 		final int[] ordered = context.orderedInstances[feature];
 
+		final SplitCriterion localCriterion = splitCriterion.forFeature(feature);
+
 		IStats bestSplitL = null;
 		double bestThreshold = 0;
 		double bestImprovement = 0;
@@ -103,7 +105,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			}
 			final double value = context.features[idx][feature];
 			if (left >= context.minObs && value != curThr) {
-				final double improvement = splitCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
+				final double improvement = localCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
 				if (improvement > bestImprovement) {
 					bestSplitL = currentSplitL.copy();
 					bestThreshold = curThr;
