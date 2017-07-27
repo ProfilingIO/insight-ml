@@ -37,7 +37,7 @@ public final class FeaturesDistribution implements IUiProvider<ISamples<?, ?>> {
 	}
 
 	@Override
-	public String getText(final ISamples instances, final int labelIndex) {
+	public String getText(final ISamples<?, ?> instances, final int labelIndex) {
 		final StringBuilder builder = new StringBuilder();
 		final double[][] table = instances.features();
 		for (int f = 0; f < table[0].length; ++f) {

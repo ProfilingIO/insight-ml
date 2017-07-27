@@ -68,15 +68,12 @@ public final class IoUtils {
 		}
 	}
 
-	public static String readFile(final File file) {
-		try {
-			if (file.getName().endsWith(".gz")) {
-				return readFile(new GZIPInputStream(new FileInputStream(file)), Charsets.UTF_8);
-			}
-			return Files.toString(file, Charsets.UTF_8);
-		} catch (final IOException e) {
-			throw new IllegalArgumentException(e);
+	@SuppressWarnings("resource")
+	public static String readFile(final File file) throws IOException {
+		if (file.getName().endsWith(".gz")) {
+			return readFile(new GZIPInputStream(new FileInputStream(file)), Charsets.UTF_8);
 		}
+		return Files.toString(file, Charsets.UTF_8);
 	}
 
 	public static String readFile(final String file) {
@@ -100,11 +97,11 @@ public final class IoUtils {
 		return new LineReader(IoUtils.class.getResourceAsStream(file));
 	}
 
-	public static void write(final String text, final File file) {
+	public static void write(final String text, final @Nonnull File file) {
 		write(text, file, Charsets.UTF_8);
 	}
 
-	public static void write(final String text, final File file, final Charset charset) {
+	public static void write(final String text, final @Nonnull File file, final @Nonnull Charset charset) {
 		try {
 			Files.write(Check.length(text, 0, 1999999999), file, charset);
 		} catch (final IOException e) {
@@ -124,6 +121,7 @@ public final class IoUtils {
 		return reader(new GZIPInputStream(inputStream));
 	}
 
+	@SuppressWarnings("resource")
 	public static InputStream inputStream(final File file) throws IOException {
 		return file.getName().endsWith(".gz") ? new GZIPInputStream(new FileInputStream(file))
 				: new FileInputStream(file);
@@ -208,6 +206,7 @@ public final class IoUtils {
 		zip2(streams, target);
 	}
 
+	@SuppressWarnings("resource")
 	private static void addFile(final File file, final String dirBase, final List<Pair<InputStream, String>> streams,
 			final File target) {
 		if (file.isDirectory()) {

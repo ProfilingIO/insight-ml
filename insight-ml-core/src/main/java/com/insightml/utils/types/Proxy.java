@@ -15,6 +15,8 @@
  */
 package com.insightml.utils.types;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.base.Supplier;
 
 public abstract class Proxy<T> extends AbstractClass implements Supplier<T> {
@@ -26,6 +28,7 @@ public abstract class Proxy<T> extends AbstractClass implements Supplier<T> {
 		lock = this;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public final T get() {
 		if (object == null) {
@@ -38,6 +41,7 @@ public abstract class Proxy<T> extends AbstractClass implements Supplier<T> {
 		return object;
 	}
 
+	@Nonnull
 	protected abstract T load();
 
 	public final boolean isLoaded() {

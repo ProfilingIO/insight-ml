@@ -43,6 +43,7 @@ public final class IList<E> extends DefensiveList<E> implements Serializable {
 		this.list = Lists.newLinkedList(list);
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public boolean contains(final Object o) {
 		return list.contains(o);

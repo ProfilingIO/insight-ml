@@ -38,6 +38,7 @@ public final class Recall extends AbstractIRFunction<Object, Object> {
 		return "-";
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public double instance(final Collection<? extends Object> predicted, final Object[] expected, final Sample sample,
 			final int labelIndex) {
@@ -53,6 +54,7 @@ public final class Recall extends AbstractIRFunction<Object, Object> {
 		return matches * 1.0 / expected.length;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	protected double micro(final Collection<? extends Object>[] preds, final List<? extends Object[]> expected) {
 		int matches = 0;

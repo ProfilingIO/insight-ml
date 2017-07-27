@@ -23,9 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import com.google.common.base.Preconditions;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.utils.Arrays;
+import com.insightml.utils.Check;
 import com.insightml.utils.types.collections.ArrayIterator;
 
 public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> implements Serializable {
@@ -44,7 +44,7 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> im
 	}
 
 	public Samples(final Iterable<S> samples, final boolean storeLabels) {
-		this.samples = Preconditions.checkNotNull(Arrays.of(samples));
+		this.samples = Check.notNull(Arrays.of(samples));
 
 		if (storeLabels) {
 			final E[] labelExample = labelExample(this.samples);

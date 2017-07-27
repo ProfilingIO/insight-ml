@@ -15,6 +15,8 @@
  */
 package com.insightml.models.optimization;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractModel;
@@ -44,6 +46,7 @@ public final class ParameterModel<I extends Sample, T, C> extends AbstractModel<
 		return run(instances, cachable);
 	}
 
+	@Nonnull
 	Double[] run(final ISamples<? extends I, ?> instances, final C[] cachable) {
 		final Double[] preds = new Double[instances.size()];
 		for (int i = 0; i < preds.length; ++i) {

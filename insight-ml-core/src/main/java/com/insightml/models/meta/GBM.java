@@ -113,6 +113,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 		return new BoostingModel(first, steps);
 	}
 
+	@SuppressWarnings("static-method")
 	protected double[] weightSamples(final ISamples<Sample, Object> samples, final int labelIndex) {
 		return samples.weights(labelIndex);
 	}

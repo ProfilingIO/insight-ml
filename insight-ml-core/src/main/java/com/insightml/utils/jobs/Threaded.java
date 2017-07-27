@@ -36,6 +36,7 @@ public abstract class Threaded<I, O> extends AbstractClass {
 		return run(queue, directThreshold, Integer.MAX_VALUE);
 	}
 
+	@SuppressWarnings("null")
 	public final List<Pair<I, O>> run(final Iterable<? extends I> queue, final int directThreshold, final int limit) {
 		final List<Callable<Pair<I, O>>> tasks = new LinkedList<>();
 		int i = -1;

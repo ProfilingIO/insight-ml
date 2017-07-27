@@ -89,7 +89,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		final Iterable<S> train = split.getFirst();
 		List<S> valid = split.getSecond();
 		if (trainRatio < 1) {
-			logger.info("Learning on " + ((List) train).size() + " samples, " + valid.size() + " ignored.");
+			logger.info("Learning on " + ((List<?>) train).size() + " samples, " + valid.size() + " ignored.");
 		}
 
 		final ISamples<S, E> valid2 = null;

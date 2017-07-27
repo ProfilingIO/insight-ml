@@ -57,8 +57,11 @@ public abstract class AbstractIRFunction<E, P> extends AbstractObjectiveFunction
 		for (final List<? extends Predictions<? extends E[], ? extends Collection<? extends P>>> predz : Check
 				.size(predictions, 1, 9999999)) {
 			for (final Predictions<? extends E[], ? extends Collection<? extends P>> preds : predz) {
-				for (final double val : label(preds.getPredictions(), (E[][]) preds.getExpected(), preds.getWeights(),
-						preds.getSamples(), preds.getLabelIndex()).getValues()) {
+				for (final double val : label(preds.getPredictions(),
+						(E[][]) preds.getExpected(),
+						preds.getWeights(),
+						preds.getSamples(),
+						preds.getLabelIndex()).getValues()) {
 					stats.addValue(val);
 				}
 			}

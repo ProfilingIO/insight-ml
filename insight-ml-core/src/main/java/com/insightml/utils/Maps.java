@@ -18,10 +18,13 @@ package com.insightml.utils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 public final class Maps {
 	private Maps() {
 	}
 
+	@Nonnull
 	public static <K, V> LinkedHashMap<K, V> create(final int expected) {
 		return new LinkedHashMap<>(Sets.capacity(expected));
 	}

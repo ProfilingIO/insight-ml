@@ -63,9 +63,9 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 
 	private <E, P> SimulationResults<E, P>[] runCv(final Iterable<I> instances, final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
-		final IJobBatch<Predictions<E, P>[]> batch = ((SimulationSetupImpl) setup).createBatch();
+		final IJobBatch<Predictions<E, P>[]> batch = ((SimulationSetupImpl<I, E, P>) setup).createBatch();
 		final int numLabels = Check.num(instances.iterator().next().getExpected().length, 1, 10);
-		final Integer labelIndex = ((SimulationSetupImpl) setup).getLabelIndex();
+		final Integer labelIndex = ((SimulationSetupImpl<I, E, P>) setup).getLabelIndex();
 		final FeaturesConfig<I, P> config = setup.getConfig();
 		for (int repetition = 0; repetition < repetitions; ++repetition) {
 			// repetition == 0 ? instances : instances.randomize(random);

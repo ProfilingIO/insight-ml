@@ -18,6 +18,7 @@ package com.insightml.utils.io;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -26,7 +27,7 @@ import com.google.common.collect.ImmutableMap;
 public final class CsvWriterTest {
 
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		final File testOutput = new File("test-ouput.csv");
 		try (CsvWriter writer = new CsvWriter(testOutput, ',', true, "testA", "testB")) {
 			writer.addLine(ImmutableMap.of("testA", 4, "testB", 2));

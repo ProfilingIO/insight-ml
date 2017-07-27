@@ -53,6 +53,7 @@ public final class CsvWriter extends AbstractClass implements AutoCloseable {
 		expectedColumns = Check.size(columns, 1, 1500);
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public void addLine(final Map<? extends CharSequence, ? extends Object> columns) {
 		final StringBuilder line = new StringBuilder();
 		for (final String expected : expectedColumns) {

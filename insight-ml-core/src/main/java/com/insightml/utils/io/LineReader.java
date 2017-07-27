@@ -59,6 +59,7 @@ public final class LineReader implements Iterator<String>, Iterable<String>, Aut
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	@Nonnull
 	public String next() {

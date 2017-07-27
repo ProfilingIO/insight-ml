@@ -52,7 +52,7 @@ public final class FeaturesReport extends AbstractModule
 		return builder.toString();
 	}
 
-	private String append(final IUiProvider provider, final ISamples<?, Double> instances) {
+	private String append(final IUiProvider<ISamples<?, Double>> provider, final ISamples<?, Double> instances) {
 		final String reportClass = provider.getClass().getSimpleName();
 		return reportClass + getLegendWithLB(true, reportClass)
 				+ "\n------------------------------------------------------------------------------------------------\n"

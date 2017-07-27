@@ -17,6 +17,8 @@ package com.insightml.models.meta;
 
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.ISamples;
@@ -49,8 +51,8 @@ public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends Ab
 		return learners;
 	}
 
-	protected abstract IModel<S, O> createModel(ISamples<S, E> instances, ILearner<S, ? extends E, O>[] learner,
-			int labelIndex);
+	protected abstract IModel<S, O> createModel(@Nonnull ISamples<S, E> instances,
+			ILearner<S, ? extends E, O>[] learner, int labelIndex);
 
 	Pair<SamplesMapping<Sample, Object>, double[]> sampleError(final ISamples<Sample, Object> instances,
 			final double[] preds, final Object[] expected, final Random random) {

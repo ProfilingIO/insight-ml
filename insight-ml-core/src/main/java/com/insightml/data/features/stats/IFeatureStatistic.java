@@ -17,9 +17,12 @@ package com.insightml.data.features.stats;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 @FunctionalInterface
 public interface IFeatureStatistic {
 
+	@Nonnull
 	Map<String, Double> run(FeatureStatistics stats);
 
 }

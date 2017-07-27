@@ -36,6 +36,7 @@ public final class IntArray {
 		return i + 1;
 	}
 
+	@SuppressWarnings("null")
 	@Nonnull
 	public int[] toArray() {
 		return Arrays.copyOf(arr, i + 1);

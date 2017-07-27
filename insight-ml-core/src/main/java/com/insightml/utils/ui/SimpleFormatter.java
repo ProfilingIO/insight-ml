@@ -38,6 +38,7 @@ public final class SimpleFormatter extends AbstractNumberPrinter {
 		return createDecimalFormatter(precision, false);
 	}
 
+	@Nonnull
 	public static DecimalFormat createDecimalFormatter(final int precision, final boolean removeFirstZero) {
 		return new DecimalFormat((removeFirstZero ? "" : "0") + "." + Strings.repeat("0", precision));
 	}

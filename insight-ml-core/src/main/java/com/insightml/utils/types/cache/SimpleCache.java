@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 import com.insightml.utils.types.ICopyable;
 
 public final class SimpleCache<K, V> extends Cache<K, V> {
-
 	private static final long serialVersionUID = -3757108358704975812L;
 
 	private Class<V> clazz;
@@ -60,7 +59,7 @@ public final class SimpleCache<K, V> extends Cache<K, V> {
 	public SimpleCache<K, V> copy() {
 		final SimpleCache<K, V> copy = new SimpleCache<>(clazz, size(), passKey);
 		for (final Entry<K, V> entry : this) {
-			copy.put(entry.getKey(), (V) ((ICopyable) entry.getValue()).copy());
+			copy.put(entry.getKey(), ((ICopyable<V>) entry.getValue()).copy());
 		}
 		return copy;
 	}

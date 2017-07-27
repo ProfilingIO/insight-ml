@@ -56,6 +56,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return pipe == null ? new Samples<>((Iterable<I>) test) : (ISamples<I, E>) pipe.run((Iterable<I>) test, false);
 	}
 
+	@SuppressWarnings("null")
 	@Nonnull
 	public P[] run(final Iterable<? extends I> test) {
 		final P[] output = model.apply(preprocess(test));

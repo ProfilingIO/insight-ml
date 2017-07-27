@@ -88,8 +88,9 @@ public final class InstancesFilter {
 		return (int) labels.build(0).statistics().getMin();
 	}
 
+	@SuppressWarnings("null")
 	public static <T extends ITimeSystem<T>, I extends TimeProvider<T>> Collection<I> filterByMarginDate(
-			final Collection<I> instances, final T marginDate) {
+			final @Nonnull Collection<I> instances, final T marginDate) {
 		return Collections2.filter(instances, input -> input.getDate().before(marginDate));
 	}
 }

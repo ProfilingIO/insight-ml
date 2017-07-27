@@ -15,7 +15,6 @@
  */
 package com.insightml.models.optimization;
 
-import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
@@ -51,7 +50,7 @@ public abstract class AbstractModelBlender<I extends Sample, E>
 		for (int i = 0; i < models.length; ++i) {
 			final Double[] preds = models[i].apply(instances);
 			for (int j = 0; j < preds.length; ++j) {
-				map[j][i] = Preconditions.checkNotNull(preds[j]);
+				map[j][i] = Check.notNull(preds[j]);
 			}
 		}
 		return map;

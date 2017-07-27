@@ -32,7 +32,8 @@ public interface IFeatureProvider<I extends Sample> extends IReporter {
 
 	Pair<String[], Map<String, Stats>> featureNames(Iterable<I> samples);
 
-	double[] features(I sample, CharSequence[] features, Map<String, Stats> featureStats, boolean isTraining);
+	double[] features(@Nonnull I sample, @Nonnull CharSequence[] features, Map<String, Stats> featureStats,
+			boolean isTraining);
 
 	Features features(@Nonnull I sample, boolean isTraining);
 

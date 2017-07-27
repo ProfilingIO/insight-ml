@@ -29,8 +29,8 @@ final class ComparisonFinder extends RecursiveTask<ISplit> {
 	private final double labelSum;
 	private final double weightSum;
 
-	public ComparisonFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
-			final double labelSum, final double weightSum, final int feature) {
+	public ComparisonFinder(final SplitFinderContext context, final double labelSum, final double weightSum,
+			final int feature) {
 		this.context = context;
 		this.labelSum = labelSum;
 		this.weightSum = weightSum;

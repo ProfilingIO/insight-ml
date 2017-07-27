@@ -80,16 +80,16 @@ public final class SimulationResultsDumper {
 
 	private static void createCsvReport(final List<SimulationResult> results, final String[] columns,
 			final String file) {
-		final CsvWriter writer = new CsvWriter(new File(file + ".csv"), ';', true, columns);
-		for (final SimulationResult row : results) {
-			final Map<CharSequence, Object> ro = Maps.create(16);
-			ro.put("Model", row.getModel());
-			for (final Entry<String, Float> metric : row.getMetrics().entrySet()) {
-				ro.put(metric.getKey(), metric.getValue());
+		try (CsvWriter writer = new CsvWriter(new File(file + ".csv"), ';', true, columns)) {
+			for (final SimulationResult row : results) {
+				final Map<CharSequence, Object> ro = Maps.create(16);
+				ro.put("Model", row.getModel());
+				for (final Entry<String, Float> metric : row.getMetrics().entrySet()) {
+					ro.put(metric.getKey(), metric.getValue());
+				}
+				writer.addLine(ro);
 			}
-			writer.addLine(ro);
 		}
-		writer.close();
 	}
 
 	private static void createLatexReport(final String datasetName, final List<SimulationResult> results,
@@ -173,19 +173,19 @@ public final class SimulationResultsDumper {
 		header[2] = "comment";
 		header[3] = "predicted";
 		header[4] = "actual";
-		final CsvWriter writer = new CsvWriter(new File(filename), ';', true, header);
-		final List<Triple<Sample, P, Double>> sorted = predictions.toList();
-		Collections.sort(sorted, (o1, o2) -> o2.getThird().compareTo(o1.getThird()));
-		final SimpleFormatter formatter = new SimpleFormatter(5, true);
-		for (final Triple<Sample, P, Double> prediction : sorted) {
-			final Map<CharSequence, Object> map = Maps.create(5);
-			map.put("id", prediction.getFirst().getId());
-			map.put("error", prediction.getThird() == null ? null : formatter.format(prediction.getThird()));
-			map.put("comment", prediction.getFirst().getComment());
-			map.put("predicted", UiUtils.format(prediction.getSecond()));
-			map.put("actual", prediction.getFirst().getExpected(0));
-			writer.addLine(map);
+		try (CsvWriter writer = new CsvWriter(new File(filename), ';', true, header)) {
+			final List<Triple<Sample, P, Double>> sorted = predictions.toList();
+			Collections.sort(sorted, (o1, o2) -> o2.getThird().compareTo(o1.getThird()));
+			final SimpleFormatter formatter = new SimpleFormatter(5, true);
+			for (final Triple<Sample, P, Double> prediction : sorted) {
+				final Map<CharSequence, Object> map = Maps.create(5);
+				map.put("id", prediction.getFirst().getId());
+				map.put("error", prediction.getThird() == null ? null : formatter.format(prediction.getThird()));
+				map.put("comment", prediction.getFirst().getComment());
+				map.put("predicted", UiUtils.format(prediction.getSecond()));
+				map.put("actual", prediction.getFirst().getExpected(0));
+				writer.addLine(map);
+			}
 		}
-		writer.close();
 	}
 }

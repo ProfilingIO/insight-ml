@@ -18,6 +18,8 @@ package com.insightml.data.features.stats;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,8 @@ import com.insightml.utils.ui.reports.IUiProvider;
 public final class FeaturesCorrelation extends AbstractClass implements IUiProvider<ISamples<?, Double>> {
 	private static final Logger LOG = LoggerFactory.getLogger(FeaturesCorrelation.class);
 
+	@SuppressWarnings("null")
+	@Nonnull
 	public static FeatureCorrelation[] correlation(final ISamples<?, ?> table, final int labelIndex) {
 		final long start = System.currentTimeMillis();
 		final FeatureCorrelation[] result = Arrays.of(ParallelFor.run(feature -> {

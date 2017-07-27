@@ -62,6 +62,7 @@ public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjec
 		return new DescriptiveStatistics(new double[] { getResult(sum, weightSum) });
 	}
 
+	@SuppressWarnings("static-method")
 	protected double getResult(final double sum, final double weightSum) {
 		return sum / weightSum;
 	}

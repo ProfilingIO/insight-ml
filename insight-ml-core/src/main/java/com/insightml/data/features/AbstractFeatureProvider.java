@@ -42,12 +42,14 @@ public abstract class AbstractFeatureProvider<I extends Sample> extends Abstract
 		final double[] array = new double[Check.size(features, 1, 5000).length];
 		final Map<String, Double> feats = features(instance, isTraining).asMap();
 		for (int i = 0; i < features.length; ++i) {
+			@SuppressWarnings("unlikely-arg-type")
 			final Double feat = feats.get(features[i]);
 			array[i] = feat == null ? handleMissingValue((String) features[i], featureStats) : feat.doubleValue();
 		}
 		return array;
 	}
 
+	@SuppressWarnings("unused")
 	protected double handleMissingValue(final String featureName, final Map<String, Stats> featureStats) {
 		return defaultValue;
 	}

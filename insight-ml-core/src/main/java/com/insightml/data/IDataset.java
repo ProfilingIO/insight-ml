@@ -15,6 +15,8 @@
  */
 package com.insightml.data;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.ui.reports.IReporter;
@@ -27,6 +29,7 @@ public interface IDataset<S extends Sample, O> extends IReporter {
 
 	Iterable<S> loadAll();
 
+	@Nonnull
 	Iterable<S> loadTraining(Integer labelIndex);
 
 	Iterable<S> loadValidation();

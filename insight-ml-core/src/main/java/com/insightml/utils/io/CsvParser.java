@@ -55,9 +55,11 @@ public class CsvParser<T> extends AbstractClass {
 		this.numColumns = Check.num(numColumns, -1, 104);
 	}
 
+	@SuppressWarnings("resource")
 	public final Iterable<String[]> iterator(final File file) throws IOException {
-		return iterator(new InputStreamReader(file.getName().endsWith(".gz")
-				? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)));
+		return iterator(
+				new InputStreamReader(file.getName().endsWith(".gz") ? new GZIPInputStream(new FileInputStream(file))
+						: new FileInputStream(file)));
 	}
 
 	public final Iterable<String[]> iterator(final Reader reader) {

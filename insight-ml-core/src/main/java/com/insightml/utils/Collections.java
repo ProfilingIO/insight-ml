@@ -112,12 +112,12 @@ public final class Collections {
 	}
 
 	public static <T, N extends Number> LinkedList<Pair<T, N>> sortDescending2(final List<Pair<T, N>> list) {
-		final LinkedList<Pair<T, N>> newList = new LinkedList(list);
+		final LinkedList<Pair<T, N>> newList = new LinkedList<>(list);
 		java.util.Collections.sort(newList, (o1, o2) -> {
 			int comp = Double.valueOf(o1.getSecond().doubleValue()).compareTo(o2.getSecond().doubleValue());
 			if (comp == 0) {
 				if (o1.getFirst() instanceof Comparable) {
-					comp = ((Comparable) o1.getFirst()).compareTo(o2.getFirst());
+					comp = ((Comparable<T>) o1.getFirst()).compareTo(o2.getFirst());
 					Check.state(comp != 0);
 				} else {
 					return 0;

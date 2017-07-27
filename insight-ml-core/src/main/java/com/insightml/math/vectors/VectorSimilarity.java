@@ -49,6 +49,7 @@ public final class VectorSimilarity {
 		int index = -1;
 		for (final Entry<K, Number> feature : features.entrySet()) {
 			vector1[++index] = feature.getValue().doubleValue();
+			@SuppressWarnings("unlikely-arg-type")
 			final Number v2 = map2.get(feature.getKey());
 			vector2[index] = v2 == null ? 0 : v2.doubleValue();
 		}

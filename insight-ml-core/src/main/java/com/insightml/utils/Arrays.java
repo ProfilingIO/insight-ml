@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.math.Vectors;
 
 public final class Arrays {
@@ -88,6 +90,7 @@ public final class Arrays {
 		return fil;
 	}
 
+	@Nonnull
 	public static <T> T[] fill(final int size, final T obj) {
 		final T[] array = (T[]) Array.newInstance(obj.getClass(), size);
 		for (int i = 0; i < array.length; ++i) {
@@ -116,6 +119,7 @@ public final class Arrays {
 		return arr;
 	}
 
+	@Nonnull
 	public static Double[] cast(final double[] array) {
 		final Double[] arr = new Double[array.length];
 		for (int i = 0; i < arr.length; ++i) {

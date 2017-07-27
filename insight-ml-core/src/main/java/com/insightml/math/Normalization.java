@@ -23,7 +23,7 @@ public enum Normalization {
 
 	private INormalizer normalizer;
 
-	INormalizer run(final double[] values) {
+	INormalizer run() {
 		return normalizer;
 	}
 

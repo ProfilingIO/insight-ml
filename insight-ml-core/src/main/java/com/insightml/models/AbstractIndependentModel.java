@@ -36,6 +36,7 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 		super(features);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public final E[] apply(final ISamples<? extends I, ?> instances) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);

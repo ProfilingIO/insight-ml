@@ -93,12 +93,17 @@ public final class Check {
 		return number;
 	}
 
+	@Nonnull
 	public static String length(final String str, final int min, final int max) {
 		return length(str, min, max, null);
 	}
 
+	@Nonnull
 	public static String length(final String str, final int min, final int max, final Object debug) {
-		final int length = Check.notNull(str, debug).length();
+		if (str == null) {
+			throw new NullPointerException(String.valueOf(debug));
+		}
+		final int length = str.length();
 		if (length < min) {
 			thrw("'" + str + "' is too short (" + length + ")", debug);
 		}
