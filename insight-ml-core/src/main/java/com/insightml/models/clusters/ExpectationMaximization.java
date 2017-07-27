@@ -15,11 +15,13 @@
  */
 package com.insightml.models.clusters;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 
 import com.insightml.math.Vectors;
 
-public abstract class ExpectationMaximization<P, D> {
+public abstract class ExpectationMaximization<P, D extends Serializable> {
 
 	@Nonnull
 	public final ExpectationMaximizationResult<D> run(final P[] data, final int components, final int iterations) {
@@ -65,7 +67,9 @@ public abstract class ExpectationMaximization<P, D> {
 
 	protected abstract D maximization(final P[] data, final double[][] points, final int comp);
 
-	public static final class ExpectationMaximizationResult<D> {
+	public static final class ExpectationMaximizationResult<D extends Serializable> implements Serializable {
+		private static final long serialVersionUID = -6315456093852760979L;
+
 		public final D[] comps;
 		public final double[] compWeights;
 		public transient final double[][] data2components;

@@ -36,12 +36,21 @@ public final class ProgressMonitor {
 	}
 
 	public void tick() {
+		tick(null);
+	}
+
+	public void tick(final String info) {
 		final int completed = counter.incrementAndGet();
 		if (completed % reportEveryNTicks == 0) {
 			final double done = completed * 1.0 / totalWork;
 			final long timeSpent = System.currentTimeMillis() - start;
 			final long timeLeft = (long) ((1 - done) / done * timeSpent);
-			LOG.info("Completed {}/{} ({}%) in {} ms; {} ms left", completed, totalWork, done, timeSpent, timeLeft);
+			LOG.info("Completed {}/{} ({}%) in {} ms; {} ms left" + (info == null ? "" : "; just completed: " + info),
+					completed,
+					totalWork,
+					done,
+					timeSpent,
+					timeLeft);
 		}
 	}
 }
