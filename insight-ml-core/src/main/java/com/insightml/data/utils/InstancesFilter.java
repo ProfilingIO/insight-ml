@@ -21,10 +21,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
 import com.insightml.math.types.IntSumMap;
 import com.insightml.math.types.IntSumMap.IntSumMapBuilder;
@@ -58,7 +60,7 @@ public final class InstancesFilter {
 		return new Samples<>(filtered);
 	}
 
-	static <I extends Sample> ISamples<I, ?> filterBySmallestLabelSize(final Iterable<I> instances) {
+	static <I extends Sample> ISamples<I, ?> filterBySmallestLabelSize(final @Nonnull Iterable<I> instances) {
 		final List<I> filtered = new LinkedList<>();
 		final List<I> instancesCopy = Lists.newLinkedList(instances);
 		final int oldSize = instancesCopy.size();

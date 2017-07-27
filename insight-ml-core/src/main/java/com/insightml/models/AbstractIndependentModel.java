@@ -17,6 +17,8 @@ package com.insightml.models;
 
 import java.lang.reflect.Array;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.base.Preconditions;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
@@ -79,6 +81,7 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 		return featuresFilter;
 	}
 
+	@Nonnull
 	protected abstract E predict(final int instance, final ISamples<? extends I, ?> instances, int[] featuresFilter);
 
 }

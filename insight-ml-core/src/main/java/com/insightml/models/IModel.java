@@ -17,6 +17,8 @@ package com.insightml.models;
 
 import java.io.Serializable;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 
@@ -26,6 +28,7 @@ public interface IModel<I extends Sample, E> extends Serializable, ModelInfo {
 
 	String[] features();
 
+	@Nonnull
 	E[] apply(ISamples<? extends I, ?> samples);
 
 	double logLikelihood(I sample, E result);

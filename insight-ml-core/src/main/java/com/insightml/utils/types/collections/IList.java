@@ -20,88 +20,90 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public final class IList<E> extends DefensiveList<E> implements Serializable {
 
-    private static final long serialVersionUID = 2319946981077893168L;
+	private static final long serialVersionUID = 2319946981077893168L;
 
-    final List<E> list;
+	final List<E> list;
 
-    public IList() {
-        list = new LinkedList<>();
-    }
+	public IList() {
+		list = new LinkedList<>();
+	}
 
-    public IList(final E element) {
-        this.list = ImmutableList.of(element);
-    }
+	public IList(final @Nonnull E element) {
+		this.list = ImmutableList.of(element);
+	}
 
-    public IList(final Iterable<E> list) {
-        this.list = Lists.newLinkedList(list);
-    }
+	public IList(final @Nonnull Iterable<E> list) {
+		this.list = Lists.newLinkedList(list);
+	}
 
-    @Override
-    public boolean contains(final Object o) {
-        return list.contains(o);
-    }
+	@Override
+	public boolean contains(final Object o) {
+		return list.contains(o);
+	}
 
-    @Override
-    public E get(final int index) {
-        return list.get(index);
-    }
+	@Override
+	public E get(final int index) {
+		return list.get(index);
+	}
 
-    @Override
-    public int size() {
-        return list.size();
-    }
+	@Override
+	public int size() {
+		return list.size();
+	}
 
-    @Override
-    public boolean isEmpty() {
-        return list.isEmpty();
-    }
+	@Override
+	public boolean isEmpty() {
+		return list.isEmpty();
+	}
 
-    @Override
-    public List<E> subList(final int fromIndex, final int toIndex) {
-        return list.subList(fromIndex, toIndex);
-    }
+	@Override
+	public List<E> subList(final int fromIndex, final int toIndex) {
+		return list.subList(fromIndex, toIndex);
+	}
 
-    @Override
-    public Object[] toArray() {
-        return list.toArray();
-    }
+	@Override
+	public Object[] toArray() {
+		return list.toArray();
+	}
 
-    @Override
-    public <T> T[] toArray(final T[] a) {
-        return list.toArray(a);
-    }
+	@Override
+	public <T> T[] toArray(final T[] a) {
+		return list.toArray(a);
+	}
 
-    @Override
-    public Iterator<E> iterator() {
-        return new Iterator<E>() {
+	@Override
+	public Iterator<E> iterator() {
+		return new Iterator<E>() {
 
-            private final Iterator<E> it = list.iterator();
+			private final Iterator<E> it = list.iterator();
 
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
 
-            @Override
-            public E next() {
-                return it.next();
-            }
+			@Override
+			public E next() {
+				return it.next();
+			}
 
-            @Override
-            public void remove() {
-                throw new IllegalAccessError();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new IllegalAccessError();
+			}
+		};
+	}
 
-    @Override
-    public String toString() {
-        return list.toString();
-    }
+	@Override
+	public String toString() {
+		return list.toString();
+	}
 
 }
