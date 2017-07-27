@@ -16,8 +16,6 @@
 package com.insightml.utils.ui.reports;
 
 import com.insightml.data.features.stats.FeaturesCorrelation;
-import com.insightml.data.features.stats.FeaturesDistribution;
-import com.insightml.data.features.stats.FeaturesImportance;
 import com.insightml.data.features.stats.FeaturesSummary;
 import com.insightml.data.features.stats.SplitGain;
 import com.insightml.data.samples.ISamples;
@@ -44,17 +42,11 @@ public final class FeaturesReport extends AbstractModule
 		if (instances.numFeatures() <= 1000) {
 			builder.append(append(new FeaturesSummary(), instances) + "\n\n");
 		}
-		if (false) {
-			builder.append(append(new FeaturesImportance(), instances) + "\n\n");
-		}
 		if (instances.numLabels() > 0) {
 			if (instances.numFeatures() < 300) {
 				builder.append(append(new SplitGain(), instances) + "\n\n");
 			}
 			builder.append(append(new FeaturesCorrelation(), instances) + "\n\n");
-		}
-		if (false && instances.numFeatures() < 300) {
-			builder.append(append(new FeaturesDistribution(), instances));
 		}
 
 		return builder.toString();

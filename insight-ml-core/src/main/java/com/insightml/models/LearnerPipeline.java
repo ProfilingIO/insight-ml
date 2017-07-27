@@ -92,7 +92,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 			logger.info("Learning on " + ((List) train).size() + " samples, " + valid.size() + " ignored.");
 		}
 
-		ISamples<S, E> valid2 = null;
+		final ISamples<S, E> valid2 = null;
 		FeaturesConfig<? extends S, O> config = null;
 		PreprocessingPipeline<S> pipe = null;
 		if (preprocess) {
@@ -107,9 +107,6 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 				config = origConfig;
 			}
 			pipe = PreprocessingPipeline.create(train, (FeaturesConfig<S, O>) config);
-			if (valid != null && false) {
-				valid2 = pipe.run(valid, true);
-			}
 		} else {
 			config = origConfig;
 		}

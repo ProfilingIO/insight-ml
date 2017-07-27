@@ -130,13 +130,12 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 			for (int i = 0; i < preds.length; ++i) {
 				final long start = System.currentTimeMillis();
 				final ModelPipeline<I, P> model = learner[i].run(sets.getFirst(), sets.getSecond(), config, label);
-				preds[i] = Predictions.create(actualFold, model, sets.getSecond(),
-						(int) (System.currentTimeMillis() - start));
-				logger.info("Completed {} on {} train and {} test samples", getTitle(), sets.getFirst().size(),
+				preds[i] = Predictions
+						.create(actualFold, model, sets.getSecond(), (int) (System.currentTimeMillis() - start));
+				logger.info("Completed {} on {} train and {} test samples",
+						getTitle(),
+						sets.getFirst().size(),
 						sets.getSecond().size());
-				if (false) {
-					logger.info(model.info());
-				}
 			}
 			return preds;
 		}

@@ -34,7 +34,6 @@ import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.jobs.IJobBatch;
 import com.insightml.utils.types.AbstractModule;
-import com.insightml.utils.ui.reports.ImportanceReport;
 import com.insightml.utils.ui.reports.SimulationResultsDumper;
 
 public abstract class AbstractSimulation<I extends Sample> extends AbstractModule implements ISimulation<I> {
@@ -55,8 +54,11 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			final IModelTask<I, E, P> task) {
 		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
 		final ISimulationResults<E, P> result = run(
-				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), }, dataset, arguments,
-				report, task)[0];
+				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), },
+				dataset,
+				arguments,
+				report,
+				task)[0];
 		dataset.close();
 		return result;
 	}
@@ -72,7 +74,7 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learners = setup.getLearner();
 		final SimulationResults<E, P>[] results = new SimulationResults[learners.length];
-		final int numLabels = true ? 1 : train.iterator().next().getExpected().length;
+		final int numLabels = 1;
 		for (int l = 0; l < learners.length; ++l) {
 			final SimulationResultsBuilder<E, P> builder = new SimulationResultsBuilder<>(learners[l].getName(), 1,
 					numLabels, setup);
@@ -84,9 +86,6 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 				builder.add(Predictions.create(1, model, test, (int) (System.currentTimeMillis() - start)));
 				if (setup.doReport()) {
 					logger.info(model.info());
-					if (false) {
-						ImportanceReport.writeLatex(model, setup.getDatasetName(), "logs/models/");
-					}
 				}
 			}
 			results[l] = builder.build();

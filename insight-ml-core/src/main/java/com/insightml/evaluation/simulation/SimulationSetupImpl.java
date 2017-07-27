@@ -89,7 +89,7 @@ public final class SimulationSetupImpl<I extends Sample, E, P> extends AbstractC
 
 	@Override
 	public boolean doDump() {
-		return false && report;
+		return false;
 	}
 
 }

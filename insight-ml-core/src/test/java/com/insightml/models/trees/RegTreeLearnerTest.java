@@ -21,7 +21,6 @@ import com.insightml.TestDatasets;
 import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.RMSE;
 import com.insightml.models.ModelBenchmark;
-import com.insightml.models.meta.GBRT;
 import com.insightml.models.meta.RandomForest;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.models.regression.OLS;
@@ -35,9 +34,6 @@ public final class RegTreeLearnerTest {
 		benchmark.addLearner(new OLS(), -0.75341);
 		benchmark.addLearner(new RegTree(7, 12, true), -0.72892);
 		benchmark.addLearner(new RandomForest(120, 7, 7, 4, 0.55, 0.9, VoteStrategy.HARMONIC), -0.68449);
-		if (false) {
-			benchmark.addLearner(new GBRT(500, 0.06, 0.6, 12, 12, 6), -0.58897);
-		}
 		benchmark.run();
 	}
 }

@@ -35,10 +35,7 @@ public class AbstractModule extends AbstractClass implements IModule {
 
 	@Override
 	public String getDescription() {
-		if (true) {
-			return "-";
-		}
-		throw new IllegalAccessError(getName());
+		return "-";
 	}
 
 }

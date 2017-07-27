@@ -44,6 +44,7 @@ import com.insightml.utils.types.Triple;
 import com.insightml.utils.ui.SimpleFormatter;
 
 public abstract class AbstractOptimizable implements Optimizable {
+	private static final boolean ADDITIONAL_OPTIMIZERS = false;
 
 	private final Convergence convergence;
 	private final SimpleBounds bounds;
@@ -125,7 +126,7 @@ public abstract class AbstractOptimizable implements Optimizable {
 			result = select("CM", cmaes(init.getFirst(), 10), result);
 		}
 		result = select("NM", nelderMead(init.getFirst()), result);
-		if (false) {
+		if (ADDITIONAL_OPTIMIZERS) {
 			result = select("MD", multiDirection(init.getFirst()), result);
 			result = select("PO", powell(init.getFirst()), result);
 			try {
