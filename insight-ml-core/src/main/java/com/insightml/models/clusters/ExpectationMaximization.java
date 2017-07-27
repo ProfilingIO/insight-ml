@@ -15,10 +15,13 @@
  */
 package com.insightml.models.clusters;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.math.Vectors;
 
 public abstract class ExpectationMaximization<P, D> {
 
+	@Nonnull
 	public final ExpectationMaximizationResult<D> run(final P[] data, final int components, final int iterations) {
 		final D[] comps = init(data, components);
 		final double[] compWeights = Vectors.fill(1.0 / components, components);
@@ -65,7 +68,7 @@ public abstract class ExpectationMaximization<P, D> {
 	public static final class ExpectationMaximizationResult<D> {
 		public final D[] comps;
 		public final double[] compWeights;
-		public final double[][] data2components;
+		public transient final double[][] data2components;
 
 		public ExpectationMaximizationResult(final D[] comps, final double[] compWeights,
 				final double[][] data2components) {

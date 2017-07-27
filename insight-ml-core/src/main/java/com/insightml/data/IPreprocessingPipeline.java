@@ -17,6 +17,8 @@ package com.insightml.data;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
@@ -26,6 +28,7 @@ import com.insightml.utils.ui.reports.IReporter;
 
 public interface IPreprocessingPipeline<S extends Sample> extends IReporter {
 
+	@Nonnull
 	<E> ISamples<S, E> run(Iterable<S> input, boolean isTraining);
 
 	IFeatureProvider<S> getProvider();
