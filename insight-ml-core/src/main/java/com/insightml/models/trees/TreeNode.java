@@ -148,8 +148,17 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	}
 
 	private static String presentPrediction(final IStats stats) {
-		return UiUtils.format(stats.getMean()) + " +/- " + UiUtils.format(stats.getStandardDeviation()) + " ("
+		final Double stddev = getStandardDeviation(stats);
+		return UiUtils.format(stats.getMean()) + (stddev == null ? "" : " +/- " + UiUtils.format(stddev)) + " ("
 				+ UiUtils.format(stats.getSumOfWeights()) + ")";
+	}
+
+	private static Double getStandardDeviation(final IStats stats) {
+		try {
+			return stats.getStandardDeviation();
+		} catch (final UnsupportedOperationException e) {
+			return null;
+		}
 	}
 
 	@Override
