@@ -114,8 +114,8 @@ final class GrowJob extends RecursiveAction {
 	}
 
 	private Split findBestSplit() {
-		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder.createThresholdSplitFinder(context,
-				subset, splitCriterionFactory, statisticsFactory);
+		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder
+				.createThresholdSplitFinder(context, subset, splitCriterionFactory, statisticsFactory);
 		return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 	}
 
@@ -123,7 +123,11 @@ final class GrowJob extends RecursiveAction {
 		Split bestSplit = null;
 		for (int i = 0; i < context.orderedInstances.length; ++i) {
 			final Split split = thresholdSplitFinder.apply(i);
-			if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
+			if (split == null) {
+				continue;
+			}
+			if (bestSplit == null
+					|| GrowJob.isFirstBetter(split.improve, bestSplit.improve, split.feature, bestSplit.feature)) {
 				bestSplit = split;
 			}
 		}
@@ -132,12 +136,27 @@ final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
 		Split bestSplit = null;
-		for (final Split split : ParallelFor.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1,
-				executor)) {
-			if (split != null && (bestSplit == null || split.isBetterThan(bestSplit))) {
+		for (final Split split : ParallelFor
+				.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1, executor)) {
+			if (split == null) {
+				continue;
+			}
+			if (bestSplit == null
+					|| GrowJob.isFirstBetter(split.improve, bestSplit.improve, split.feature, bestSplit.feature)) {
 				bestSplit = split;
 			}
 		}
 		return bestSplit;
+	}
+
+	public static boolean isFirstBetter(final double score1, final double score2, final int feature1,
+			final int feature2) {
+		if (score1 < score2) {
+			return false;
+		}
+		if (score1 > score2) {
+			return true;
+		}
+		return feature1 == feature2 ? true : feature1 < feature2;
 	}
 }

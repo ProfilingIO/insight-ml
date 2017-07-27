@@ -64,23 +64,6 @@ abstract class AbstractSplit extends AbstractClass implements ISplit {
 	}
 
 	@Override
-	public final boolean isBetterThan(final ISplit split) {
-		final AbstractSplit splitt = (AbstractSplit) split;
-		return isFirstBetter(improve, splitt.improve, feature, splitt.feature);
-	}
-
-	public static boolean isFirstBetter(final double improvement1, final double improvement2, final int feature1,
-			final int feature2) {
-		if (improvement1 < improvement2) {
-			return false;
-		}
-		if (improvement1 > improvement2) {
-			return true;
-		}
-		return feature1 == feature2 ? true : feature1 < feature2;
-	}
-
-	@Override
 	public final IStats getStatsL() {
 		return statsL;
 	}

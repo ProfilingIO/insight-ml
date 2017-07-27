@@ -27,8 +27,6 @@ public interface ISplit extends IBinarySplit {
 
 	IStats getStatsR();
 
-	boolean isBetterThan(ISplit bestSplit);
-
 	int getFeature();
 
 	int getLastIndexLeft();

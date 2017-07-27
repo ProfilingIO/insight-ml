@@ -61,7 +61,7 @@ final class ComparisonFinder extends RecursiveTask<ISplit> {
 
 				if (left >= context.minObs) {
 					final double improvement = MseSplitCriterion.improvement(labelSumL, null, labelSum, weightSum);
-					if (!AbstractSplit.isFirstBetter(bestImprovement, improvement, i, bestFeature2)) {
+					if (!GrowJob.isFirstBetter(bestImprovement, improvement, i, bestFeature2)) {
 						bestImprovement = improvement;
 						bestFeature2 = i;
 					}
