@@ -48,7 +48,7 @@ public final class ProgressMonitor {
 			LOG.info("Completed {}/{} ({}%) in {} ms; {} ms left" + (info == null ? "" : "; just completed: " + info),
 					completed,
 					totalWork,
-					done,
+					done * 100,
 					timeSpent,
 					timeLeft);
 		}

@@ -15,12 +15,16 @@
  */
 package com.insightml.models.meta;
 
+import java.io.Serializable;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.types.SumMap;
 import com.insightml.models.DoubleModel;
 
-public final class Baseline implements DoubleModel {
+public final class Baseline implements DoubleModel, Serializable {
+	private static final long serialVersionUID = -319726204965685995L;
+
 	private final double value;
 
 	public Baseline(final double value) {
