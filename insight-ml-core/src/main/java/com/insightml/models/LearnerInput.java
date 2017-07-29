@@ -27,6 +27,7 @@ import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
+import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.utils.io.serialization.ISerializer;
 
 public final class LearnerInput<S extends Sample, E> {
@@ -81,7 +82,7 @@ public final class LearnerInput<S extends Sample, E> {
 				: new File("cache/samples_" + train.hashCode() + "_" + pipe.hashCode());
 		if (serializer != null && file != null && file.exists()) {
 			try {
-				return serializer.unserialize(file, ISamples.class);
+				return serializer.unserialize(file, FeaturesDecorator.class);
 			} catch (final Throwable e) {
 				e.printStackTrace();
 			}

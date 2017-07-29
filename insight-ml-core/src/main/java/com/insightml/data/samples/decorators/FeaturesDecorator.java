@@ -37,6 +37,9 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 	private double[][] features;
 	private int[][] orderedByFeatures;
 
+	FeaturesDecorator() {
+	}
+
 	public FeaturesDecorator(final ISamples<S, E> orig, final double[][] features, final String[] featureNames) {
 		super(orig);
 		this.features = features;
