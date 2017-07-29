@@ -102,6 +102,11 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hash(provider, featureNames, normalization);
+	}
+
+	@Override
 	public boolean equals(final Object obj) {
 		final PreprocessingPipeline<?> oth = (PreprocessingPipeline<?>) obj;
 		Check.state(provider.equals(oth.provider), provider);

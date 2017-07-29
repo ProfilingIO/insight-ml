@@ -39,7 +39,7 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 	private final int repetitions;
 
 	public CrossValidation(final int folds, final int repetitions, final SimulationResultConsumer database) {
-		super((repetitions == 1 ? "" : repetitions + "x ") + folds + "-Fold Cross-Validation", database);
+		super((repetitions == 1 ? "" : repetitions + "x ") + folds + "-Fold Cross-Validation", database, null);
 		this.folds = Check.num(folds, 2, 20);
 		this.repetitions = Check.num(repetitions, 1, 10);
 	}

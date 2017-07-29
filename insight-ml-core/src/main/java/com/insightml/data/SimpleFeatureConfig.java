@@ -15,6 +15,7 @@
  */
 package com.insightml.data;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
@@ -48,5 +49,10 @@ public final class SimpleFeatureConfig<I extends Sample, P> extends FeaturesConf
 	@Override
 	public IFeatureFilter newFeatureFilter() {
 		return filter;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(provider, filter, getNormalization(), getPostProcessor());
 	}
 }

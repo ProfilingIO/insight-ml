@@ -32,6 +32,7 @@ import com.insightml.models.ModelPipeline;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
+import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.jobs.IJobBatch;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.ui.reports.SimulationResultsDumper;
@@ -42,10 +43,13 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 	private final Logger logger = LoggerFactory.getLogger(AbstractSimulation.class);
 
 	private final SimulationResultConsumer simulationResultConsumer;
+	private final ISerializer serializer;
 
-	protected AbstractSimulation(final String name, final SimulationResultConsumer simulationResultConsumer) {
+	protected AbstractSimulation(final String name, final SimulationResultConsumer simulationResultConsumer,
+			final ISerializer serializer) {
 		super(name);
 		this.simulationResultConsumer = Preconditions.checkNotNull(simulationResultConsumer);
+		this.serializer = serializer;
 	}
 
 	@Override
@@ -54,7 +58,7 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			final IModelTask<I, E, P> task) {
 		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
 		final ISimulationResults<E, P> result = run(
-				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit), },
+				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit, serializer), },
 				dataset,
 				arguments,
 				report,

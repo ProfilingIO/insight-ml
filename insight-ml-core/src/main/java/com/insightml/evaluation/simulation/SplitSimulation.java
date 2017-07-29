@@ -31,7 +31,7 @@ public final class SplitSimulation<I extends Sample> extends AbstractSimulation<
 	private final double trainFraction;
 
 	public SplitSimulation(final double trainFraction, final SimulationResultConsumer database) {
-		super((int) (trainFraction * 100) + "/" + (int) ((1 - trainFraction) * 100) + " Split", database);
+		super((int) (trainFraction * 100) + "/" + (int) ((1 - trainFraction) * 100) + " Split", database, null);
 		this.trainFraction = trainFraction;
 	}
 

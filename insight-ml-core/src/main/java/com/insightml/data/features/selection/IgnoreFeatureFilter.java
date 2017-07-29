@@ -19,26 +19,31 @@ import com.insightml.utils.types.AbstractClass;
 
 public final class IgnoreFeatureFilter extends AbstractClass implements IFeatureFilter {
 
-    private static final long serialVersionUID = -7692774720196688190L;
+	private static final long serialVersionUID = -7692774720196688190L;
 
-    @Override
-    public void ignoreFeature(final String feature) {
-        throw new IllegalAccessError();
-    }
+	@Override
+	public void ignoreFeature(final String feature) {
+		throw new IllegalAccessError();
+	}
 
-    @Override
-    public String[] allowedFeatures(final String[] features) {
-        return features;
-    }
+	@Override
+	public String[] allowedFeatures(final String[] features) {
+		return features;
+	}
 
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof IgnoreFeatureFilter;
-    }
+	@Override
+	public int hashCode() {
+		return "IgnoreFeatureFilter".hashCode();
+	}
 
-    @Override
-    public String toString() {
-        return "IgnoreFeatureFilter";
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		return obj instanceof IgnoreFeatureFilter;
+	}
+
+	@Override
+	public String toString() {
+		return "IgnoreFeatureFilter";
+	}
 
 }

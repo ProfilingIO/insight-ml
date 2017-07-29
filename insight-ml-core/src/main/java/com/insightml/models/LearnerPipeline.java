@@ -32,6 +32,7 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.simulation.SplitSimulation;
 import com.insightml.evaluation.simulation.optimization.IFeatureSelection;
+import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.types.DoublePair;
 
@@ -40,34 +41,38 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 
 	private static final long serialVersionUID = 8008644928002890346L;
 
+	private final Logger logger = LoggerFactory.getLogger(LearnerPipeline.class);
+
 	private final ILearner<? super S, E, O> learner;
 	private final double trainRatio;
-	private boolean preprocess;
-	private final Logger logger = LoggerFactory.getLogger(LearnerPipeline.class);
+	private final boolean preprocess;
+	private final ISerializer serializer;
 
 	private IFeatureSelection<S, E, O> selection;
 
 	public LearnerPipeline(final ILearner<? super S, E, O> learner) {
-		this(learner, 1.0, true);
+		this(learner, 1.0, true, null);
 	}
 
 	public LearnerPipeline(final ILearner<? super S, E, O> learner, final boolean preprocess) {
-		this(learner, 1.0, preprocess);
+		this(learner, 1.0, preprocess, null);
 	}
 
 	public LearnerPipeline(final ILearner<? super S, E, O> learner, final IFeatureSelection<S, E, O> selection) {
-		this(learner, 1.0, true);
+		this(learner, 1.0, true, null);
 		this.selection = selection;
 	}
 
 	public LearnerPipeline(final ILearner<S, E, O> learner, final double trainRatio) {
-		this(learner, trainRatio, true);
+		this(learner, trainRatio, true, null);
 	}
 
-	public LearnerPipeline(final ILearner<? super S, E, O> learner, final double trainRatio, final boolean preprocess) {
+	public LearnerPipeline(final ILearner<? super S, E, O> learner, final double trainRatio, final boolean preprocess,
+			final ISerializer serializer) {
 		this.learner = Preconditions.checkNotNull(learner);
 		this.trainRatio = trainRatio;
 		this.preprocess = preprocess;
+		this.serializer = serializer;
 	}
 
 	@Override
@@ -112,6 +117,6 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		}
 		valid = null;
 
-		return new Pair<>(learner.run(new LearnerInput(train, valid2, labelIndex, origConfig, pipe)), pipe);
+		return new Pair<>(learner.run(new LearnerInput(train, valid2, labelIndex, origConfig, pipe, serializer)), pipe);
 	}
 }
