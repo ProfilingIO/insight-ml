@@ -17,6 +17,8 @@ package com.insightml.utils;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public final class Arguments implements IArguments {
 	private static final long serialVersionUID = 4806144248416561294L;
@@ -41,6 +43,11 @@ public final class Arguments implements IArguments {
 	}
 
 	@Override
+	public Set<Entry<String, Serializable>> entrySet() {
+		return values.entrySet();
+	}
+
+	@Override
 	public boolean containsKey(final String key) {
 		return values.containsKey(key);
 	}
@@ -54,7 +61,7 @@ public final class Arguments implements IArguments {
 	public void set(final String key, final Serializable value) {
 		final Serializable old = values.put(key, value);
 		if (old != null && !value.equals(old)) {
-			System.err.println("Overwrote " + key + " from " + old + " to " + value);
+			throw new IllegalAccessError("Overwrote " + key + " from " + old + " to " + value);
 		}
 	}
 

@@ -16,6 +16,8 @@
 package com.insightml.utils;
 
 import java.io.Serializable;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public interface IArguments extends Serializable {
 
@@ -38,5 +40,7 @@ public interface IArguments extends Serializable {
 	boolean containsKey(String key);
 
 	<T extends Serializable> T get(String key);
+
+	Set<Entry<String, Serializable>> entrySet();
 
 }
