@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.insightml.utils.io.serialization;
-
-import java.io.File;
-import java.io.IOException;
+package com.insightml.utils.pipeline;
 
 import javax.annotation.Nonnull;
 
-public interface ISerializer {
+public interface PipelineConsumer<T> {
 
-	<T> T serialize(T obj, String dir);
-
-	<T> T serialize(File file, T obj);
-
-	@Nonnull
-	<T> T unserialize(File file, Class<T> clazz) throws IOException;
-
-	<T> T loadOrCreate(T instance, String dir);
+	void consume(@Nonnull T input) throws Exception;
 
 }

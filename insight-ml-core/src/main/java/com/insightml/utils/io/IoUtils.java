@@ -177,6 +177,7 @@ public final class IoUtils {
 		}
 	}
 
+	@Nonnull
 	public static BufferedWriter writer(final File file, final boolean gzip) {
 		try {
 			final int sz = (int) Math.pow(1024, 2);
