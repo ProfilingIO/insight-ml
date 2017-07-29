@@ -15,6 +15,8 @@
  */
 package com.insightml.models;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 import com.google.common.base.Supplier;
@@ -30,12 +32,14 @@ public final class LearnerInput<S extends Sample, E> {
 	public final @Nullable ISamples<S, E> valid;
 	public final @Nullable FeaturesConfig<S, ?> config;
 	public final int labelIndex;
+	private final int hashCode;
 
 	public LearnerInput(final ISamples<S, E> train, final int labelIndex) {
 		this.train = () -> train;
 		valid = null;
 		config = null;
 		this.labelIndex = labelIndex;
+		this.hashCode = Objects.hash(train, labelIndex);
 	}
 
 	public LearnerInput(final Supplier<ISamples<S, E>> train, final @Nullable ISamples<S, E> valid,
@@ -44,6 +48,7 @@ public final class LearnerInput<S extends Sample, E> {
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
+		hashCode = super.hashCode();
 	}
 
 	public LearnerInput(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
@@ -52,6 +57,7 @@ public final class LearnerInput<S extends Sample, E> {
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
+		this.hashCode = Objects.hash(train, valid, config, labelIndex);
 	}
 
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
@@ -60,6 +66,7 @@ public final class LearnerInput<S extends Sample, E> {
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
+		hashCode = super.hashCode();
 	}
 
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
@@ -72,6 +79,11 @@ public final class LearnerInput<S extends Sample, E> {
 
 	public ISamples<S, E> getTrain() {
 		return train.get();
+	}
+
+	@Override
+	public int hashCode() {
+		return hashCode;
 	}
 
 }
