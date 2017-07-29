@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -96,6 +97,11 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 				Arrays.asList(prov, new DivFeaturesProvider<>(prov, defaultValue)));
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(provider, useDivFeaturesProvider, filter);
+	}
+
 	public static final class SimpleFeatureProvider<S extends Sample> extends GeneralFeatureProvider<S> {
 		private final List<Pair<String, String>> features;
 		private final Function<S, Features> simpleFeaturesProvider;
@@ -118,6 +124,11 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		@Override
 		public Features features(final S sample, final boolean isTraining) {
 			return simpleFeaturesProvider.apply(sample);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(features);
 		}
 	}
 
