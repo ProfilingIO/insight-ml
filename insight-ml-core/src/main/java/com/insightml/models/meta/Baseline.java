@@ -25,7 +25,10 @@ import com.insightml.models.DoubleModel;
 public final class Baseline implements DoubleModel, Serializable {
 	private static final long serialVersionUID = -319726204965685995L;
 
-	private final double value;
+	private double value;
+
+	Baseline() {
+	}
 
 	public Baseline(final double value) {
 		this.value = value;

@@ -19,34 +19,37 @@ import java.io.Serializable;
 
 public final class DoublePair<T> extends AbstractClass implements Serializable {
 
-    private static final long serialVersionUID = 850618188901102118L;
+	private static final long serialVersionUID = 850618188901102118L;
 
-    private final T first;
-    private final double second;
+	private T first;
+	private double second;
 
-    public DoublePair(final T first, final double second) {
-        this.first = first;
-        this.second = second;
-        if (Double.isNaN(second)) {
-            throw new IllegalStateException(first + "");
-        }
-    }
+	DoublePair() {
+	}
 
-    public T getKey() {
-        return first;
-    }
+	public DoublePair(final T first, final double second) {
+		this.first = first;
+		this.second = second;
+		if (Double.isNaN(second)) {
+			throw new IllegalStateException(first + "");
+		}
+	}
 
-    public double getValue() {
-        return second;
-    }
+	public T getKey() {
+		return first;
+	}
 
-    public int compareDouble(final DoublePair<?> pair) {
-        return Double.compare(second, pair.second);
-    }
+	public double getValue() {
+		return second;
+	}
 
-    @Override
-    public String toString() {
-        return "(" + first + ", " + second + ")";
-    }
+	public int compareDouble(final DoublePair<?> pair) {
+		return Double.compare(second, pair.second);
+	}
+
+	@Override
+	public String toString() {
+		return "(" + first + ", " + second + ")";
+	}
 
 }
