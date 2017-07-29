@@ -23,6 +23,7 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 
 public abstract class AbstractDecorator<S extends Sample, E> extends AbstractSamples<S, E> {
+	private static final long serialVersionUID = -806564214146792007L;
 
 	protected final ISamples<S, E> ref;
 

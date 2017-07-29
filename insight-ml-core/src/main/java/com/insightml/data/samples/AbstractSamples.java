@@ -15,7 +15,6 @@
  */
 package com.insightml.data.samples;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +28,7 @@ import com.insightml.utils.Check;
 import com.insightml.utils.types.collections.IntArray;
 
 public abstract class AbstractSamples<S extends Sample, E> implements ISamples<S, E> {
+	private static final long serialVersionUID = 7627952745618197898L;
 
 	@Override
 	public final SamplesMapping<S, E> subset(final int[] indexes) {
@@ -84,11 +84,6 @@ public abstract class AbstractSamples<S extends Sample, E> implements ISamples<S
 			keep[i] = random.nextDouble() <= ratio;
 		}
 		return filterFeatures(keep);
-	}
-
-	@Override
-	public Iterator<S> iterator() {
-		throw new UnsupportedOperationException();
 	}
 
 }

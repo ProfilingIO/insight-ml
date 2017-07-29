@@ -15,13 +15,14 @@
  */
 package com.insightml.data.samples.decorators;
 
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.Vectors;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 
 public final class FeaturesFilterDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
+	private static final long serialVersionUID = 2742206788138781257L;
 
 	private final boolean[] filter;
 	private final int[] map;

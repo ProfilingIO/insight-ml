@@ -16,7 +16,6 @@
 package com.insightml.models;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -83,11 +82,12 @@ public final class LearnerInput<S extends Sample, E> {
 		if (serializer != null && file != null && file.exists()) {
 			try {
 				return serializer.unserialize(file, ISamples.class);
-			} catch (final IOException e) {
+			} catch (final Throwable e) {
 				e.printStackTrace();
 			}
 		}
 		final ISamples<S, E> result = pipe.run(train, true);
+		result.orderedIndexes();
 		if (serializer != null) {
 			serializer.serialize(file, result);
 		}
@@ -97,7 +97,7 @@ public final class LearnerInput<S extends Sample, E> {
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
 			final FeaturesConfig<S, O> config) {
 		return new LearnerInput<>(Suppliers.memoize(() -> {
-			final PreprocessingPipeline<S> pipe = PreprocessingPipeline.create(data, config);
+			final PreprocessingPipeline<S> pipe = PreprocessingPipeline.create(data, config, null);
 			return pipe == null ? new Samples<>(data) : pipe.run(data, true);
 		}), null, config, 0);
 	}

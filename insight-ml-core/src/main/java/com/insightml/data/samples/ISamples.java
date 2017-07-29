@@ -15,11 +15,12 @@
  */
 package com.insightml.data.samples;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-public interface ISamples<S extends Sample, E> extends Iterable<S> {
+public interface ISamples<S extends Sample, E> extends Serializable {
 
 	S get(int i);
 

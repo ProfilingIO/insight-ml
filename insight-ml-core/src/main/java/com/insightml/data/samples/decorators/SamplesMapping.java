@@ -21,6 +21,7 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 
 public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator<S, E> {
+	private static final long serialVersionUID = 5410695563675584751L;
 
 	final int[] map;
 	private final double[][] features;

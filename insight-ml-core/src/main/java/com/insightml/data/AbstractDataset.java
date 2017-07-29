@@ -49,7 +49,7 @@ public abstract class AbstractDataset<I extends Sample, P> extends AbstractModul
 
 	@Override
 	public final PreprocessingPipeline<I> pipeline(final Iterable<I> train) {
-		return PreprocessingPipeline.create(train, getFeaturesConfig(null));
+		return PreprocessingPipeline.create(train, getFeaturesConfig(null), null);
 	}
 
 	@Override

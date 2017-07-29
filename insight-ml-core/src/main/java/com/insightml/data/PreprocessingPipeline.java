@@ -15,7 +15,10 @@
  */
 package com.insightml.data;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +34,7 @@ import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.math.Normalization;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
+import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.types.AbstractConfigurable;
 
 public final class PreprocessingPipeline<S extends Sample> extends AbstractConfigurable
@@ -63,11 +67,24 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	}
 
 	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
-			final FeaturesConfig<S, ?> config) {
-		return create(trainingSamples,
+			final FeaturesConfig<S, ?> config, final ISerializer serializer) {
+		final File file = serializer == null ? null
+				: new File("cache/pipeline_" + trainingSamples.hashCode() + "_" + config.hashCode());
+		if (file != null && serializer != null && file.exists()) {
+			try {
+				return serializer.unserialize(file, PreprocessingPipeline.class);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+		final PreprocessingPipeline<S> pipeline = create(trainingSamples,
 				config.newFeatureProvider(),
 				config.newFeatureFilter(),
 				config.getNormalization());
+		if (serializer != null) {
+			serializer.serialize(file, pipeline);
+		}
+		return pipeline;
 	}
 
 	@Override
@@ -103,7 +120,7 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(provider, featureNames, normalization);
+		return Arrays.hashCode(featureNames);
 	}
 
 	@Override

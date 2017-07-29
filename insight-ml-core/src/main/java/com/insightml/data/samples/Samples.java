@@ -15,7 +15,6 @@
  */
 package com.insightml.data.samples;
 
-import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +27,7 @@ import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.collections.ArrayIterator;
 
-public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> implements Serializable {
+public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> implements Iterable<S> {
 
 	private static final long serialVersionUID = 3351881040269525917L;
 

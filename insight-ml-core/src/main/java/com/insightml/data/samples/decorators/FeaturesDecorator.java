@@ -29,10 +29,12 @@ import com.insightml.math.statistics.Stats;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
+	private static final long serialVersionUID = -2321252279857532465L;
+
 	private static final Logger LOG = LoggerFactory.getLogger(FeaturesDecorator.class);
 
 	private String[] featureNames;
-	double[][] features;
+	private double[][] features;
 	private int[][] orderedByFeatures;
 
 	public FeaturesDecorator(final ISamples<S, E> orig, final double[][] features, final String[] featureNames) {

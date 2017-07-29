@@ -16,11 +16,12 @@
 package com.insightml.data.samples.decorators;
 
 import com.google.common.base.Preconditions;
-import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.Check;
 
 public final class LabelDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
+	private static final long serialVersionUID = 8741409672524384788L;
 
 	private final E[] expected;
 	private final int label;
