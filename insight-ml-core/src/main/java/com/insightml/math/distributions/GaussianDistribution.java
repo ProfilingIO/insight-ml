@@ -23,11 +23,14 @@ import com.insightml.utils.ui.SimpleFormatter;
 public final class GaussianDistribution extends AbstractGaussian {
 	private static final long serialVersionUID = -7890800047310199392L;
 
-	private final double mean;
-	private final double stddev;
+	private double mean;
+	private double stddev;
 
-	private final double sigmaSquare;
-	private final double factor;
+	private double sigmaSquare;
+	private double factor;
+
+	GaussianDistribution() {
+	}
 
 	public GaussianDistribution(final double mean, final double stddev) {
 		this.mean = mean;

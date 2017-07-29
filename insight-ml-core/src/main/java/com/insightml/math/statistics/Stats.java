@@ -15,13 +15,16 @@
  */
 package com.insightml.math.statistics;
 
+import java.io.Serializable;
+
 import com.google.common.base.Preconditions;
 import com.insightml.math.distributions.GaussianDistribution;
 import com.insightml.math.types.Interval;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.ui.SimpleFormatter;
 
-public final class Stats extends AbstractClass implements MutableStatistics {
+public final class Stats extends AbstractClass implements MutableStatistics, Serializable {
+	private static final long serialVersionUID = 5899748228598382827L;
 
 	private int n;
 	private double sum;

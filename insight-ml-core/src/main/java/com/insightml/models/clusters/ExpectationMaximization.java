@@ -70,9 +70,12 @@ public abstract class ExpectationMaximization<P, D extends Serializable> {
 	public static final class ExpectationMaximizationResult<D extends Serializable> implements Serializable {
 		private static final long serialVersionUID = -6315456093852760979L;
 
-		public final D[] comps;
-		public final double[] compWeights;
-		public transient final double[][] data2components;
+		public D[] comps;
+		public double[] compWeights;
+		public transient double[][] data2components;
+
+		ExpectationMaximizationResult() {
+		}
 
 		public ExpectationMaximizationResult(final D[] comps, final double[] compWeights,
 				final double[][] data2components) {
