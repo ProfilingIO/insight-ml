@@ -38,10 +38,12 @@ public abstract class PipelineSource<T> implements PipelineElement {
 		final long start = System.currentTimeMillis();
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		if (loadSerializedResultsIfAvailable && serializationFile.exists()) {
-			final T result = serializer.unserialize(new File("sub.model"), serializationClass);
+			logger.info("Loading source from {}", serializationFile);
+			final T result = serializer.unserialize(serializationFile, serializationClass);
 			logger.info("Loaded source from {} in {} ms",
 					serializationFile,
 					Long.valueOf(System.currentTimeMillis() - start));
+			deserializationCallback(result);
 			return result;
 		}
 		final T result = load();
@@ -54,6 +56,9 @@ public abstract class PipelineSource<T> implements PipelineElement {
 		}
 		logger.info("Loaded source in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 		return result;
+	}
+
+	protected void deserializationCallback(@SuppressWarnings("unused") final @Nonnull T result) {
 	}
 
 	public final void consume(final PipelineConsumer<T> consumer) throws Exception {
