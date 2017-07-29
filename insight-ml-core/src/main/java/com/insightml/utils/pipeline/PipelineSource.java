@@ -17,6 +17,7 @@ package com.insightml.utils.pipeline;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import javax.annotation.Nonnull;
 
@@ -34,28 +35,36 @@ public abstract class PipelineSource<T> implements PipelineElement {
 	private boolean loadSerializedResultsIfAvailable;
 
 	@Nonnull
-	public final T get() throws IOException {
+	public final T get() {
 		final long start = System.currentTimeMillis();
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		if (loadSerializedResultsIfAvailable && serializationFile.exists()) {
 			logger.info("Loading source from {}", serializationFile);
-			final T result = serializer.unserialize(serializationFile, serializationClass);
-			logger.info("Loaded source from {} in {} ms",
-					serializationFile,
-					Long.valueOf(System.currentTimeMillis() - start));
-			deserializationCallback(result);
-			return result;
-		}
-		final T result = load();
-		if (serializeResult) {
 			try {
-				serializer.serialize(serializationFile, result);
+				final T result = serializer.unserialize(serializationFile, serializationClass);
+				logger.info("Loaded source from {} in {} ms",
+						serializationFile,
+						Long.valueOf(System.currentTimeMillis() - start));
+				deserializationCallback(result);
+				return result;
 			} catch (final Throwable e) {
 				logger.error("{}", e, e);
 			}
 		}
-		logger.info("Loaded source in {} ms", Long.valueOf(System.currentTimeMillis() - start));
-		return result;
+		try {
+			final T result = load();
+			if (serializeResult) {
+				try {
+					serializer.serialize(serializationFile, result);
+				} catch (final Throwable e) {
+					logger.error("{}", e, e);
+				}
+			}
+			logger.info("Loaded source in {} ms", Long.valueOf(System.currentTimeMillis() - start));
+			return result;
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	protected void deserializationCallback(@SuppressWarnings("unused") final @Nonnull T result) {

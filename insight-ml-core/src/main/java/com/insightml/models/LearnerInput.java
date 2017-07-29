@@ -15,7 +15,6 @@
  */
 package com.insightml.models;
 
-import java.io.File;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -24,10 +23,9 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.PreprocessingPipeline;
+import com.insightml.data.PreprocessingPipelineSupplier;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
-import com.insightml.data.samples.Samples;
-import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.utils.io.serialization.ISerializer;
 
 public final class LearnerInput<S extends Sample, E> {
@@ -66,41 +64,18 @@ public final class LearnerInput<S extends Sample, E> {
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
 			final @Nullable FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe,
 			final ISerializer serializer) {
-		this.train = Suppliers.memoize(() -> createSamples(train, pipe, serializer));
+		this.train = Suppliers.memoize(() -> new LearnerInputSource<S, E>(train, pipe, serializer).get());
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
 		hashCode = Objects.hash(train, valid, pipe, config, labelIndex);
 	}
 
-	private static <S extends Sample, E> ISamples<S, E> createSamples(final Iterable<S> train,
-			final PreprocessingPipeline<S> pipe, final ISerializer serializer) {
-		if (pipe == null) {
-			return new Samples<>(train);
-		}
-		final File file = serializer == null ? null
-				: new File("cache/samples_" + train.hashCode() + "_" + pipe.hashCode());
-		if (serializer != null && file != null && file.exists()) {
-			try {
-				return serializer.unserialize(file, FeaturesDecorator.class);
-			} catch (final Throwable e) {
-				e.printStackTrace();
-			}
-		}
-		final ISamples<S, E> result = pipe.run(train, true);
-		result.orderedIndexes();
-		if (serializer != null) {
-			serializer.serialize(file, result);
-		}
-		return result;
-	}
-
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
 			final FeaturesConfig<S, O> config) {
-		return new LearnerInput<>(Suppliers.memoize(() -> {
-			final PreprocessingPipeline<S> pipe = PreprocessingPipeline.create(data, config, null);
-			return pipe == null ? new Samples<>(data) : pipe.run(data, true);
-		}), null, config, 0);
+		return new LearnerInput<>(
+				Suppliers.memoize(() -> new PreprocessingPipelineSupplier<>(data, config, null).get().run(data, true)),
+				null, config, 0);
 	}
 
 	public ISamples<S, E> getTrain() {

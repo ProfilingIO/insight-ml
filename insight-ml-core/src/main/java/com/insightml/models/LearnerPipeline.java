@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.PreprocessingPipeline;
+import com.insightml.data.PreprocessingPipelineSupplier;
 import com.insightml.data.SimpleFeatureConfig;
 import com.insightml.data.features.selection.ManualSelectionFilter;
 import com.insightml.data.samples.ISamples;
@@ -111,7 +112,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 			if (config == null) {
 				config = origConfig;
 			}
-			pipe = PreprocessingPipeline.create(train, (FeaturesConfig<S, O>) config, serializer);
+			pipe = new PreprocessingPipelineSupplier<>(train, (FeaturesConfig<S, O>) config, serializer).get();
 		} else {
 			config = origConfig;
 		}
