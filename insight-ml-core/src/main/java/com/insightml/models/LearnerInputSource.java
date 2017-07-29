@@ -21,6 +21,7 @@ import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
+import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.pipeline.PipelineSource;
 
@@ -35,7 +36,7 @@ public class LearnerInputSource<S extends Sample, E> extends PipelineSource<ISam
 
 		if (pipe != null && serializer != null) {
 			serializeResult(new File("cache/samples_" + train.hashCode() + "_" + pipe.hashCode()), serializer);
-			this.loadSerializedResultsIfAvailable(PreprocessingPipeline.class);
+			this.loadSerializedResultsIfAvailable(FeaturesDecorator.class);
 		}
 	}
 

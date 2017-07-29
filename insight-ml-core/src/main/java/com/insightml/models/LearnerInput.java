@@ -29,46 +29,42 @@ import com.insightml.data.samples.Sample;
 import com.insightml.utils.io.serialization.ISerializer;
 
 public final class LearnerInput<S extends Sample, E> {
-	private final Supplier<ISamples<S, E>> train;
-	public final @Nullable ISamples<S, E> valid;
-	public final @Nullable FeaturesConfig<S, ?> config;
-	public final int labelIndex;
-	private final int hashCode;
+	private ISamples<S, E> train;
+	public @Nullable ISamples<S, E> valid;
+	public @Nullable FeaturesConfig<S, ?> config;
+	public int labelIndex;
+	private int hashCode;
+
+	LearnerInput() {
+	}
 
 	public LearnerInput(final ISamples<S, E> train, final int labelIndex) {
-		this.train = () -> train;
-		valid = null;
-		config = null;
-		this.labelIndex = labelIndex;
-		this.hashCode = Objects.hash(train, labelIndex);
+		this(train, null, null, labelIndex);
 	}
 
 	public LearnerInput(final Supplier<ISamples<S, E>> train, final @Nullable ISamples<S, E> valid,
 			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
-		this.train = train;
-		this.valid = valid;
-		this.config = config;
-		this.labelIndex = labelIndex;
-		hashCode = super.hashCode();
-	}
-
-	public LearnerInput(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
-			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
-		this.train = () -> train;
-		this.valid = valid;
-		this.config = config;
-		this.labelIndex = labelIndex;
-		this.hashCode = Objects.hash(train, valid, config, labelIndex);
+		this(train.get(), valid, config, labelIndex);
 	}
 
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
 			final @Nullable FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe,
 			final ISerializer serializer) {
-		this.train = Suppliers.memoize(() -> new LearnerInputSource<S, E>(train, pipe, serializer).get());
+		this(createSamples(train, pipe, serializer), valid, config, labelIndex);
+	}
+
+	private static <S extends Sample, E> ISamples<S, E> createSamples(final Iterable<S> train,
+			final PreprocessingPipeline<S> pipe, final ISerializer serializer) {
+		return new LearnerInputSource<S, E>(train, pipe, serializer).get();
+	}
+
+	public LearnerInput(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
+			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
+		this.train = train;
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
-		hashCode = Objects.hash(train, valid, pipe, config, labelIndex);
+		this.hashCode = Objects.hash(train, valid, config, labelIndex);
 	}
 
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
@@ -79,7 +75,7 @@ public final class LearnerInput<S extends Sample, E> {
 	}
 
 	public ISamples<S, E> getTrain() {
-		return train.get();
+		return train;
 	}
 
 	@Override

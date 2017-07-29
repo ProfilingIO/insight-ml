@@ -20,11 +20,9 @@ import java.util.Map;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
-import com.insightml.utils.types.AbstractConfigurable;
-import com.insightml.utils.types.Parameter;
+import com.insightml.utils.types.AbstractModule;
 
-public abstract class AbstractFeatureProvider<I extends Sample> extends AbstractConfigurable
-		implements IFeatureProvider<I> {
+public abstract class AbstractFeatureProvider<I extends Sample> extends AbstractModule implements IFeatureProvider<I> {
 
 	protected double defaultValue;
 
@@ -57,10 +55,5 @@ public abstract class AbstractFeatureProvider<I extends Sample> extends Abstract
 	@Override
 	public String getReport() {
 		throw new IllegalAccessError();
-	}
-
-	@Override
-	public Object[] getComponents() {
-		return new Object[] { new Parameter("default_value", defaultValue) };
 	}
 }

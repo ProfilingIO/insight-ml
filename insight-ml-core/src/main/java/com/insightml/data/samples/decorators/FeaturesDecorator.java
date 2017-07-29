@@ -15,6 +15,7 @@
  */
 package com.insightml.data.samples.decorators;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -152,4 +153,8 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		return Arrays.deepHashCode(features);
+	}
 }
