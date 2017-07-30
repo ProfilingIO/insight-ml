@@ -84,12 +84,17 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<IModel<S, O>, PreprocessingPipeline<S>> modelAndPipe = modelAndPipe(data, config, labelIndex);
-		return new ModelPipeline<>(modelAndPipe.getFirst(), modelAndPipe.getSecond(),
+		final Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe = modelAndPipe(data, config, labelIndex);
+		return run(modelAndPipe.getFirst(), modelAndPipe.getSecond(), config, labelIndex);
+	}
+
+	public ModelPipeline<S, O> run(final LearnerInput learnerInput, final PreprocessingPipeline<S> pipe,
+			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
+		return new ModelPipeline<S, O>(learner.run(learnerInput), pipe,
 				config == null ? null : config.getPostProcessor(), labelIndex);
 	}
 
-	private Pair<IModel<S, O>, PreprocessingPipeline<S>> modelAndPipe(final Iterable<S> data,
+	public Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe(final Iterable<S> data,
 			final FeaturesConfig<? extends S, O> origConfig, final int labelIndex) {
 		final Pair<Iterable<S>, List<S>> split = SplitSimulation.split(data, trainRatio, null);
 		final Iterable<S> train = split.getFirst();
@@ -118,6 +123,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		}
 		valid = null;
 
-		return new Pair<>(learner.run(new LearnerInput(train, valid2, labelIndex, origConfig, pipe, serializer)), pipe);
+		final LearnerInput learnerInput = new LearnerInput(train, valid2, labelIndex, origConfig, pipe, serializer);
+		return new Pair<>(learnerInput, pipe);
 	}
 }

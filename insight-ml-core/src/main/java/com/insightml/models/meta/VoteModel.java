@@ -18,8 +18,6 @@ package com.insightml.models.meta;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
@@ -71,10 +69,10 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			});
 		}
 		batch.run();
-		final DescriptiveStatistics[] map = Arrays.fill(instnces.size(), DescriptiveStatistics.class);
+		final Stats[] map = Arrays.fill(instnces.size(), Stats.class);
 		for (int i = 0; i < predss.length; ++i) {
 			for (int j = 0; j < predss[i].length; ++j) {
-				map[j].addValue(predss[i][j] * weights[i]);
+				map[j].add(predss[i][j], weights[i]);
 			}
 		}
 		final Double[] preds = new Double[map.length];
@@ -94,7 +92,10 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			debg[i] = new ArrayList<>();
 		}
 		for (final DistributionPrediction[] preds : ParallelFor.run(
-				i -> ((DistributionModel<I>) models[i]).predictDistribution(instnces, debug), 0, models.length, 1)) {
+				i -> ((DistributionModel<I>) models[i]).predictDistribution(instnces, debug),
+				0,
+				models.length,
+				1)) {
 			for (int j = 0; j < preds.length; ++j) {
 				map[j].add(preds[j].getPrediction());
 				debg[j].add(preds[j].getDebug());
@@ -107,22 +108,22 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		return result;
 	}
 
-	private double resolve(final DescriptiveStatistics stats) {
+	private double resolve(final Stats stats) {
 		switch (strategy) {
 		case AVERAGE:
 			return stats.getMean();
 		case MEDIAN:
-			return stats.getPercentile(50);
+			// return stats.getPercentile(50);
 		case GEOMETRIC:
-			return stats.getGeometricMean();
+			// return stats.getGeometricMean();
 		case HARMONIC:
-			double sum = 0;
-			for (final double value : stats.getValues()) {
-				sum += 1 / value;
-			}
-			return stats.getN() * 1.0 / sum;
+			// double sum = 0;
+			// for (final double value : stats.getValues()) {
+			// sum += 1 / value;
+			// }
+			// return stats.getN() * 1.0 / sum;
 		default:
-			throw new IllegalStateException();
+			throw new IllegalArgumentException();
 		}
 	}
 }

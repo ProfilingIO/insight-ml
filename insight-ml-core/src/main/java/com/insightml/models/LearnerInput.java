@@ -29,7 +29,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.utils.io.serialization.ISerializer;
 
 public final class LearnerInput<S extends Sample, E> {
-	private ISamples<S, E> train;
+	private Supplier<ISamples<S, E>> train;
 	public @Nullable ISamples<S, E> valid;
 	public @Nullable FeaturesConfig<S, ?> config;
 	public int labelIndex;
@@ -50,7 +50,11 @@ public final class LearnerInput<S extends Sample, E> {
 	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
 			final @Nullable FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe,
 			final ISerializer serializer) {
-		this(createSamples(train, pipe, serializer), valid, config, labelIndex);
+		this.train = () -> createSamples(train, pipe, serializer);
+		this.valid = valid;
+		this.config = config;
+		this.labelIndex = labelIndex;
+		this.hashCode = Objects.hash(train, valid, config, pipe, labelIndex);
 	}
 
 	private static <S extends Sample, E> ISamples<S, E> createSamples(final Iterable<S> train,
@@ -60,7 +64,7 @@ public final class LearnerInput<S extends Sample, E> {
 
 	public LearnerInput(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
 			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
-		this.train = train;
+		this.train = () -> train;
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
@@ -75,7 +79,7 @@ public final class LearnerInput<S extends Sample, E> {
 	}
 
 	public ISamples<S, E> getTrain() {
-		return train;
+		return train.get();
 	}
 
 	@Override

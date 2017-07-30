@@ -78,8 +78,9 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
 	@Override
 	@Nonnull
-	protected BoostingModel createModel(final ISamples<Sample, Object> samples,
+	protected BoostingModel createModel(final LearnerInput<? extends Sample, ? extends Object> input,
 			final ILearner<Sample, ? extends Object, Double>[] learner, final int labelIndex) {
+		final ISamples<Sample, Object> samples = (ISamples<Sample, Object>) input.getTrain();
 		final Object[] expected = samples.expected(labelIndex);
 		final double[] weights = weightSamples(samples, labelIndex);
 

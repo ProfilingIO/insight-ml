@@ -28,7 +28,6 @@ import com.insightml.models.AbstractLearner;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerInput;
-import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.Utils;
 
@@ -43,15 +42,14 @@ public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends Ab
 
 	@Override
 	public final IModel<S, O> run(final LearnerInput<? extends S, ? extends E> input) {
-		Check.num(input.getTrain().size(), 50, 9999999);
-		return createModel((ISamples<S, E>) input.getTrain(), learners, input.labelIndex);
+		return createModel(input, learners, input.labelIndex);
 	}
 
 	protected final ILearner<S, ? extends E, O>[] getLearners() {
 		return learners;
 	}
 
-	protected abstract IModel<S, O> createModel(@Nonnull ISamples<S, E> instances,
+	protected abstract IModel<S, O> createModel(@Nonnull LearnerInput<? extends S, ? extends E> input,
 			ILearner<S, ? extends E, O>[] learner, int labelIndex);
 
 	Pair<SamplesMapping<Sample, Object>, double[]> sampleError(final ISamples<Sample, Object> instances,

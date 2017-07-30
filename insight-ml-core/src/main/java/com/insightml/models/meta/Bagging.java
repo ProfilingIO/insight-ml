@@ -65,9 +65,9 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 	}
 
 	@Override
-	protected IModel<I, Double> createModel(final ISamples<I, Object> instances,
+	protected IModel<I, Double> createModel(final LearnerInput<? extends I, ? extends Object> input,
 			final ILearner<I, ? extends Object, Double>[] learner, final int labelIndex) {
-		final ISamples<I, Object> samples = preprocess(instances);
+		final ISamples<I, Object> samples = preprocess((ISamples<I, Object>) input.getTrain());
 		final int bags = (int) argument("bags");
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");
