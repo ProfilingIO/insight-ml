@@ -44,6 +44,9 @@ public final class LineReader implements Iterator<String>, Iterable<String>, Aut
 
 	@Override
 	public boolean hasNext() {
+		if (calledNext) {
+			return nextLine != null;
+		}
 		calledNext = true;
 		try {
 			nextLine = br.readLine();
