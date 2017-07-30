@@ -15,6 +15,7 @@
  */
 package com.insightml.models;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -80,6 +81,11 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	}
 
 	@Override
+	public ILearner<? super S, E, O> getLearner() {
+		return learner;
+	}
+
+	@Override
 	public String getName() {
 		return learner.getName();
 	}
@@ -87,22 +93,24 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe = modelAndPipe(data,
+		final Pair<Iterable<S>, PreprocessingPipeline<S>> modelAndPipe = modelAndPipe(data,
 				config,
-				labelIndex,
 				learner.getOriginalArguments());
-		return run(modelAndPipe.getFirst(), modelAndPipe.getSecond(), config, labelIndex);
+		final Iterable<S> samples = modelAndPipe.getFirst();
+		final PreprocessingPipeline<S> pipe = modelAndPipe.getSecond();
+		final File cacheFile = new File("cache/samples_" + samples.hashCode() + "_" + pipe.hashCode());
+		final IModel<S, O> model = learner
+				.run((ISamples) createSamples(samples, pipe, cacheFile), null, (FeaturesConfig) config, labelIndex);
+		return new ModelPipeline<>(model, pipe, config == null ? null : config.getPostProcessor(), labelIndex);
 	}
 
-	public ModelPipeline<S, O> run(final LearnerInput learnerInput, final PreprocessingPipeline<S> pipe,
-			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		return new ModelPipeline<S, O>(learner.run(learnerInput), pipe,
-				config == null ? null : config.getPostProcessor(), labelIndex);
+	private ISamples<S, E> createSamples(final Iterable<S> train, final PreprocessingPipeline<S> pipe,
+			final File serializationFile) {
+		return new LearnerInputSource<S, E>(train, pipe, serializationFile, serializer).get();
 	}
 
-	public Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe(final Iterable<S> data,
-			final FeaturesConfig<? extends S, O> origConfig, final int labelIndex,
-			final @Nonnull IArguments arguments) {
+	public Pair<Iterable<S>, PreprocessingPipeline<S>> modelAndPipe(final Iterable<S> data,
+			final FeaturesConfig<? extends S, O> origConfig, final @Nonnull IArguments arguments) {
 		final Pair<Iterable<S>, List<S>> split = SplitSimulation.split(data, trainRatio, null);
 		final Iterable<S> train = split.getFirst();
 		List<S> valid = split.getSecond();
@@ -110,7 +118,6 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 			logger.info("Learning on " + ((List<?>) train).size() + " samples, " + valid.size() + " ignored.");
 		}
 
-		final ISamples<S, E> valid2 = null;
 		FeaturesConfig<? extends S, O> config = null;
 		PreprocessingPipeline<S> pipe = null;
 		if (preprocess) {
@@ -131,7 +138,6 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		}
 		valid = null;
 
-		final LearnerInput learnerInput = new LearnerInput(train, valid2, labelIndex, origConfig, pipe, serializer);
-		return new Pair<>(learnerInput, pipe);
+		return new Pair<>(train, pipe);
 	}
 }

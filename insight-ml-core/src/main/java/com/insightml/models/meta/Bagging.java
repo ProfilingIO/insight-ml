@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Nonnull;
 
+import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
@@ -65,9 +66,10 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 	}
 
 	@Override
-	protected IModel<I, Double> createModel(final LearnerInput<? extends I, ? extends Object> input,
-			final ILearner<I, ? extends Object, Double>[] learner, final int labelIndex) {
-		final ISamples<I, Object> samples = preprocess((ISamples<I, Object>) input.getTrain());
+	protected IModel<I, Double> createModel(final ISamples<I, Object> train, final ISamples<I, Object> valid,
+			final FeaturesConfig<I, ?> config, final ILearner<I, ? extends Object, Double>[] learner,
+			final int labelIndex) {
+		final ISamples<I, Object> samples = preprocess(train);
 		final int bags = (int) argument("bags");
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");

@@ -30,13 +30,13 @@ public class LearnerInputSource<S extends Sample, E> extends PipelineSource<ISam
 	private final PreprocessingPipeline<S> pipe;
 
 	public LearnerInputSource(final Iterable<S> train, final PreprocessingPipeline<S> pipe,
-			final ISerializer serializer) {
+			final File serializationFile, final ISerializer serializer) {
 		this.train = train;
 		this.pipe = pipe;
 
-		if (pipe != null && serializer != null) {
-			serializeResult(new File("cache/samples_" + train.hashCode() + "_" + pipe.hashCode()), serializer);
-			this.loadSerializedResultsIfAvailable(FeaturesDecorator.class);
+		if (pipe != null && serializationFile != null && serializer != null) {
+			serializeResult(serializationFile, serializer);
+			loadSerializedResultsIfAvailable(FeaturesDecorator.class);
 		}
 	}
 

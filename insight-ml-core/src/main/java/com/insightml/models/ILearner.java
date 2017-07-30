@@ -15,6 +15,10 @@
  */
 package com.insightml.models;
 
+import javax.annotation.Nullable;
+
+import com.insightml.data.FeaturesConfig;
+import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 
@@ -25,6 +29,15 @@ public interface ILearner<S extends Sample, E, O> {
 	LearnerArguments arguments();
 
 	IArguments getOriginalArguments();
+
+	default IModel<S, O> run(final ISamples<S, E> train, final int labelIndex) {
+		return run(train, null, null, labelIndex);
+	}
+
+	default IModel<S, O> run(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
+			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
+		return run(new LearnerInput<>(train, valid, config, labelIndex));
+	}
 
 	IModel<S, O> run(LearnerInput<? extends S, ? extends E> input);
 

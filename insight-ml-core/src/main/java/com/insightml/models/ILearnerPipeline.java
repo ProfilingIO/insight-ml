@@ -22,6 +22,8 @@ public interface ILearnerPipeline<S extends Sample, O> {
 
 	String getName();
 
+	ILearner<? super S, ?, O> getLearner();
+
 	ModelPipeline<S, O> run(Iterable<S> data, Iterable<S> unlabled, FeaturesConfig<? extends S, O> config,
 			int labelIndex);
 
@@ -32,4 +34,5 @@ public interface ILearnerPipeline<S extends Sample, O> {
 		}
 		return pipes;
 	}
+
 }

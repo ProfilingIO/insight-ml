@@ -39,7 +39,7 @@ public class PreprocessingPipelineSupplier<S extends Sample> extends PipelineSou
 			serializeResult(
 					new File("cache/pipeline_" + trainingSamples.hashCode() + "_" + config.hashCode() + "_" + features),
 					serializer);
-			this.loadSerializedResultsIfAvailable(PreprocessingPipeline.class);
+			loadSerializedResultsIfAvailable(PreprocessingPipeline.class);
 		}
 	}
 

@@ -46,16 +46,18 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	private String[] featureNames;
 	private Map<String, Stats> featureStats;
 	private Normalization normalization;
+	private IArguments arguments;
 
 	PreprocessingPipeline() {
 	}
 
 	private PreprocessingPipeline(final IFeatureProvider<S> provider, final String[] featureNames,
-			final Map<String, Stats> featureStats, final Normalization normalization) {
+			final Map<String, Stats> featureStats, final Normalization normalization, final IArguments arguments) {
 		this.provider = Preconditions.checkNotNull(provider);
 		this.featureNames = Preconditions.checkNotNull(featureNames);
 		this.featureStats = featureStats;
 		this.normalization = normalization;
+		this.arguments = arguments;
 	}
 
 	@Nonnull
@@ -65,13 +67,14 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 		final Pair<String[], Map<String, Stats>> featureSelection = provider
 				.featureNames(new Samples<>(trainingSamples), arguments);
 		return new PreprocessingPipeline<>(provider, filter.allowedFeatures(featureSelection.getFirst()),
-				featureSelection.getSecond(), normalization);
+				featureSelection.getSecond(), normalization, arguments);
 	}
 
 	@Override
 	public <E> ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
 		final Samples<S, E> samples = new Samples<>(input, isTraining);
-		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, normalization, isTraining, null);
+		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, normalization, isTraining,
+				arguments);
 	}
 
 	@Override

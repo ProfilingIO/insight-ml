@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.util.Pair;
 
+import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.LabelDecorator;
@@ -35,7 +36,6 @@ import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DoubleModel;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
-import com.insightml.models.LearnerInput;
 import com.insightml.models.regression.SimpleRegression;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Arrays;
@@ -78,9 +78,9 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
 	@Override
 	@Nonnull
-	protected BoostingModel createModel(final LearnerInput<? extends Sample, ? extends Object> input,
-			final ILearner<Sample, ? extends Object, Double>[] learner, final int labelIndex) {
-		final ISamples<Sample, Object> samples = (ISamples<Sample, Object>) input.getTrain();
+	protected BoostingModel createModel(final ISamples<Sample, Object> samples, final ISamples<Sample, Object> valid,
+			final FeaturesConfig<Sample, ?> config, final ILearner<Sample, ? extends Object, Double>[] learner,
+			final int labelIndex) {
 		final Object[] expected = samples.expected(labelIndex);
 		final double[] weights = weightSamples(samples, labelIndex);
 
@@ -97,7 +97,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 			}
 			try {
 				final AbstractIndependentFeaturesModel fit = (AbstractIndependentFeaturesModel) learner[i
-						% learner.length].run(new LearnerInput(subset, null, null, labelIndex));
+						% learner.length].run((ISamples) subset, labelIndex);
 				final Pair<Double, double[]> update = fitGamma(fit,
 						preds,
 						samples,

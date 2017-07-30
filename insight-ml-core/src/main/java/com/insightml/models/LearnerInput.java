@@ -22,14 +22,12 @@ import javax.annotation.Nullable;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.insightml.data.FeaturesConfig;
-import com.insightml.data.PreprocessingPipeline;
 import com.insightml.data.PreprocessingPipelineSupplier;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
-import com.insightml.utils.io.serialization.ISerializer;
 
 public final class LearnerInput<S extends Sample, E> {
-	private Supplier<ISamples<S, E>> train;
+	private ISamples<S, E> train;
 	public @Nullable ISamples<S, E> valid;
 	public @Nullable FeaturesConfig<S, ?> config;
 	public int labelIndex;
@@ -47,24 +45,9 @@ public final class LearnerInput<S extends Sample, E> {
 		this(train.get(), valid, config, labelIndex);
 	}
 
-	public LearnerInput(final Iterable<S> train, final ISamples<S, E> valid, final int labelIndex,
-			final @Nullable FeaturesConfig<S, ?> config, final PreprocessingPipeline<S> pipe,
-			final ISerializer serializer) {
-		this.train = () -> createSamples(train, pipe, serializer);
-		this.valid = valid;
-		this.config = config;
-		this.labelIndex = labelIndex;
-		this.hashCode = Objects.hash(train, valid, config, pipe, labelIndex);
-	}
-
-	private static <S extends Sample, E> ISamples<S, E> createSamples(final Iterable<S> train,
-			final PreprocessingPipeline<S> pipe, final ISerializer serializer) {
-		return new LearnerInputSource<S, E>(train, pipe, serializer).get();
-	}
-
 	public LearnerInput(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
 			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
-		this.train = () -> train;
+		this.train = train;
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
@@ -80,7 +63,7 @@ public final class LearnerInput<S extends Sample, E> {
 	}
 
 	public ISamples<S, E> getTrain() {
-		return train.get();
+		return train;
 	}
 
 	@Override
