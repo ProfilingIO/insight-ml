@@ -15,7 +15,6 @@
  */
 package com.insightml.models;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -33,7 +32,7 @@ import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractConfigurable;
 import com.insightml.utils.types.Parameter;
 
-public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable implements Serializable {
+public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable implements IModelPipeline<I, P> {
 	private static final long serialVersionUID = 5471706800666990790L;
 
 	private IModel<I, P> model;
@@ -56,6 +55,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return pipe == null ? new Samples<>((Iterable<I>) test) : (ISamples<I, E>) pipe.run((Iterable<I>) test, false);
 	}
 
+	@Override
 	@SuppressWarnings("null")
 	@Nonnull
 	public P[] run(final Iterable<? extends I> test) {
@@ -74,6 +74,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return model.featureImportance();
 	}
 
+	@Override
 	public int getLabelIndex() {
 		return labelIndex;
 	}
@@ -82,6 +83,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return model.info();
 	}
 
+	@Override
 	public void close() {
 		model.close();
 	}

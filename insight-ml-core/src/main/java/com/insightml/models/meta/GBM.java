@@ -78,9 +78,8 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 
 	@Override
 	@Nonnull
-	protected BoostingModel createModel(final ISamples<Sample, Object> samples, final ISamples<Sample, Object> valid,
-			final FeaturesConfig<Sample, ?> config, final ILearner<Sample, ? extends Object, Double>[] learner,
-			final int labelIndex) {
+	public BoostingModel run(final ISamples<Sample, Object> samples, final ISamples<Sample, Object> valid,
+			final FeaturesConfig<Sample, ?> config, final int labelIndex) {
 		final Object[] expected = samples.expected(labelIndex);
 		final double[] weights = weightSamples(samples, labelIndex);
 
@@ -90,6 +89,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Object, Double> {
 		final int iterations = (int) argument("it");
 		final double shrinkage = argument("shrink");
 		final List<DoublePair<DoubleModel>> steps = new ArrayList<>(iterations);
+		final ILearner<Sample, ? extends Object, Double>[] learner = getLearners();
 		for (int i = 0; i < iterations; ++i) {
 			final ISamples<Sample, Object> subset = subset(samples, preds, expected, random, labelIndex);
 			if (subset == null) {

@@ -69,7 +69,11 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			});
 		}
 		batch.run();
-		final Stats[] map = Arrays.fill(instnces.size(), Stats.class);
+		return ensemble(weights, predss, strategy);
+	}
+
+	public static Double[] ensemble(final double[] weights, final Double[][] predss, final VoteStrategy strategy) {
+		final Stats[] map = Arrays.fill(predss[0].length, Stats.class);
 		for (int i = 0; i < predss.length; ++i) {
 			for (int j = 0; j < predss[i].length; ++j) {
 				map[j].add(predss[i][j], weights[i]);
@@ -77,7 +81,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		}
 		final Double[] preds = new Double[map.length];
 		for (int i = 0; i < preds.length; ++i) {
-			preds[i] = resolve(map[i]);
+			preds[i] = resolve(map[i], strategy);
 		}
 		return preds;
 	}
@@ -108,7 +112,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		return result;
 	}
 
-	private double resolve(final Stats stats) {
+	private static double resolve(final Stats stats, final VoteStrategy strategy) {
 		switch (strategy) {
 		case AVERAGE:
 			return stats.getMean();

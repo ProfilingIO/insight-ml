@@ -17,12 +17,8 @@ package com.insightml.models.meta;
 
 import java.util.Random;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.commons.math3.util.Pair;
 
-import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.SamplesMapping;
@@ -42,23 +38,14 @@ public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends Ab
 		this.learners = learners.clone();
 	}
 
-	@Override
-	public final IModel<S, O> run(final LearnerInput<? extends S, ? extends E> input) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IModel<S, O> run(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
-			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
-		return createModel(train, valid, config, learners, labelIndex);
-	}
-
 	protected final ILearner<S, ? extends E, O>[] getLearners() {
 		return learners;
 	}
 
-	protected abstract IModel<S, O> createModel(@Nonnull ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
-			final @Nullable FeaturesConfig<S, ?> config, ILearner<S, ? extends E, O>[] learner, int labelIndex);
+	@Override
+	public IModel<S, O> run(final LearnerInput<? extends S, ? extends E> input) {
+		throw new UnsupportedOperationException(getClass().getName());
+	}
 
 	Pair<SamplesMapping<Sample, Object>, double[]> sampleError(final ISamples<Sample, Object> instances,
 			final double[] preds, final Object[] expected, final Random random) {

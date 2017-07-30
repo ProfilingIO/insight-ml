@@ -30,6 +30,12 @@ public interface ILearner<S extends Sample, E, O> {
 
 	IArguments getOriginalArguments();
 
+	default IModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
+			final FeaturesConfig<? extends S, O> config, final int labelIndex,
+			final ILearnerPipeline<S, O> learnerPipe) {
+		return learnerPipe.run(data, unlabled, config, labelIndex);
+	}
+
 	default IModel<S, O> run(final ISamples<S, E> train, final int labelIndex) {
 		return run(train, null, null, labelIndex);
 	}

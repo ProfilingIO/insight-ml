@@ -66,15 +66,15 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 	}
 
 	@Override
-	protected IModel<I, Double> createModel(final ISamples<I, Object> train, final ISamples<I, Object> valid,
-			final FeaturesConfig<I, ?> config, final ILearner<I, ? extends Object, Double>[] learner,
-			final int labelIndex) {
+	public IModel<I, Double> run(final ISamples<I, Object> train, final ISamples<I, Object> valid,
+			final FeaturesConfig<I, ?> config, final int labelIndex) {
 		final ISamples<I, Object> samples = preprocess(train);
 		final int bags = (int) argument("bags");
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");
 		final IModel<I, Double>[] models = new IModel[bags];
 		final double[] weights = new double[bags];
+		final ILearner<I, ? extends Object, Double>[] learner = getLearners();
 		ParallelFor.run(i -> {
 			final Random random = new Random((long) Math.pow(i + 2, 2));
 			final ISamples<I, Object> sampled = sample(samples, instancesSample, featureSample, random);

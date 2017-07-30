@@ -53,7 +53,7 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 		this.modelTrainingTimeInMillis = modelTrainingTimeInMillis;
 	}
 
-	public static <I extends Sample, E, P> Predictions<E, P> create(final int run, final ModelPipeline<I, P> model,
+	public static <I extends Sample, E, P> Predictions<E, P> create(final int run, final IModelPipeline<I, P> model,
 			final Iterable<? extends I> samples, final int modelTrainingTimeInMillis) {
 		final long start = System.currentTimeMillis();
 		final int labelIndex = model.getLabelIndex();
