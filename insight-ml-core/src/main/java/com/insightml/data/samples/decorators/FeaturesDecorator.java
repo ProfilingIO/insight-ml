@@ -27,6 +27,7 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Normalization;
 import com.insightml.math.statistics.Stats;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.jobs.ParallelFor;
 
 public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
@@ -48,7 +49,8 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 	}
 
 	public FeaturesDecorator(final ISamples<S, E> orig, final IFeatureProvider prov, final String[] featureNames,
-			final Map<String, Stats> featureStats, final Normalization normalization, final boolean isTraining) {
+			final Map<String, Stats> featureStats, final Normalization normalization, final boolean isTraining,
+			final IArguments arguments) {
 		super(orig);
 
 		this.featureNames = featureNames;
@@ -58,7 +60,8 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 			try {
 				final S sample = orig.get(i);
 				features[i] = sample == null ? null
-						: Preconditions.checkNotNull(prov.features(sample, featureNames, featureStats, isTraining));
+						: Preconditions
+								.checkNotNull(prov.features(sample, featureNames, featureStats, isTraining, arguments));
 				return 1;
 			} catch (final Throwable e) {
 				LOG.error("{}", e, e);

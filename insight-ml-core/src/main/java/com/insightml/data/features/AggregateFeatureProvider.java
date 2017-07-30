@@ -27,6 +27,7 @@ import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.types.DoublePair;
 
 public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
@@ -39,10 +40,11 @@ public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureP
 	}
 
 	@Override
-	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples) {
+	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples,
+			final IArguments arguments) {
 		final List<String> names = new LinkedList<>();
 		for (final IFeatureProvider<I> provider : providers) {
-			for (final String namee : provider.featureNames(samples).getFirst()) {
+			for (final String namee : provider.featureNames(samples, arguments).getFirst()) {
 				names.add(namee);
 			}
 		}
@@ -50,10 +52,10 @@ public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureP
 	}
 
 	@Override
-	public final Features features(final I instance, final boolean isTraining) {
+	public final Features features(final I instance, final boolean isTraining, final IArguments arguments) {
 		final FeaturesImpl features = new FeaturesImpl();
 		for (final IFeatureProvider<I> provider : providers) {
-			for (final DoublePair<String> feat : provider.features(instance, isTraining)) {
+			for (final DoublePair<String> feat : provider.features(instance, isTraining, arguments)) {
 				features.add(feat.getKey(), feat.getValue());
 			}
 		}

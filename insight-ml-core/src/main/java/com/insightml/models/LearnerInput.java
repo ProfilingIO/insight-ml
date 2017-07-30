@@ -74,7 +74,8 @@ public final class LearnerInput<S extends Sample, E> {
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
 			final FeaturesConfig<S, O> config) {
 		return new LearnerInput<>(
-				Suppliers.memoize(() -> new PreprocessingPipelineSupplier<>(data, config, null).get().run(data, true)),
+				Suppliers.memoize(
+						() -> new PreprocessingPipelineSupplier<>(data, config, null, null).get().run(data, true)),
 				null, config, 0);
 	}
 

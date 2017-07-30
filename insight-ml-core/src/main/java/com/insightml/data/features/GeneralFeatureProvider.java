@@ -23,6 +23,7 @@ import org.apache.commons.math3.util.Pair;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
+import com.insightml.utils.IArguments;
 
 public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 
@@ -34,7 +35,8 @@ public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractF
 	}
 
 	@Override
-	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples) {
+	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples,
+			final IArguments arguments) {
 		final List<Pair<String, String>> features = getFeatures();
 		final String[] names = new String[features.size()];
 		int i = -1;
@@ -48,6 +50,6 @@ public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractF
 
 	@Override
 	public String getReport() {
-		return getName() + "\n" + getFeatures();
+		return getName(null) + "\n" + getFeatures();
 	}
 }

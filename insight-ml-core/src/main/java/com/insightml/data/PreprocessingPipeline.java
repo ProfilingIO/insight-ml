@@ -34,6 +34,7 @@ import com.insightml.data.samples.decorators.FeaturesDecorator;
 import com.insightml.math.Normalization;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.types.AbstractConfigurable;
 
 public final class PreprocessingPipeline<S extends Sample> extends AbstractConfigurable
@@ -59,9 +60,10 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 
 	@Nonnull
 	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
-			final IFeatureProvider<S> provider, final IFeatureFilter filter, final Normalization normalization) {
+			final IFeatureProvider<S> provider, final IFeatureFilter filter, final Normalization normalization,
+			final IArguments arguments) {
 		final Pair<String[], Map<String, Stats>> featureSelection = provider
-				.featureNames(new Samples<>(trainingSamples));
+				.featureNames(new Samples<>(trainingSamples), arguments);
 		return new PreprocessingPipeline<>(provider, filter.allowedFeatures(featureSelection.getFirst()),
 				featureSelection.getSecond(), normalization);
 	}
@@ -69,7 +71,7 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	@Override
 	public <E> ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
 		final Samples<S, E> samples = new Samples<>(input, isTraining);
-		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, normalization, isTraining);
+		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, normalization, isTraining, null);
 	}
 
 	@Override

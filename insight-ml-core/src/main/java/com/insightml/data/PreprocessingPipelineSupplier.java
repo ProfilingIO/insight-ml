@@ -18,6 +18,7 @@ package com.insightml.data;
 import java.io.File;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.pipeline.PipelineSource;
 
@@ -25,14 +26,18 @@ public class PreprocessingPipelineSupplier<S extends Sample> extends PipelineSou
 
 	private final Iterable<S> trainingSamples;
 	private final FeaturesConfig<S, ?> config;
+	private final IArguments arguments;
 
 	public PreprocessingPipelineSupplier(final Iterable<S> trainingSamples, final FeaturesConfig<S, ?> config,
-			final ISerializer serializer) {
+			final ISerializer serializer, final IArguments arguments) {
 		this.trainingSamples = trainingSamples;
 		this.config = config;
+		this.arguments = arguments;
 
 		if (serializer != null) {
-			serializeResult(new File("cache/pipeline_" + trainingSamples.hashCode() + "_" + config.hashCode()),
+			final String features = arguments.toString("features", "all");
+			serializeResult(
+					new File("cache/pipeline_" + trainingSamples.hashCode() + "_" + config.hashCode() + "_" + features),
 					serializer);
 			this.loadSerializedResultsIfAvailable(PreprocessingPipeline.class);
 		}
@@ -43,6 +48,7 @@ public class PreprocessingPipelineSupplier<S extends Sample> extends PipelineSou
 		return PreprocessingPipeline.create(trainingSamples,
 				config.newFeatureProvider(),
 				config.newFeatureFilter(),
-				config.getNormalization());
+				config.getNormalization(),
+				arguments);
 	}
 }

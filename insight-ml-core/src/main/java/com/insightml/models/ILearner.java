@@ -16,12 +16,15 @@
 package com.insightml.models;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.utils.IArguments;
 
 public interface ILearner<S extends Sample, E, O> {
 
 	String getName();
 
 	LearnerArguments arguments();
+
+	IArguments getOriginalArguments();
 
 	IModel<S, O> run(LearnerInput<? extends S, ? extends E> input);
 

@@ -20,25 +20,31 @@ import java.util.Map;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.Check;
-import com.insightml.utils.types.AbstractModule;
+import com.insightml.utils.IArguments;
 
-public abstract class AbstractFeatureProvider<I extends Sample> extends AbstractModule implements IFeatureProvider<I> {
+public abstract class AbstractFeatureProvider<I extends Sample> implements IFeatureProvider<I> {
 
+	private String name;
 	protected double defaultValue;
 
 	protected AbstractFeatureProvider() {
 	}
 
 	public AbstractFeatureProvider(final String name, final double defaultValue) {
-		super(name);
+		this.name = name;
 		this.defaultValue = defaultValue;
 	}
 
 	@Override
+	public String getName(final IArguments arguments) {
+		return name;
+	}
+
+	@Override
 	public final double[] features(final I instance, final CharSequence[] features,
-			final Map<String, Stats> featureStats, final boolean isTraining) {
+			final Map<String, Stats> featureStats, final boolean isTraining, final IArguments arguments) {
 		final double[] array = new double[Check.size(features, 1, 5000).length];
-		final Map<String, Double> feats = features(instance, isTraining).asMap();
+		final Map<String, Double> feats = features(instance, isTraining, arguments).asMap();
 		for (int i = 0; i < features.length; ++i) {
 			@SuppressWarnings("unlikely-arg-type")
 			final Double feat = feats.get(features[i]);

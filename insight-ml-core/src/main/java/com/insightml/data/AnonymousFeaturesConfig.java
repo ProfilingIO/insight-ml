@@ -34,6 +34,7 @@ import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.Features;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.types.DoublePair;
 
 public final class AnonymousFeaturesConfig<S extends Sample, O> extends FeaturesConfig<S, O> {
@@ -122,7 +123,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		}
 
 		@Override
-		public Features features(final S sample, final boolean isTraining) {
+		public Features features(final S sample, final boolean isTraining, final IArguments arguments) {
 			return simpleFeaturesProvider.apply(sample);
 		}
 

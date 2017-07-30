@@ -36,13 +36,18 @@ public abstract class AbstractLearner<S extends Sample, E, O> extends AbstractMo
 	private final LearnerArguments args;
 
 	public AbstractLearner(final IArguments arguments) {
-		this.arguments = arguments;
+		this.arguments = Check.notNull(arguments);
 		this.args = arguments();
 	}
 
 	@Override
 	public LearnerArguments arguments() {
 		return null;
+	}
+
+	@Override
+	public IArguments getOriginalArguments() {
+		return arguments;
 	}
 
 	protected final double argument(final String arg) {

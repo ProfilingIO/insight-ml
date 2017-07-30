@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.simulation.SplitSimulation;
 import com.insightml.evaluation.simulation.optimization.IFeatureSelection;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.io.serialization.ISerializer;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.types.DoublePair;
@@ -84,7 +87,10 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	@Override
 	public ModelPipeline<S, O> run(final Iterable<S> data, final Iterable<S> unlabled,
 			final FeaturesConfig<? extends S, O> config, final int labelIndex) {
-		final Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe = modelAndPipe(data, config, labelIndex);
+		final Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe = modelAndPipe(data,
+				config,
+				labelIndex,
+				learner.getOriginalArguments());
 		return run(modelAndPipe.getFirst(), modelAndPipe.getSecond(), config, labelIndex);
 	}
 
@@ -95,7 +101,8 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	}
 
 	public Pair<LearnerInput, PreprocessingPipeline<S>> modelAndPipe(final Iterable<S> data,
-			final FeaturesConfig<? extends S, O> origConfig, final int labelIndex) {
+			final FeaturesConfig<? extends S, O> origConfig, final int labelIndex,
+			final @Nonnull IArguments arguments) {
 		final Pair<Iterable<S>, List<S>> split = SplitSimulation.split(data, trainRatio, null);
 		final Iterable<S> train = split.getFirst();
 		List<S> valid = split.getSecond();
@@ -117,7 +124,8 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 			if (config == null) {
 				config = origConfig;
 			}
-			pipe = new PreprocessingPipelineSupplier<>(train, (FeaturesConfig<S, O>) config, serializer).get();
+			pipe = new PreprocessingPipelineSupplier<>(train, (FeaturesConfig<S, O>) config, serializer, arguments)
+					.get();
 		} else {
 			config = origConfig;
 		}

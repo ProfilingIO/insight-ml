@@ -26,6 +26,7 @@ import com.insightml.math.statistics.Stats;
 import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
+import com.insightml.utils.IArguments;
 import com.insightml.utils.types.DoublePair;
 
 public final class DivFeaturesProvider<I extends Sample> extends AbstractFeatureProvider<I> {
@@ -37,8 +38,8 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 	}
 
 	@Override
-	public Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples) {
-		final CharSequence[] baseNames = baseProvider.featureNames(samples).getFirst();
+	public Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples, final IArguments arguments) {
+		final CharSequence[] baseNames = baseProvider.featureNames(samples, arguments).getFirst();
 		final List<String> names = new LinkedList<>();
 		for (int i = 0; i < baseNames.length; ++i) {
 			if (!baseNames[i].toString().contains("/")) {
@@ -53,8 +54,8 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 	}
 
 	@Override
-	public Features features(final I instance, final boolean isTraining) {
-		final Features baseFeatures = baseProvider.features(instance, isTraining);
+	public Features features(final I instance, final boolean isTraining, final IArguments arguments) {
+		final Features baseFeatures = baseProvider.features(instance, isTraining, arguments);
 		final FeaturesImpl features = new FeaturesImpl();
 		for (final DoublePair<String> e1 : baseFeatures) {
 			final double v1 = e1.getValue();
