@@ -33,7 +33,7 @@ public final class RegTreeLearnerTest {
 				new RMSE());
 		benchmark.addLearner(new OLS(), -0.75341);
 		benchmark.addLearner(new RegTree(7, 12, true), -0.72892);
-		benchmark.addLearner(new RandomForest(120, 7, 7, 4, 0.55, 0.9, VoteStrategy.HARMONIC), -0.68449);
+		benchmark.addLearner(new RandomForest(120, 7, 7, 4, 0.55, 0.9, VoteStrategy.AVERAGE), -0.68485);
 		benchmark.run();
 	}
 }

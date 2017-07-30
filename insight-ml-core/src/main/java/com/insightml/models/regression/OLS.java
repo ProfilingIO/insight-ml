@@ -22,11 +22,12 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractBasicDoubleLearner;
 import com.insightml.models.IModel;
+import com.insightml.utils.Arguments;
 
 public final class OLS extends AbstractBasicDoubleLearner {
 
 	public OLS() {
-		super(null);
+		super(new Arguments());
 	}
 
 	@Override
