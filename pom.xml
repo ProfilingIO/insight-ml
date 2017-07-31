@@ -41,7 +41,6 @@
 
 	<modules>
 		<module>insight-ml-core</module>
-		<module>insight-ml-nlp</module>
 	</modules>
 
 	<dependencies>

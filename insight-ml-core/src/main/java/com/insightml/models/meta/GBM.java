@@ -151,7 +151,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		final double[] optim = fit.predictDouble(instances);
 		final double gamma = findGamma(expected, weights, preds, optim, 0.000000001, labelIndex);
 		final double[] update = updatePredictions(preds, optim, gamma * argument("shrink"));
-		if (it % 100 == 0) {
+		if (it % 50 == 0) {
 			logger.info("[" + it + "] "
 					+ objective.label(Arrays.cast(update), expected, weights, instances, labelIndex).getMean());
 		}
