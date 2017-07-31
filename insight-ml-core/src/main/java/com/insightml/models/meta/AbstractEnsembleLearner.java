@@ -31,14 +31,14 @@ import com.insightml.utils.Utils;
 
 public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends AbstractLearner<S, E, O> {
 
-	private final ILearner<S, ? extends E, O>[] learners;
+	private final ILearner<S, E, O>[] learners;
 
-	protected AbstractEnsembleLearner(final IArguments arguments, final ILearner<S, ? extends E, O>[] learners) {
+	protected AbstractEnsembleLearner(final IArguments arguments, final ILearner<S, E, O>[] learners) {
 		super(arguments);
 		this.learners = learners.clone();
 	}
 
-	protected final ILearner<S, ? extends E, O>[] getLearners() {
+	protected final ILearner<S, E, O>[] getLearners() {
 		return learners;
 	}
 
@@ -47,10 +47,9 @@ public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends Ab
 		throw new UnsupportedOperationException(getClass().getName());
 	}
 
-	Pair<SamplesMapping<Sample, Object>, double[]> sampleError(final ISamples<Sample, Object> instances,
-			final double[] preds, final Object[] expected, final Random random) {
-		final SamplesMapping<Sample, Object> sample = (SamplesMapping<Sample, Object>) instances
-				.sample(argument("bag"), random).getFirst();
+	Pair<SamplesMapping<S, E>, double[]> sampleError(final ISamples<S, E> instances, final double[] preds,
+			final Object[] expected, final Random random) {
+		final SamplesMapping<S, E> sample = (SamplesMapping<S, E>) instances.sample(argument("bag"), random).getFirst();
 		final int[] map = sample.getIndexMap();
 		final double[] labels = new double[map.length];
 		for (int i = 0; i < map.length; ++i) {

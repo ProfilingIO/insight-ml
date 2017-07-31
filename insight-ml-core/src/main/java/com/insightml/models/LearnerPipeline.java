@@ -99,8 +99,8 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 		final Iterable<S> samples = modelAndPipe.getFirst();
 		final PreprocessingPipeline<S> pipe = modelAndPipe.getSecond();
 		final File cacheFile = new File("cache/samples_" + samples.hashCode() + "_" + pipe.hashCode());
-		final IModel<S, O> model = learner
-				.run((ISamples) createSamples(samples, pipe, cacheFile), null, (FeaturesConfig) config, labelIndex);
+		final IModel<S, O> model = (IModel<S, O>) learner
+				.run(createSamples(samples, pipe, cacheFile), null, config, labelIndex);
 		return new ModelPipeline<>(model, pipe, config == null ? null : config.getPostProcessor(), labelIndex);
 	}
 

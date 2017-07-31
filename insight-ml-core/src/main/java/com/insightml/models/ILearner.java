@@ -40,9 +40,11 @@ public interface ILearner<S extends Sample, E, O> {
 		return run(train, null, null, labelIndex);
 	}
 
-	default IModel<S, O> run(final ISamples<S, E> train, final @Nullable ISamples<S, E> valid,
-			final @Nullable FeaturesConfig<S, ?> config, final int labelIndex) {
-		return run(new LearnerInput<>(train, valid, config, labelIndex));
+	default IModel<S, O> run(final ISamples<? extends S, ? extends E> train,
+			final @Nullable ISamples<? extends S, ? extends E> valid,
+			final @Nullable FeaturesConfig<? extends S, ?> config, final int labelIndex) {
+		return run(new LearnerInput<>((ISamples<S, E>) train, (ISamples<S, E>) valid, (FeaturesConfig<S, ?>) config,
+				labelIndex));
 	}
 
 	IModel<S, O> run(LearnerInput<? extends S, ? extends E> input);

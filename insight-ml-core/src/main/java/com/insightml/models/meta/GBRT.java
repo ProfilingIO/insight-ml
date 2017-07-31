@@ -17,7 +17,6 @@ package com.insightml.models.meta;
 
 import com.insightml.evaluation.functions.MSE;
 import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.models.ILearner;
 import com.insightml.models.trees.RegTree;
 import com.insightml.utils.IArguments;
 
@@ -42,13 +41,16 @@ public class GBRT extends GBM {
 		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, nodePred, true));
 	}
 
-	public static ILearner[] getLearner(final IArguments arguments, final boolean parallelize) {
+	public static RegTree[] getLearner(final IArguments arguments, final boolean parallelize) {
 		// TODO: Change back to min/max params
-		return getLearner(arguments.toInt("depth", 4), arguments.toInt("depth", 4), arguments.toInt("minObs", 10),
-				arguments.toInt("nodePred", 1), parallelize);
+		return getLearner(arguments.toInt("depth", 4),
+				arguments.toInt("depth", 4),
+				arguments.toInt("minObs", 10),
+				arguments.toInt("nodePred", 1),
+				parallelize);
 	}
 
-	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs, final int nodePred,
+	private static RegTree[] getLearner(final int minDepth, final int maxDepth, final int minObs, final int nodePred,
 			final boolean parallelize) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {

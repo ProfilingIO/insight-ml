@@ -27,14 +27,13 @@ import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
-import com.insightml.models.LearnerInput;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.ParallelFor;
 
-public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object, Double> {
+public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
 
 	private static final ExecutorService executor;
 
@@ -45,13 +44,13 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 
 	private final VoteStrategy strategy;
 
-	public Bagging(final IArguments arguments, final ILearner<I, ? extends Object, Double>... learner) {
+	public Bagging(final IArguments arguments, final ILearner<I, Double, Double>... learner) {
 		super(arguments, learner);
 		this.strategy = VoteStrategy.AVERAGE;
 	}
 
 	public Bagging(final int bags, final double isample, final double fsample, final VoteStrategy strategy,
-			final ILearner<I, ? extends Object, Double>... learner) {
+			final ILearner<I, Double, Double>... learner) {
 		super(new Arguments("bags", bags, "isample", isample, "fsample", fsample), learner);
 		this.strategy = strategy;
 	}
@@ -66,33 +65,34 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Object
 	}
 
 	@Override
-	public IModel<I, Double> run(final ISamples<I, Object> train, final ISamples<I, Object> valid,
-			final FeaturesConfig<I, ?> config, final int labelIndex) {
-		final ISamples<I, Object> samples = preprocess(train);
+	public IModel<I, Double> run(final ISamples<? extends I, ? extends Double> train,
+			final ISamples<? extends I, ? extends Double> valid, final FeaturesConfig<? extends I, ?> config,
+			final int labelIndex) {
+		final ISamples<I, Double> samples = preprocess((ISamples<I, Double>) train);
 		final int bags = (int) argument("bags");
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");
 		final IModel<I, Double>[] models = new IModel[bags];
 		final double[] weights = new double[bags];
-		final ILearner<I, ? extends Object, Double>[] learner = getLearners();
+		final ILearner<I, Double, Double>[] learner = getLearners();
 		ParallelFor.run(i -> {
 			final Random random = new Random((long) Math.pow(i + 2, 2));
-			final ISamples<I, Object> sampled = sample(samples, instancesSample, featureSample, random);
-			models[i] = learner[i % learner.length].run(new LearnerInput(sampled, null, null, labelIndex));
+			final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, random);
+			models[i] = learner[i % learner.length].run(sampled, null, null, labelIndex);
 			weights[i] = 1;
 			return 1;
 		}, 0, bags, 3, executor);
 		return new VoteModel<>(models, weights, strategy);
 	}
 
-	protected ISamples<I, Object> sample(final ISamples<I, Object> samples, final double instancesSample,
+	protected ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,
 			final double featureSample, final Random random) {
-		final ISamples<I, Object> sub = instancesSample < 1 ? samples.sample(instancesSample, random).getFirst()
+		final ISamples<I, Double> sub = instancesSample < 1 ? samples.sample(instancesSample, random).getFirst()
 				: samples;
 		return featureSample < 1 ? sub.sampleFeatures(featureSample, random) : sub;
 	}
 
-	protected ISamples<I, Object> preprocess(final @Nonnull ISamples<I, Object> instances) {
+	protected ISamples<I, Double> preprocess(final @Nonnull ISamples<I, Double> instances) {
 		return instances;
 	}
 
