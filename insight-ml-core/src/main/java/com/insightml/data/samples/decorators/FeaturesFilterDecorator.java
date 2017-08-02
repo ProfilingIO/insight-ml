@@ -71,9 +71,9 @@ public final class FeaturesFilterDecorator<S extends Sample, E> extends Abstract
 	}
 
 	@Override
-	public float[][] features() {
-		final float[][] parent = ref.features();
-		final float[][] fil = new float[size()][];
+	public double[][] features() {
+		final double[][] parent = ref.features();
+		final double[][] fil = new double[size()][];
 		for (int i = 0; i < fil.length; ++i) {
 			fil[i] = Arrays.filter(parent[i], filter);
 		}

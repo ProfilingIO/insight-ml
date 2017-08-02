@@ -45,14 +45,14 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	private IFeatureFilter filter;
 
 	public AnonymousFeaturesConfig(final String[] features, final SimpleFeaturesProvider<S> simpleFeaturesProvider,
-			final float defaultValue, final boolean useDivFeaturesProvider) {
+			final double defaultValue, final boolean useDivFeaturesProvider) {
 		super(null, null);
 		this.provider = provider(features, simpleFeaturesProvider, defaultValue);
 		this.useDivFeaturesProvider = useDivFeaturesProvider;
 	}
 
 	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
-			final float defaultValue, final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
+			final double defaultValue, final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
 		super(null, null);
 		this.provider = fromExamples(examples, exampleFeaturesProvider, defaultValue);
 		this.useDivFeaturesProvider = useDivFeaturesProvider;
@@ -60,7 +60,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Iterable<S> examples,
-			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final float defaultValue) {
+			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final double defaultValue) {
 		return new AnonymousFeaturesConfig<>(examples, exampleFeaturesProvider, defaultValue, false,
 				new IgnoreFeatureFilter());
 	}
@@ -76,7 +76,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	private IFeatureProvider<S> fromExamples(final Iterable<S> examples,
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final float defaultValue) {
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
 		final Set<String> names = new LinkedHashSet<>();
 		for (final S example : examples) {
 			simpleFeaturesProvider.apply(example, (k, v) -> names.add(k));
@@ -85,7 +85,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	private IFeatureProvider<S> provider(final String[] featureNames,
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final float defaultValue) {
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
 		final SimpleFeatureProvider<S> prov = new SimpleFeatureProvider<>(featureNames, simpleFeaturesProvider,
 				defaultValue);
 		if (!useDivFeaturesProvider) {
@@ -105,7 +105,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		private final SimpleFeaturesProvider<S> simpleFeaturesProvider;
 
 		public SimpleFeatureProvider(final String[] featureNames,
-				final SimpleFeaturesProvider<S> simpleFeaturesProvider, final float defaultValue) {
+				final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
 			super("features", defaultValue);
 			this.features = new LinkedList<>();
 			for (final CharSequence feat : featureNames) {

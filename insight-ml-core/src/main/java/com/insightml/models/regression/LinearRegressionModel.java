@@ -38,7 +38,7 @@ public final class LinearRegressionModel extends AbstractIndependentFeaturesMode
 	}
 
 	@Override
-	public double predict(final float[] features) {
+	public double predict(final double[] features) {
 		double result = bias ? coefficients[0] : 0;
 		for (int i = 0; i < features.length; ++i) {
 			result += coefficients[i + (bias ? 1 : 0)] * features[i];

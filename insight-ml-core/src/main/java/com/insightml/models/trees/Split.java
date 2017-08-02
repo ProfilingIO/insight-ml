@@ -49,13 +49,13 @@ public final class Split extends AbstractSplit implements Cloneable {
 	}
 
 	@Override
-	public int selectChild(final float[] features) {
+	public int selectChild(final double[] features) {
 		return features[feature] > thresh ? 1
 				: lastIndexNaN >= 0 && features[feature] == ThresholdSplitFinder.VALUE_MISSING ? 2 : 0;
 	}
 
 	@Override
-	public String explain(final float[] features) {
+	public String explain(final double[] features) {
 		final int child = selectChild(features);
 		if (child == 1) {
 			return fname + " (" + UiUtils.format(features[feature]) + ") > " + UiUtils.format(thresh);

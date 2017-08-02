@@ -24,7 +24,7 @@ public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator
 	private static final long serialVersionUID = 5410695563675584751L;
 
 	final int[] map;
-	private final float[][] features;
+	private final double[][] features;
 	private E[][] exp;
 	private final double[][] weights;
 	private int[][] orderedIndexes;
@@ -33,8 +33,8 @@ public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator
 		super(orig);
 		this.map = map;
 
-		final float[][] refFeats = ref.features();
-		features = refFeats == null ? null : new float[map.length][];
+		final double[][] refFeats = ref.features();
+		features = refFeats == null ? null : new double[map.length][];
 		weights = new double[ref.numLabels()][map.length];
 
 		for (int labelIndex = 0; labelIndex < weights.length; ++labelIndex) {
@@ -89,7 +89,7 @@ public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator
 	}
 
 	@Override
-	public float[][] features() {
+	public double[][] features() {
 		return features;
 	}
 

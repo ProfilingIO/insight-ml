@@ -36,13 +36,13 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 	private static final Logger LOG = LoggerFactory.getLogger(FeaturesDecorator.class);
 
 	private String[] featureNames;
-	private float[][] features;
+	private double[][] features;
 	private int[][] orderedByFeatures;
 
 	FeaturesDecorator() {
 	}
 
-	public FeaturesDecorator(final ISamples<S, E> orig, final float[][] features, final String[] featureNames) {
+	public FeaturesDecorator(final ISamples<S, E> orig, final double[][] features, final String[] featureNames) {
 		super(orig);
 		this.features = features;
 		this.featureNames = featureNames;
@@ -55,7 +55,7 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 
 		this.featureNames = featureNames;
 
-		features = new float[orig.size()][];
+		features = new double[orig.size()][];
 		ParallelFor.run(i -> {
 			try {
 				final S sample = orig.get(i);
@@ -91,7 +91,7 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 	}
 
 	@Override
-	public float[][] features() {
+	public double[][] features() {
 		return features;
 	}
 

@@ -43,7 +43,7 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 		final long start = System.currentTimeMillis();
 		final FeatureCorrelation[] result = Arrays.of(ParallelFor.run(feature -> {
 			final double[] feats = new double[table.size()];
-			final float[][] features = table.features();
+			final double[][] features = table.features();
 			for (int i = 0; i < feats.length; ++i) {
 				feats[i] = features[i][feature];
 			}

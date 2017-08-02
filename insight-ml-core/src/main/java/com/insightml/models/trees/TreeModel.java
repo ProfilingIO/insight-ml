@@ -39,7 +39,7 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 	}
 
 	@Override
-	public double predict(final float[] features) {
+	public double predict(final double[] features) {
 		TreeNode node = root;
 		for (;;) {
 			if (node.rule == null) {
@@ -49,7 +49,7 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 		}
 	}
 
-	public DistributionPrediction predictDistribution(final float[] features, final boolean debug) {
+	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
 		return root.predictDistribution(features, debug);
 	}
 
@@ -57,14 +57,14 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 	public DistributionPrediction[] predictDistribution(final ISamples<? extends Sample, ?> instances,
 			final boolean debug) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);
-		final float[][] instancesFeatures = instances.features();
+		final double[][] instancesFeatures = instances.features();
 		return ParallelFor.run(i -> predictDistribution(i, instancesFeatures, featuresFilter, debug),
 				0,
 				instancesFeatures.length,
 				1).toArray(new DistributionPrediction[instances.size()]);
 	}
 
-	private DistributionPrediction predictDistribution(final int instance, final float[][] instancesFeatures,
+	private DistributionPrediction predictDistribution(final int instance, final double[][] instancesFeatures,
 			final int[] featuresFilter, final boolean debug) {
 		return predictDistribution(selectFeatures(instance, instancesFeatures, featuresFilter), debug);
 	}

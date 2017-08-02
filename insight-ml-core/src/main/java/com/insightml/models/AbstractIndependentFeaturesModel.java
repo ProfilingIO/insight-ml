@@ -42,7 +42,7 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 	@Override
 	public final double[] predictDouble(final ISamples<? extends Sample, ?> instances) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);
-		final float[][] instancesFeatures = instances.features();
+		final double[][] instancesFeatures = instances.features();
 		final double[] result = new double[instancesFeatures.length];
 		for (int i = 0; i < result.length; ++i) {
 			result[i] = _predict(i, instancesFeatures, featuresFilter);
@@ -50,7 +50,7 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 		return result;
 	}
 
-	private double _predict(final int instance, final float[][] instancesFeatures,
+	private double _predict(final int instance, final double[][] instancesFeatures,
 			final @Nullable int[] featuresFilter) {
 		if (featuresFilter == null) {
 			return predict(instancesFeatures[instance]);
@@ -58,16 +58,16 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 		return predict(selectFeatures(instance, instancesFeatures, featuresFilter));
 	}
 
-	protected static float[] selectFeatures(final int instance, final float[][] instancesFeatures,
+	protected static double[] selectFeatures(final int instance, final double[][] instancesFeatures,
 			final int[] featuresFilter) {
-		final float[] features = instancesFeatures[instance];
-		final float[] selection = new float[featuresFilter.length];
+		final double[] features = instancesFeatures[instance];
+		final double[] selection = new double[featuresFilter.length];
 		for (int i = 0; i < selection.length; ++i) {
 			selection[i] = featuresFilter[i] == -1 ? 0 : features[featuresFilter[i]];
 		}
 		return selection;
 	}
 
-	public abstract double predict(float[] features);
+	public abstract double predict(double[] features);
 
 }

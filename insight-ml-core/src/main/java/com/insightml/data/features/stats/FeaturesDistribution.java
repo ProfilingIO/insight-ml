@@ -19,7 +19,6 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.Matrices;
-import com.insightml.math.Vectors;
 import com.insightml.math.distributions.GaussianDistribution;
 import com.insightml.utils.ui.IChartGui;
 import com.insightml.utils.ui.UiUtils;
@@ -40,11 +39,11 @@ public final class FeaturesDistribution implements IUiProvider<ISamples<?, ?>> {
 	@Override
 	public String getText(final ISamples<?, ?> instances, final int labelIndex) {
 		final StringBuilder builder = new StringBuilder();
-		final float[][] table = instances.features();
+		final double[][] table = instances.features();
 		for (int f = 0; f < table[0].length; ++f) {
 			final CharSequence feature = instances.featureNames()[f];
 			builder.append(UiUtils.fill(feature, 40));
-			builder.append(new GaussianDistribution(Vectors.cast(Matrices.column(table, f))) + "\n");
+			builder.append(new GaussianDistribution(Matrices.column(table, f)) + "\n");
 		}
 		return builder.toString();
 	}

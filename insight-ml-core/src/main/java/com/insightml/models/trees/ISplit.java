@@ -31,6 +31,6 @@ public interface ISplit extends IBinarySplit {
 
 	int getLastIndexLeft();
 
-	String explain(float[] features);
+	String explain(double[] features);
 
 }

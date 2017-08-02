@@ -22,7 +22,7 @@ import com.insightml.math.statistics.IStats;
 import com.insightml.math.statistics.MutableStatistics;
 
 public final class ThresholdSplitFinder implements IntFunction<Split> {
-	public static final float VALUE_MISSING = Float.NEGATIVE_INFINITY;
+	public static final double VALUE_MISSING = Double.NEGATIVE_INFINITY;
 
 	private final SplitFinderContext context;
 	private final boolean[] subset;

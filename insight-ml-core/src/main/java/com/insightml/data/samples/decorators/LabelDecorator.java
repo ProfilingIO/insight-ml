@@ -68,7 +68,7 @@ public final class LabelDecorator<S extends Sample, E> extends AbstractDecorator
 	}
 
 	@Override
-	public float[][] features() {
+	public double[][] features() {
 		return ref.features();
 	}
 

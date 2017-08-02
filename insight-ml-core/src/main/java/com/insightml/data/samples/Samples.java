@@ -103,7 +103,7 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> im
 	}
 
 	@Override
-	public float[][] features() {
+	public double[][] features() {
 		throw new UnsupportedOperationException();
 	}
 

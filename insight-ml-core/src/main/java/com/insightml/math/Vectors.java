@@ -238,12 +238,4 @@ public final class Vectors {
 		return result;
 	}
 
-	public static double[] cast(final float[] a) {
-		final double[] out = new double[a.length];
-		for (int i = 0; i < a.length; ++i) {
-			out[i] = a[i];
-		}
-		return out;
-	}
-
 }

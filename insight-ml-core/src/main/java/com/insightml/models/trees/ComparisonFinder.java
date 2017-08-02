@@ -92,12 +92,12 @@ final class ComparisonFinder extends RecursiveTask<ISplit> {
 		}
 
 		@Override
-		public int selectChild(final float[] features) {
+		public int selectChild(final double[] features) {
 			return features[feature] >= features[featureB] ? 1 : 0;
 		}
 
 		@Override
-		public String explain(final float[] features) {
+		public String explain(final double[] features) {
 			if (selectChild(features) == 1) {
 				return featureName + " (" + features[feature] + ") >=" + featureNameB + " (" + features[featureB] + ")";
 			}

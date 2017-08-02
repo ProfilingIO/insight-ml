@@ -80,16 +80,6 @@ public final class Arrays {
 		return fil;
 	}
 
-	public static float[] filter(final float[] orig, final boolean[] filter) {
-		final float[] fil = new float[Vectors.sum(filter)];
-		for (int i = 0, j = -1; i < orig.length; ++i) {
-			if (filter[i]) {
-				fil[++j] = orig[i];
-			}
-		}
-		return fil;
-	}
-
 	public static <T> T[] filter(final T[] orig, final boolean[] filter) {
 		final T[] fil = (T[]) Array.newInstance(orig[0].getClass(), Vectors.sum(filter));
 		for (int i = 0, j = -1; i < orig.length; ++i) {
