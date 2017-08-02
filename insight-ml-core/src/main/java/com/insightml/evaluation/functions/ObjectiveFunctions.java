@@ -32,4 +32,9 @@ public class ObjectiveFunctions {
 	private ObjectiveFunctions() {
 	}
 
+	@Nonnull
+	public static ObjectiveFunction<Double, Double>[] metricsBinary() {
+		return METRICS_BINARY;
+	}
+
 }

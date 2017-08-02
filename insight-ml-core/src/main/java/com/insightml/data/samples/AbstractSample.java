@@ -69,12 +69,12 @@ public abstract class AbstractSample<E> extends AbstractClass implements Sample,
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		return getId();
 	}
 
 	@Override
-	public final boolean equals(final Object o) {
+	public boolean equals(final Object o) {
 		if (!(o instanceof Sample)) {
 			throw new IllegalStateException("Tried to compare " + this + " to " + o + " (" + o.getClass() + ")");
 		}
@@ -82,7 +82,7 @@ public abstract class AbstractSample<E> extends AbstractClass implements Sample,
 	}
 
 	@Override
-	public final int compareTo(final Sample o) {
+	public int compareTo(final Sample o) {
 		return Integer.compare(getId(), o.getId());
 	}
 
