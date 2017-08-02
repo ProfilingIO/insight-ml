@@ -29,4 +29,6 @@ public interface IModelPipeline<I extends Sample, P> extends Serializable {
 	int getLabelIndex();
 
 	void close();
+
+	String info();
 }

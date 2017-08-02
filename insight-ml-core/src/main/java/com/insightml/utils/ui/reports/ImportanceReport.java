@@ -31,25 +31,25 @@ import com.insightml.utils.ui.LaTeX;
 
 public final class ImportanceReport {
 
-    private ImportanceReport() {
-    }
+	private ImportanceReport() {
+	}
 
-    public static void writeLatex(final ModelPipeline<?, ?> model, final String dataset, String folder) {
-        final SumMap<String> imp = model.featureImportance();
-        if (model.featureImportance() == null) {
-            LoggerFactory.getLogger(ImportanceReport.class).info(
-                    "No feature importance for " + model.getName());
-            return;
-        }
-        new File(folder).mkdirs();
-        final List<Object[]> cells = new LinkedList<>();
-        for (final Entry<String, Double> feat : Collections.sort(imp.distribution().getMap(),
-                SortOrder.DESCENDING).entrySet()) {
-            cells.add(new Object[] {feat.getKey(), feat.getValue() });
-        }
-        IoUtils.write(LaTeX.table("Feature Importance " + dataset, new String[] {"Feature",
-            "Importance", }, cells, false, 5.0, 10), new File(folder
-                + (dataset + "-" + model.getName()).replaceAll("[}{, =]+", "") + ".tex"));
-    }
+	public static void writeLatex(final ModelPipeline<?, ?> model, final String dataset, final String folder) {
+		final SumMap<String> imp = model.featureImportance();
+		if (model.featureImportance() == null) {
+			LoggerFactory.getLogger(ImportanceReport.class).info("No feature importance for " + model.getName());
+			return;
+		}
+		new File(folder).mkdirs();
+		final List<Object[]> cells = new LinkedList<>();
+		for (final Entry<String, Double> feat : Collections.sort(imp.distribution().getMap(), SortOrder.DESCENDING)
+				.entrySet()) {
+			cells.add(new Object[] { feat.getKey(), feat.getValue() });
+		}
+		IoUtils.write(
+				LaTeX.table("Feature Importance "
+						+ dataset, new String[] { "Feature", "Importance", }, cells, false, 5.0, 10),
+				new File(folder + (dataset + "-" + model.getName()).replaceAll("[}{, =]+", "") + ".tex"));
+	}
 
 }

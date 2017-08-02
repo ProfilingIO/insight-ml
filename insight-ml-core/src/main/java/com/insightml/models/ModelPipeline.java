@@ -79,6 +79,7 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return labelIndex;
 	}
 
+	@Override
 	public String info() {
 		return model.info();
 	}

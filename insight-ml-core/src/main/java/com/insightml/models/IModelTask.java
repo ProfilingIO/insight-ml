@@ -24,7 +24,7 @@ public interface IModelTask<I extends Sample, E, P> {
 
 	IDataset<I, P> dataset(IArguments arguments);
 
-	ModelPipeline<I, P> buildModel(IArguments args, int labelIndex);
+	IModelPipeline<I, P> buildModel(IArguments args, int labelIndex);
 
 	SimulationSetup<I, E, P> getSimulationSetup(ILearnerPipeline<I, P>[] learner, IDataset<I, P> dataset,
 			IArguments arguments, boolean report, Integer labelIndex);
