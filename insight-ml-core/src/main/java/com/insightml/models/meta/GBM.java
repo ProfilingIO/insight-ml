@@ -55,10 +55,11 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		this.predefinedBaseline = predefinedBaseline;
 	}
 
-	public GBM(final int it, final double shrink, final double bag,
+	public GBM(final IArguments arguments, final int it, final double shrink, final double bag,
 			final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final ILearner<Sample, Double, Double>[] learner) {
-		this(new Arguments("it", it, "shrink", shrink, "bag", bag), objective, learner, null);
+		this(Arguments.copy(arguments).set("it", it, true).set("shrink", shrink, true).set("bag", bag, true), objective,
+				learner, null);
 	}
 
 	@Override
@@ -81,7 +82,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 	public BoostingModel run(final ISamples<? extends Sample, ? extends Double> samples,
 			final ISamples<? extends Sample, ? extends Double> valid, final FeaturesConfig<? extends Sample, ?> config,
 			final int labelIndex) {
-		final Object[] expected = samples.expected(labelIndex);
+		final Object[] expected = expectedLabels(samples, labelIndex);
 		final double[] weights = weightSamples((ISamples<Sample, Double>) samples, labelIndex);
 
 		final DoubleModel first = f0(expected, weights, labelIndex);
@@ -117,6 +118,12 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 			}
 		}
 		return new BoostingModel(first, steps);
+	}
+
+	@SuppressWarnings("static-method")
+	protected Double[] expectedLabels(final ISamples<? extends Sample, ? extends Double> samples,
+			final int labelIndex) {
+		return samples.expected(labelIndex);
 	}
 
 	@SuppressWarnings("static-method")

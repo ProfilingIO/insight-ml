@@ -19,6 +19,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
+import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.SamplesMapping;
@@ -46,6 +47,11 @@ public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends Ab
 	public IModel<S, O> run(final LearnerInput<? extends S, ? extends E> input) {
 		throw new UnsupportedOperationException(getClass().getName());
 	}
+
+	@Override
+	public abstract IModel<S, O> run(final ISamples<? extends S, ? extends E> samples,
+			final ISamples<? extends S, ? extends E> valid, final FeaturesConfig<? extends S, ?> config,
+			final int labelIndex);
 
 	Pair<SamplesMapping<S, E>, double[]> sampleError(final ISamples<S, E> instances, final double[] preds,
 			final Object[] expected, final Random random) {

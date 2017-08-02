@@ -42,6 +42,12 @@ public final class Arguments implements IArguments {
 		}
 	}
 
+	public static Arguments copy(final IArguments arguments) {
+		final Arguments args = new Arguments();
+		args.values.putAll(((Arguments) arguments).values);
+		return args;
+	}
+
 	@Override
 	public Set<Entry<String, Serializable>> entrySet() {
 		return values.entrySet();
@@ -58,11 +64,16 @@ public final class Arguments implements IArguments {
 		return (T) values.get(key);
 	}
 
-	public void set(final String key, final Serializable value) {
+	public Arguments set(final String key, final Serializable value) {
+		return set(key, value, false);
+	}
+
+	public Arguments set(final String key, final Serializable value, final boolean allowOverwriting) {
 		final Serializable old = values.put(key, value);
-		if (old != null && !value.equals(old)) {
+		if (!allowOverwriting && old != null && !value.equals(old)) {
 			throw new IllegalAccessError("Overwrote " + key + " from " + old + " to " + value);
 		}
+		return this;
 	}
 
 	@Override

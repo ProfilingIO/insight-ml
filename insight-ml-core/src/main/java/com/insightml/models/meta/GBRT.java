@@ -31,14 +31,14 @@ public class GBRT extends GBM {
 		super(arguments, objective, getLearner(arguments, true), predefinedBaseline);
 	}
 
-	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
-			final int minObs) {
-		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, 1, true));
+	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
+			final int maxDepth, final int minObs) {
+		super(arguments, it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, 1, true));
 	}
 
-	public GBRT(final int it, final double shrink, final double bag, final int minDepth, final int maxDepth,
-			final int minObs, final int nodePred) {
-		super(it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, nodePred, true));
+	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
+			final int maxDepth, final int minObs, final int nodePred) {
+		super(arguments, it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, nodePred, true));
 	}
 
 	public static RegTree[] getLearner(final IArguments arguments, final boolean parallelize) {
