@@ -31,7 +31,7 @@ import com.insightml.utils.types.DoublePair;
 public final class DivFeaturesProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 	private final IFeatureProvider<I> baseProvider;
 
-	public DivFeaturesProvider(final IFeatureProvider<I> baseProvider, final double defaultValue) {
+	public DivFeaturesProvider(final IFeatureProvider<I> baseProvider, final float defaultValue) {
 		super("Div", defaultValue);
 		this.baseProvider = baseProvider;
 	}

@@ -25,12 +25,12 @@ import com.insightml.utils.IArguments;
 public abstract class AbstractFeatureProvider<I extends Sample> implements IFeatureProvider<I> {
 
 	private String name;
-	protected double defaultValue;
+	protected float defaultValue;
 
 	protected AbstractFeatureProvider() {
 	}
 
-	public AbstractFeatureProvider(final String name, final double defaultValue) {
+	public AbstractFeatureProvider(final String name, final float defaultValue) {
 		this.name = name;
 		this.defaultValue = defaultValue;
 	}
@@ -41,20 +41,20 @@ public abstract class AbstractFeatureProvider<I extends Sample> implements IFeat
 	}
 
 	@Override
-	public final double[] features(final I instance, final CharSequence[] features,
+	public final float[] features(final I instance, final CharSequence[] features,
 			final Map<String, Stats> featureStats, final boolean isTraining, final IArguments arguments) {
-		final double[] array = new double[Check.size(features, 1, 5000).length];
+		final float[] array = new float[Check.size(features, 1, 5000).length];
 		final FeaturesMapBuilder feats = new FeaturesMapBuilder();
 		features(instance, isTraining, arguments, feats);
 		for (int i = 0; i < features.length; ++i) {
 			final Double feat = feats.get(features[i]);
-			array[i] = feat == null ? handleMissingValue((String) features[i], featureStats) : feat.doubleValue();
+			array[i] = feat == null ? handleMissingValue((String) features[i], featureStats) : feat.floatValue();
 		}
 		return array;
 	}
 
 	@SuppressWarnings("unused")
-	protected double handleMissingValue(final String featureName, final Map<String, Stats> featureStats) {
+	protected float handleMissingValue(final String featureName, final Map<String, Stats> featureStats) {
 		return defaultValue;
 	}
 

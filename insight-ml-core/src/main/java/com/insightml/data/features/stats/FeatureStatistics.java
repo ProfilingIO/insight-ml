@@ -43,7 +43,7 @@ public final class FeatureStatistics extends AbstractClass {
 		this.instances = (ISamples<Sample, Double>) instances;
 		this.labelIndex = labelIndex;
 		final String[] featureNames = this.instances.featureNames();
-		final double[][] feats = this.instances.features();
+		final float[][] feats = this.instances.features();
 		final IntSumMapBuilder<CharSequence> nan = IntSumMap.builder(false, 16);
 		for (int i = 0; i < this.instances.size(); ++i) {
 			for (int j = 0; j < featureNames.length; ++j) {

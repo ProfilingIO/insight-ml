@@ -20,6 +20,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.math.Matrices;
 import com.insightml.models.AbstractBasicDoubleLearner;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arguments;
@@ -31,14 +32,14 @@ public final class OLS extends AbstractBasicDoubleLearner {
 	}
 
 	@Override
-	public IModel<Sample, Double> train(final double[][] features, final double[] expected,
+	public IModel<Sample, Double> train(final float[][] features, final double[] expected,
 			final String[] featureNames) {
 		final OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-		regression.newSampleData(expected, features);
+		regression.newSampleData(expected, Matrices.cast(features));
 		return new LinearRegressionModel(regression.estimateRegressionParameters(), featureNames);
 	}
 
-	public static double[][] addIntercept(final double[][] x) {
+	public static double[][] addIntercept(final float[][] x) {
 		final int nVars = x[0].length;
 		final double[][] xAug = new double[x.length][nVars + 1];
 		for (int i = 0; i < x.length; ++i) {
@@ -51,7 +52,7 @@ public final class OLS extends AbstractBasicDoubleLearner {
 		return xAug;
 	}
 
-	public static Array2DRowRealMatrix addIntercept2(final double[][] x) {
+	public static Array2DRowRealMatrix addIntercept2(final float[][] x) {
 		return new Array2DRowRealMatrix(addIntercept(x), false);
 	}
 

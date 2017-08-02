@@ -38,7 +38,7 @@ public interface ISamples<S extends Sample, E> extends Serializable {
 
 	String[] featureNames();
 
-	double[][] features();
+	float[][] features();
 
 	int[][] orderedIndexes();
 

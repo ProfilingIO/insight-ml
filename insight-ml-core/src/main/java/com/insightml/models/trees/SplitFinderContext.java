@@ -23,7 +23,7 @@ public final class SplitFinderContext {
 	public final double[] expected;
 	public final double[] weights;
 	public final String[] featureNames;
-	public final double[][] features;
+	public final float[][] features;
 	public final int[][] orderedInstances;
 
 	public final int maxDepth;

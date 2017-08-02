@@ -47,7 +47,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		mean = prediction;
 	}
 
-	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
+	public DistributionPrediction predictDistribution(final float[] features, final boolean debug) {
 		if (!debug) {
 			return new DistributionPrediction(predictDistributionNoDebug(features), null);
 		}
@@ -60,14 +60,14 @@ public final class TreeNode extends AbstractClass implements Serializable {
 				debug ? makeDebugOutput(features, moveRight, pred) : null);
 	}
 
-	private IStats predictDistributionNoDebug(final double[] features) {
+	private IStats predictDistributionNoDebug(final float[] features) {
 		if (rule == null) {
 			return stats;
 		}
 		return children[rule.selectChild(features)].predictDistributionNoDebug(features);
 	}
 
-	private List<String> makeDebugOutput(final double[] features, final int moveRight,
+	private List<String> makeDebugOutput(final float[] features, final int moveRight,
 			final DistributionPrediction pred) {
 		final List<String> debugValue = Lists
 				.newArrayList(rule.explain(features) + " \u2192 " + presentPrediction(children[moveRight].stats));
@@ -129,8 +129,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		print("", true, builder);
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
-			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true, true));
+			builder.append(UiUtils
+					.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING), true, true));
 		}
 		return builder.toString();
 	}
