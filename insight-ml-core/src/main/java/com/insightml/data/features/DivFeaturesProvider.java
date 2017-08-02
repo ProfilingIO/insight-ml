@@ -23,7 +23,6 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
-import com.insightml.models.Features;
 import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.IArguments;
@@ -54,9 +53,10 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 	}
 
 	@Override
-	public Features features(final I instance, final boolean isTraining, final IArguments arguments) {
-		final Features baseFeatures = baseProvider.features(instance, isTraining, arguments);
-		final FeaturesImpl features = new FeaturesImpl();
+	public void features(final I instance, final boolean isTraining, final IArguments arguments,
+			final FeaturesConsumer features) {
+		final FeaturesImpl baseFeatures = new FeaturesImpl();
+		baseProvider.features(instance, isTraining, arguments, baseFeatures);
 		for (final DoublePair<String> e1 : baseFeatures) {
 			final double v1 = e1.getValue();
 			for (final DoublePair<String> e2 : baseFeatures) {
@@ -66,7 +66,6 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 				}
 			}
 		}
-		return features;
 	}
 
 }

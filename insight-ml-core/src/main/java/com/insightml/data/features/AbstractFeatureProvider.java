@@ -44,9 +44,9 @@ public abstract class AbstractFeatureProvider<I extends Sample> implements IFeat
 	public final double[] features(final I instance, final CharSequence[] features,
 			final Map<String, Stats> featureStats, final boolean isTraining, final IArguments arguments) {
 		final double[] array = new double[Check.size(features, 1, 5000).length];
-		final Map<String, Double> feats = features(instance, isTraining, arguments).asMap();
+		final FeaturesMapBuilder feats = new FeaturesMapBuilder();
+		features(instance, isTraining, arguments, feats);
 		for (int i = 0; i < features.length; ++i) {
-			@SuppressWarnings("unlikely-arg-type")
 			final Double feat = feats.get(features[i]);
 			array[i] = feat == null ? handleMissingValue((String) features[i], featureStats) : feat.doubleValue();
 		}

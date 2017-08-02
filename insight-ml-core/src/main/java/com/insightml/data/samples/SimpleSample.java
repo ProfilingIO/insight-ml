@@ -15,8 +15,7 @@
  */
 package com.insightml.data.samples;
 
-import com.insightml.models.Features;
-import com.insightml.models.FeaturesImpl;
+import com.insightml.data.features.FeaturesConsumer;
 import com.insightml.utils.Check;
 
 public class SimpleSample implements Sample, Cloneable {
@@ -50,12 +49,10 @@ public class SimpleSample implements Sample, Cloneable {
 		return labels == null ? null : labels[labelIndex];
 	}
 
-	public Features loadFeatures() {
-		final FeaturesImpl feat = new FeaturesImpl();
+	public void loadFeatures(final FeaturesConsumer feat) {
 		for (int i = 0; i < features.length; ++i) {
 			feat.add(featureNames[i], features[i]);
 		}
-		return feat;
 	}
 
 	@Override

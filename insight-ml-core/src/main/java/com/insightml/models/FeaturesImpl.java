@@ -20,14 +20,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.insightml.data.features.FeaturesConsumer;
 import com.insightml.utils.Check;
 import com.insightml.utils.Maps;
 import com.insightml.utils.types.DoublePair;
 
-public final class FeaturesImpl implements Features {
+public final class FeaturesImpl implements Features, FeaturesConsumer {
 
 	private final List<DoublePair<String>> features = new LinkedList<>();
 
+	@Override
 	public void add(final String feature, final double value) {
 		features.add(new DoublePair<>(feature, value));
 	}

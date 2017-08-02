@@ -23,12 +23,9 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
-import com.insightml.models.Features;
-import com.insightml.models.FeaturesImpl;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.types.DoublePair;
 
 public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 	private final List<IFeatureProvider<I>> providers;
@@ -52,14 +49,11 @@ public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureP
 	}
 
 	@Override
-	public final Features features(final I instance, final boolean isTraining, final IArguments arguments) {
-		final FeaturesImpl features = new FeaturesImpl();
+	public final void features(final I instance, final boolean isTraining, final IArguments arguments,
+			final FeaturesConsumer features) {
 		for (final IFeatureProvider<I> provider : providers) {
-			for (final DoublePair<String> feat : provider.features(instance, isTraining, arguments)) {
-				features.add(feat.getKey(), feat.getValue());
-			}
+			provider.features(instance, isTraining, arguments, features);
 		}
-		return features;
 	}
 
 	@Override

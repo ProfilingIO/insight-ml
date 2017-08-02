@@ -23,7 +23,6 @@ import org.apache.commons.math3.util.Pair;
 
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
-import com.insightml.models.Features;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.ui.reports.IReporter;
 
@@ -36,6 +35,6 @@ public interface IFeatureProvider<I extends Sample> extends IReporter {
 	double[] features(@Nonnull I sample, @Nonnull CharSequence[] features, Map<String, Stats> featureStats,
 			boolean isTraining, IArguments arguments);
 
-	Features features(@Nonnull I sample, boolean isTraining, IArguments arguments);
+	void features(@Nonnull I sample, boolean isTraining, IArguments arguments, FeaturesConsumer consumer);
 
 }
