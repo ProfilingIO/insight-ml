@@ -26,7 +26,7 @@ public final class LinearModelBlender<I extends Sample, E> extends AbstractModel
 	private final boolean useOffset;
 
 	public LinearModelBlender(final boolean useOffset, final double[][] init,
-			final ObjectiveFunction<E, ? super Double> obj, final ILearner<I, E, ? super Double>... learner) {
+			final ObjectiveFunction<? super E, ? super Double> obj, final ILearner<I, E, ? super Double>... learner) {
 		super(learner, init, obj);
 		this.useOffset = useOffset;
 	}
