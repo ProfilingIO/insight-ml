@@ -15,6 +15,9 @@
  */
 package com.insightml.models.trees;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RecursiveAction;
@@ -25,7 +28,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import com.insightml.math.statistics.IStats;
 import com.insightml.math.statistics.MutableStatistics;
 import com.insightml.utils.ResourceCloser;
-import com.insightml.utils.jobs.ParallelFor;
+import com.insightml.utils.jobs.JobPool;
 
 final class GrowJob extends RecursiveAction {
 	private static final long serialVersionUID = 1788913869138107684L;
@@ -121,7 +124,11 @@ final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplit(final ThresholdSplitFinder thresholdSplitFinder) {
 		Split bestSplit = null;
+		final boolean[] featuresMask = context.featuresMask;
 		for (int i = 0; i < context.orderedInstances.length; ++i) {
+			if (featuresMask != null && !featuresMask[i]) {
+				continue;
+			}
 			final Split split = thresholdSplitFinder.apply(i);
 			if (split == null) {
 				continue;
@@ -136,8 +143,15 @@ final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplitParallel(final ThresholdSplitFinder thresholdSplitFinder) {
 		Split bestSplit = null;
-		for (final Split split : ParallelFor
-				.run(thresholdSplitFinder, 0, context.orderedInstances.length, 1, executor)) {
+		final boolean[] featuresMask = context.featuresMask;
+		final List<Callable<Split>> tasks = new ArrayList<>();
+		for (int i = 0; i < context.orderedInstances.length; ++i) {
+			if (featuresMask == null || featuresMask[i]) {
+				final int idx = i;
+				tasks.add(() -> thresholdSplitFinder.apply(idx));
+			}
+		}
+		for (final Split split : JobPool.execute(tasks, 1, executor)) {
 			if (split == null) {
 				continue;
 			}

@@ -15,6 +15,8 @@
  */
 package com.insightml.models.trees;
 
+import javax.annotation.Nullable;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.Utils;
 
@@ -26,12 +28,15 @@ public final class SplitFinderContext {
 	public final double[][] features;
 	public final int[][] orderedInstances;
 
+	@Nullable
+	final boolean[] featuresMask;
+
 	public final int maxDepth;
 	final int minObs;
 	final int labelIndex;
 
-	public SplitFinderContext(final ISamples<?, Double> instances, final int maxDepth, final int minObs,
-			final int labelIndex) {
+	public SplitFinderContext(final ISamples<?, Double> instances, @Nullable final boolean[] featuresMask,
+			final int maxDepth, final int minObs, final int labelIndex) {
 		final Object[] exp = instances.expected(labelIndex);
 		expected = new double[exp.length];
 		for (int i = 0; i < exp.length; ++i) {
@@ -41,6 +46,8 @@ public final class SplitFinderContext {
 		featureNames = instances.featureNames();
 		features = instances.features();
 		orderedInstances = instances.orderedIndexes();
+
+		this.featuresMask = featuresMask;
 
 		this.maxDepth = maxDepth;
 		this.minObs = minObs;

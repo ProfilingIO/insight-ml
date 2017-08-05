@@ -37,6 +37,7 @@ import com.insightml.models.DoubleModel;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.regression.SimpleRegression;
+import com.insightml.models.trees.RegTree;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.IArguments;
@@ -91,7 +92,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		final int iterations = (int) argument("it");
 		final double shrinkage = argument("shrink");
 		final List<DoublePair<DoubleModel>> steps = new ArrayList<>(iterations);
-		final ILearner<Sample, ? extends Object, Double>[] learner = getLearners();
+		final ILearner<Sample, Double, Double>[] learner = getLearners();
 		for (int i = 0; i < iterations; ++i) {
 			final ISamples<Sample, Double> subset = subset((ISamples<Sample, Double>) samples,
 					preds,
@@ -102,8 +103,8 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 				continue;
 			}
 			try {
-				final AbstractIndependentFeaturesModel fit = (AbstractIndependentFeaturesModel) learner[i
-						% learner.length].run((ISamples) subset, labelIndex);
+				final AbstractIndependentFeaturesModel fit = ((RegTree) learner[i % learner.length])
+						.run(subset, featuresMask(subset.numFeatures(), random), labelIndex);
 				final Pair<Double, double[]> update = fitGamma(fit,
 						preds,
 						samples,
@@ -118,6 +119,18 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 			}
 		}
 		return new BoostingModel(first, steps);
+	}
+
+	private boolean[] featuresMask(final int dimensionality, final Random random) {
+		final double ratio = argument("fbag");
+		if (ratio >= 1) {
+			return null;
+		}
+		final boolean[] keep = new boolean[dimensionality];
+		for (int i = 0; i < keep.length; ++i) {
+			keep[i] = random.nextDouble() <= ratio;
+		}
+		return keep;
 	}
 
 	@SuppressWarnings("static-method")
@@ -149,8 +162,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 	private ISamples<Sample, Double> subset(final ISamples<Sample, Double> instances, final double[] preds,
 			final Object[] expected, final Random random, final int labelIndex) {
 		final Pair<SamplesMapping<Sample, Double>, double[]> error = sampleError(instances, preds, expected, random);
-		return new LabelDecorator<>(error.getFirst(), Arrays.cast(error.getSecond()), labelIndex)
-				.sampleFeatures(argument("fbag"), random);
+		return new LabelDecorator<>(error.getFirst(), Arrays.cast(error.getSecond()), labelIndex);
 	}
 
 	private Pair<Double, double[]> fitGamma(final DoubleModel fit, final double[] preds, final ISamples<?, ?> instances,

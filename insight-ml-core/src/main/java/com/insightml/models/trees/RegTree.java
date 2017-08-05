@@ -17,6 +17,8 @@ package com.insightml.models.trees;
 
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.Vectors;
@@ -77,11 +79,22 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 	public final TreeModel run(final LearnerInput<? extends Sample, ? extends Double> input) {
 		Check.state(input.valid == null);
 		final ISamples<Sample, Double> train = (ISamples<Sample, Double>) input.getTrain();
+		final int labelIndex = input.labelIndex;
+		return run(train, labelIndex);
+	}
+
+	@Override
+	public TreeModel run(final ISamples<Sample, Double> train, final int labelIndex) {
+		return run(train, null, labelIndex);
+	}
+
+	public TreeModel run(final ISamples<Sample, Double> train, @Nullable final boolean[] featuresMask,
+			final int labelIndex) {
 		final Stats sRoot = new Stats();
-		sRoot.add(0, Vectors.sum(train.weights(input.labelIndex)));
+		sRoot.add(0, Vectors.sum(train.weights(labelIndex)));
 		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
-		final SplitFinderContext context = new SplitFinderContext(train, (int) argument("depth"),
-				(int) argument("minObs"), input.labelIndex);
+		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, (int) argument("depth"),
+				(int) argument("minObs"), labelIndex);
 		final boolean[] subset = new boolean[train.size()];
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;

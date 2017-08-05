@@ -56,13 +56,14 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	}
 
 	private static ThresholdSplitFinder createSplitFinder(final FeatureStatistics stats) {
-		final SplitFinderContext context = new SplitFinderContext(stats.getInstances(), 10, 10, stats.getLabelIndex());
+		final SplitFinderContext context = new SplitFinderContext(stats.getInstances(), null, 10, 10,
+				stats.getLabelIndex());
 		final boolean[] subset = new boolean[stats.getInstances().size()];
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
-		return ThresholdSplitFinder.createThresholdSplitFinder(context, subset, MseSplitCriterion::create,
-				() -> new Stats());
+		return ThresholdSplitFinder
+				.createThresholdSplitFinder(context, subset, MseSplitCriterion::create, () -> new Stats());
 	}
 
 	private static double compute(final int feature, final ThresholdSplitFinder thresholdSplitFinder) {
