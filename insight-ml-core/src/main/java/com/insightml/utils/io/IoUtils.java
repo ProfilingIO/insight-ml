@@ -98,15 +98,16 @@ public final class IoUtils {
 	}
 
 	public static void write(final String text, final @Nonnull File file) {
-		write(text, file, Charsets.UTF_8);
+		try {
+			write(text, file, Charsets.UTF_8);
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
-	public static void write(final String text, final @Nonnull File file, final @Nonnull Charset charset) {
-		try {
-			Files.write(Check.length(text, 0, 1999999999), file, charset);
-		} catch (final IOException e) {
-			throw new IllegalArgumentException(e);
-		}
+	public static void write(final String text, final @Nonnull File file, final @Nonnull Charset charset)
+			throws IOException {
+		Files.write(Check.length(text, 0, 1999999999), file, charset);
 	}
 
 	public static BufferedReader reader(final File file) throws IOException {
