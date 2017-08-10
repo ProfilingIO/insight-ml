@@ -66,7 +66,7 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 
 	private DistributionPrediction predictDistribution(final int instance, final double[][] instancesFeatures,
 			final int[] featuresFilter, final boolean debug) {
-		return predictDistribution(selectFeatures(instance, instancesFeatures, featuresFilter), debug);
+		return predictDistribution(selectFeatures(instancesFeatures[instance], featuresFilter), debug);
 	}
 
 	@Override

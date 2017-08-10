@@ -53,7 +53,7 @@ public abstract class AbstractIndependentModel<I extends Sample, E> extends Abst
 				.run(i -> Preconditions.checkNotNull(predict(i, instances, featuresFilter)), 0, instances.size(), 1));
 	}
 
-	protected int[] constractFeaturesFilter(final ISamples<? extends I, ?> instances) {
+	public int[] constractFeaturesFilter(final ISamples<? extends I, ?> instances) {
 		final CharSequence[] ref = features();
 		final String[] names = instances.featureNames();
 		if (ref == names || java.util.Arrays.deepEquals(ref, names)) {

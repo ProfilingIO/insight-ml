@@ -22,4 +22,8 @@ public interface DoubleModel extends ModelInfo {
 
 	double[] predictDouble(ISamples<? extends Sample, ?> instances);
 
+	double predict(double[] features, int[] featuresFilter);
+
+	int[] constractFeaturesFilter(final ISamples<? extends Sample, ?> instances);
+
 }

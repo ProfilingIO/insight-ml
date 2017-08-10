@@ -212,4 +212,8 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		}
 		return preds;
 	}
+
+	static double updatePrediction(final double lastModel, final double update, final double gamma) {
+		return lastModel + gamma * update;
+	}
 }

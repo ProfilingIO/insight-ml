@@ -44,6 +44,16 @@ public final class Baseline implements DoubleModel, Serializable {
 	}
 
 	@Override
+	public double predict(final double[] features, final int[] featuresFilter) {
+		return value;
+	}
+
+	@Override
+	public int[] constractFeaturesFilter(final ISamples<? extends Sample, ?> instances) {
+		return null;
+	}
+
+	@Override
 	public SumMap<String> featureImportance() {
 		return null;
 	}

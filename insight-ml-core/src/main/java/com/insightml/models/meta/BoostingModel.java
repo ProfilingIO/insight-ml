@@ -26,6 +26,8 @@ import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.AbstractModel;
 import com.insightml.models.DoubleModel;
 import com.insightml.utils.Arrays;
+import com.insightml.utils.Check;
+import com.insightml.utils.jobs.ParallelFor;
 import com.insightml.utils.types.DoublePair;
 import com.insightml.utils.ui.UiUtils;
 
@@ -47,11 +49,17 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	@Override
 	public Double[] apply(final ISamples<? extends Sample, ?> instances) {
-		double[] preds = first.predictDouble(instances);
-		for (final DoublePair<DoubleModel> step : steps) {
-			final double[] fit = step.getKey().predictDouble(instances);
-			preds = GBM.updatePredictions(preds, fit, step.getValue());
-		}
+		final double[] preds = first.predictDouble(instances);
+		final double[][] features = instances.features();
+		// We do not expect to have step-level feature filtering as of now
+		Check.isNull(steps.get(0).getKey().constractFeaturesFilter(instances));
+		ParallelFor.run(i -> {
+			for (final DoublePair<DoubleModel> step : steps) {
+				final double fit = step.getKey().predict(features[i], null);
+				preds[i] = GBM.updatePrediction(preds[i], fit, step.getValue());
+			}
+			return 1;
+		}, 0, instances.size(), 10_000);
 		return Arrays.cast(preds);
 	}
 
