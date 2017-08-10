@@ -17,6 +17,7 @@ package com.insightml.models;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
@@ -105,6 +106,11 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 	@Override
 	public Object[] getComponents() {
 		return new Object[] { model, pipe, postProcessor, new Parameter("label_index", labelIndex) };
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(model, pipe, labelIndex);
 	}
 
 }

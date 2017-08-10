@@ -16,8 +16,10 @@
 package com.insightml.models.trees;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -129,8 +131,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		print("", true, builder);
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
-			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true, true));
+			builder.append(UiUtils
+					.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING), true, true));
 		}
 		return builder.toString();
 	}
@@ -171,4 +173,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return stats.getSumOfWeights() == oth.stats.getSumOfWeights();
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(rule, Arrays.deepHashCode(children), mean);
+	}
 }

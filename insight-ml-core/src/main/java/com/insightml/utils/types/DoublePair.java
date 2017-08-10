@@ -16,6 +16,7 @@
 package com.insightml.utils.types;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public final class DoublePair<T> extends AbstractClass implements Serializable {
 
@@ -45,6 +46,11 @@ public final class DoublePair<T> extends AbstractClass implements Serializable {
 
 	public int compareDouble(final DoublePair<?> pair) {
 		return Double.compare(second, pair.second);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(first, second);
 	}
 
 	@Override

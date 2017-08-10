@@ -95,4 +95,9 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 		return Objects.toStringHelper(this).add("first", first).add("steps", steps.size()).toString();
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(first, steps, features());
+	}
+
 }

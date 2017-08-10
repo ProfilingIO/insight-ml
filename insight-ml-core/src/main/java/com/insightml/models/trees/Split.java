@@ -15,6 +15,8 @@
  */
 package com.insightml.models.trees;
 
+import java.util.Objects;
+
 import com.google.common.base.Preconditions;
 import com.insightml.math.statistics.IStats;
 import com.insightml.utils.ui.UiUtils;
@@ -73,6 +75,11 @@ public final class Split extends AbstractSplit implements Cloneable {
 		} catch (final CloneNotSupportedException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(feature, thresh);
 	}
 
 	@Override

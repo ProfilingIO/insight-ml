@@ -84,4 +84,8 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 		return Arrays.deepEquals(features(), ((TreeModel) obj).features()) && root.equals(((TreeModel) obj).root);
 	}
 
+	@Override
+	public int hashCode() {
+		return root.hashCode();
+	}
 }
