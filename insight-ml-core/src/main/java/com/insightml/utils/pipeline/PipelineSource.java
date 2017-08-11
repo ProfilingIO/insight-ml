@@ -55,6 +55,7 @@ public abstract class PipelineSource<T> implements PipelineElement {
 			final T result = load();
 			if (serializeResult) {
 				try {
+					serializationFile.getParentFile().mkdirs();
 					serializer.serialize(serializationFile, result);
 				} catch (final Throwable e) {
 					logger.error("{}", e, e);
