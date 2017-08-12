@@ -38,17 +38,21 @@ public abstract class PipelineSource<T> implements PipelineElement {
 	public final T get() {
 		final long start = System.currentTimeMillis();
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		if (loadSerializedResultsIfAvailable && serializationFile.exists()) {
-			logger.info("Loading source from {}", serializationFile);
-			try {
-				final T result = serializer.unserialize(serializationFile, serializationClass);
-				logger.info("Loaded source from {} in {} ms",
-						serializationFile,
-						Long.valueOf(System.currentTimeMillis() - start));
-				deserializationCallback(result);
-				return result;
-			} catch (final Throwable e) {
-				logger.error("{}", e, e);
+		if (loadSerializedResultsIfAvailable) {
+			if (serializationFile.exists()) {
+				logger.info("Loading source from {}", serializationFile);
+				try {
+					final T result = serializer.unserialize(serializationFile, serializationClass);
+					logger.info("Loaded source from {} in {} ms",
+							serializationFile,
+							Long.valueOf(System.currentTimeMillis() - start));
+					deserializationCallback(result);
+					return result;
+				} catch (final Throwable e) {
+					logger.error("{}", e, e);
+				}
+			} else {
+				logger.info("Could not find {}, going to create it ...", serializationFile);
 			}
 		}
 		try {
@@ -61,7 +65,7 @@ public abstract class PipelineSource<T> implements PipelineElement {
 					logger.error("{}", e, e);
 				}
 			}
-			logger.info("Loaded source in {} ms", Long.valueOf(System.currentTimeMillis() - start));
+			logger.info("Loaded source from provider in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 			return result;
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
