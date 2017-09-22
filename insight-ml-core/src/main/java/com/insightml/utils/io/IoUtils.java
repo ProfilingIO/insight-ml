@@ -60,7 +60,17 @@ public final class IoUtils {
 		return files;
 	}
 
-	public static String readFile(final InputStream stream, final Charset charset) {
+	@Nonnull
+	public static String read(final InputStream stream) {
+		return readFile(stream, Charsets.UTF_8);
+	}
+
+	@Nonnull
+	public static String read(final String filename, final Class<?> clazz) {
+		return read(clazz.getResourceAsStream(filename));
+	}
+
+	public static String readFile(final @Nonnull InputStream stream, final Charset charset) {
 		try (InputStreamReader reader = new InputStreamReader(stream, charset)) {
 			return CharStreams.toString(reader);
 		} catch (final IOException e) {
