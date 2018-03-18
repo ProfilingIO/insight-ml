@@ -81,7 +81,7 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final LearnerArguments args = new LearnerArguments();
 		args.add("depth", 4.0, 1, 24);
 		args.add("minObs", 10.0, 1, 20000);
-		args.add("minImprovement", 0.0, 0, 100);
+		args.add("minImprovement", 0.0, 0, 1000);
 		args.add("nodePred", 1.0, 1, 3);
 		return args;
 	}
