@@ -52,6 +52,10 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		this(depth, minobs, 1, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
 	}
 
+	public RegTree(final int depth, final int minobs, final double minImprovement, final boolean parallelize) {
+		this(depth, minobs, minImprovement, 1, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
+	}
+
 	public RegTree(final int depth, final int minobs, final int nodePred, final boolean parallelize) {
 		this(depth, minobs, nodePred, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
 	}
@@ -59,8 +63,14 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 	public RegTree(final int depth, final int minobs, final int nodePred,
 			final SplitCriterionFactory splitCriterionFactory, final Supplier<MutableStatistics> statisticsFactory,
 			final boolean parallelize) {
-		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs), "nodePred",
-				String.valueOf(nodePred)));
+		this(depth, minobs, 0, nodePred, splitCriterionFactory, statisticsFactory, parallelize);
+	}
+
+	public RegTree(final int depth, final int minobs, final double minImprovement, final int nodePred,
+			final SplitCriterionFactory splitCriterionFactory, final Supplier<MutableStatistics> statisticsFactory,
+			final boolean parallelize) {
+		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs), "minImprovement",
+				String.valueOf(minImprovement), "nodePred", String.valueOf(nodePred)));
 		this.parallelize = parallelize;
 		this.splitCriterionFactory = splitCriterionFactory;
 		this.statisticsFactory = statisticsFactory;
@@ -71,6 +81,7 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final LearnerArguments args = new LearnerArguments();
 		args.add("depth", 4.0, 1, 24);
 		args.add("minObs", 10.0, 1, 20000);
+		args.add("minImprovement", 0.0, 0, 100);
 		args.add("nodePred", 1.0, 1, 3);
 		return args;
 	}
@@ -94,7 +105,7 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		sRoot.add(0, Vectors.sum(train.weights(labelIndex)));
 		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, (int) argument("depth"),
-				(int) argument("minObs"), labelIndex);
+				(int) argument("minObs"), argument("minImprovement"), labelIndex);
 		final boolean[] subset = new boolean[train.size()];
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;

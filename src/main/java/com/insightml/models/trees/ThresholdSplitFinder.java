@@ -61,7 +61,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 
 		IStats bestSplitL = null;
 		double bestThreshold = 0;
-		double bestImprovement = 0;
+		double bestImprovement = context.minImprovement - 0.000000001;
 		int bestLastIndexLeft = -1;
 
 		final MutableStatistics currentSplitL = statisticsFactory.get();

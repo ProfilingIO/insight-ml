@@ -66,7 +66,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	}
 
 	private static ThresholdSplitFinder createSplitFinder(final ISamples<?, Double> instances, final int labelIndex) {
-		final SplitFinderContext context = new SplitFinderContext(instances, null, 10, 10, labelIndex);
+		final SplitFinderContext context = new SplitFinderContext(instances, null, 10, 10, 0, labelIndex);
 		final boolean[] subset = new boolean[instances.size()];
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
