@@ -18,16 +18,14 @@ package com.insightml.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.insightml.utils.Arrays;
+public class ArraysTest {
 
-public final class ArraysTest {
-
-    @Test
-    public void testFilter() {
-        Assert.assertArrayEquals(
-                new double[] {3, 8, 2, 5, 21 },
-                Arrays.filter(new double[] {9, 8, 3, 8, 2, -43, 5, 9, 3, 21 }, new boolean[] {
-                    false, false, true, true, true, false, true, false, false, true, }), 0);
-    }
+	@Test
+	public void testFilter() {
+		Assert.assertArrayEquals(new double[] { 3, 8, 2, 5, 21 },
+				Arrays.filter(new double[] { 9, 8, 3, 8, 2, -43, 5, 9, 3, 21 },
+						new boolean[] { false, false, true, true, true, false, true, false, false, true, }),
+				0);
+	}
 
 }

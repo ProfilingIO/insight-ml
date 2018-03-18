@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.insightml.utils.types.collections.DoubleLinkedList;
 
-public final class AUCTest {
+public class AUCTest {
 
 	@Test
 	public void testAuc() {

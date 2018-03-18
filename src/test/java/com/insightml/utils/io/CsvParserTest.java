@@ -23,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public final class CsvParserTest {
+public class CsvParserTest {
 
 	@Test
 	public void test() throws IOException {

@@ -25,7 +25,7 @@ import com.insightml.models.meta.RandomForest;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.models.regression.OLS;
 
-public final class RegTreeLearnerTest {
+public class RegTreeLearnerTest {
 
 	@Test
 	public void test() {

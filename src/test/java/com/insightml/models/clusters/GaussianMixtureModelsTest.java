@@ -24,7 +24,7 @@ import com.insightml.math.Vectors;
 import com.insightml.models.clusters.GaussianMixtureModels.Components;
 import com.insightml.models.clusters.GaussianMixtureModels.Point;
 
-public final class GaussianMixtureModelsTest {
+public class GaussianMixtureModelsTest {
 
 	@Test
 	public void test() {

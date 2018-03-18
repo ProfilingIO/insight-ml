@@ -18,13 +18,11 @@ package com.insightml.math;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.insightml.math.Vectors;
+public class VectorsTest {
 
-public final class VectorsTest {
-
-    @Test
-    public void test() {
-        Assert.assertEquals(-1.3734, Vectors.angle(200, 500, 100, 1000), 0.0001);
-    }
+	@Test
+	public void test() {
+		Assert.assertEquals(-1.3734, Vectors.angle(200, 500, 100, 1000), 0.0001);
+	}
 
 }

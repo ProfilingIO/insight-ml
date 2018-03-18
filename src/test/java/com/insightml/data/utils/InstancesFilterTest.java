@@ -22,12 +22,12 @@ import com.google.common.collect.Lists;
 import com.insightml.TestInstance;
 import com.insightml.data.samples.ISamples;
 
-public final class InstancesFilterTest {
+public class InstancesFilterTest {
 
 	@Test
 	public void testInstanceFilter() {
-		final Iterable<TestInstance> instances = TestInstance.create("labelA", "labelA", "labelA", "labelB", "labelB",
-				"labelA");
+		final Iterable<TestInstance> instances = TestInstance
+				.create("labelA", "labelA", "labelA", "labelB", "labelB", "labelA");
 		final ISamples<TestInstance, ?> filtered = InstancesFilter.filterBySmallestLabelSize(instances);
 
 		Assert.assertEquals(6, Lists.newLinkedList(instances).size());

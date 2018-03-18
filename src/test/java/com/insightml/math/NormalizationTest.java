@@ -17,18 +17,16 @@ package com.insightml.math;
 
 import org.junit.Test;
 
-import com.insightml.math.Normalization;
+public class NormalizationTest {
 
-public final class NormalizationTest {
+	@Test
+	public void test() {
+		final double[] values = new double[] { 1, 2, 3 };
+		final double value = 2;
 
-    @Test
-    public void test() {
-        final double[] values = new double[] {1, 2, 3 };
-        final double value = 2;
-
-        System.err.println(Normalization.linear(value, values));
-        System.err.println(Normalization.log(value, values));
-        System.err.println(Normalization.quad(value, values));
-    }
+		System.err.println(Normalization.linear(value, values));
+		System.err.println(Normalization.log(value, values));
+		System.err.println(Normalization.quad(value, values));
+	}
 
 }

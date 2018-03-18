@@ -18,7 +18,7 @@ package com.insightml.evaluation.functions;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public final class GiniTest extends AbstractFunctionsTest {
+public class GiniTest extends AbstractFunctionsTest {
 
 	@Test
 	@Ignore

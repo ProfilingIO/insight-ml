@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-public final class CsvWriterTest {
+public class CsvWriterTest {
 
 	@Test
 	public void test() throws IOException {

@@ -19,14 +19,14 @@ import org.junit.Test;
 
 import com.insightml.math.statistics.Stats;
 
-public final class BayesianNormalDistributionTest {
+public class BayesianNormalDistributionTest {
 
-    @Test
-    public void test() {
-        final Stats stats = new Stats(new double[] {1100, 1300 });
-        final BayesianNormalDistribution dist = new BayesianNormalDistribution(600, 100, stats);
-        System.err.println(dist.expectedValue());
-        System.err.println(dist.standardDeviation() + " vs. " + stats.getStandardDeviation());
-    }
+	@Test
+	public void test() {
+		final Stats stats = new Stats(new double[] { 1100, 1300 });
+		final BayesianNormalDistribution dist = new BayesianNormalDistribution(600, 100, stats);
+		System.err.println(dist.expectedValue());
+		System.err.println(dist.standardDeviation() + " vs. " + stats.getStandardDeviation());
+	}
 
 }
