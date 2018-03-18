@@ -16,9 +16,12 @@
 package com.insightml.data;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -41,27 +44,40 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	private static final long serialVersionUID = -8466353461597201244L;
 
 	private final IFeatureProvider<S> provider;
-	private final boolean useDivFeaturesProvider;
 	private IFeatureFilter filter;
 
 	public AnonymousFeaturesConfig(final String[] features, final SimpleFeaturesProvider<S> simpleFeaturesProvider,
 			final double defaultValue, final boolean useDivFeaturesProvider) {
 		super(null, null);
-		this.provider = provider(features, simpleFeaturesProvider, defaultValue);
-		this.useDivFeaturesProvider = useDivFeaturesProvider;
+		this.provider = provider(features, simpleFeaturesProvider, defaultValue, useDivFeaturesProvider);
 	}
 
 	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
 			final double defaultValue, final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
+		this(examples, exampleFeaturesProvider, 1, defaultValue, useDivFeaturesProvider, filter);
+	}
+
+	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
+			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
+			final IFeatureFilter filter) {
 		super(null, null);
-		this.provider = fromExamples(examples, exampleFeaturesProvider, defaultValue);
-		this.useDivFeaturesProvider = useDivFeaturesProvider;
+		this.provider = fromExamples(examples,
+				exampleFeaturesProvider,
+				minOccurrences,
+				defaultValue,
+				useDivFeaturesProvider);
 		this.filter = Preconditions.checkNotNull(filter);
 	}
 
 	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Iterable<S> examples,
 			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final double defaultValue) {
-		return new AnonymousFeaturesConfig<>(examples, exampleFeaturesProvider, defaultValue, false,
+		return of(examples, exampleFeaturesProvider, 1, defaultValue);
+	}
+
+	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Iterable<S> examples,
+			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final int minOccurrences,
+			final double defaultValue) {
+		return new AnonymousFeaturesConfig<>(examples, exampleFeaturesProvider, minOccurrences, defaultValue, false,
 				new IgnoreFeatureFilter());
 	}
 
@@ -75,17 +91,28 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		return filter;
 	}
 
-	private IFeatureProvider<S> fromExamples(final Iterable<S> examples,
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
-		final Set<String> names = new LinkedHashSet<>();
+	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Iterable<S> examples,
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
+			final boolean useDivFeaturesProvider) {
+		final Map<String, Integer> names = new LinkedHashMap<>();
 		for (final S example : examples) {
-			simpleFeaturesProvider.apply(example, (k, v) -> names.add(k));
+			simpleFeaturesProvider.apply(example, (k, v) -> names.merge(k, 1, Integer::sum));
 		}
-		return provider(names.toArray(new String[names.size()]), simpleFeaturesProvider, defaultValue);
+		final Set<String> selected = new LinkedHashSet<>();
+		for (final Entry<String, Integer> entry : names.entrySet()) {
+			if (entry.getValue() >= minOccurrences) {
+				selected.add(entry.getKey());
+			}
+		}
+		return provider(selected.toArray(new String[selected.size()]),
+				simpleFeaturesProvider,
+				defaultValue,
+				useDivFeaturesProvider);
 	}
 
-	private IFeatureProvider<S> provider(final String[] featureNames,
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
+	private static <S extends Sample> IFeatureProvider<S> provider(final String[] featureNames,
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue,
+			final boolean useDivFeaturesProvider) {
 		final SimpleFeatureProvider<S> prov = new SimpleFeatureProvider<>(featureNames, simpleFeaturesProvider,
 				defaultValue);
 		if (!useDivFeaturesProvider) {
@@ -97,7 +124,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(provider, useDivFeaturesProvider, filter);
+		return Objects.hash(provider, filter);
 	}
 
 	public static final class SimpleFeatureProvider<S extends Sample> extends GeneralFeatureProvider<S> {

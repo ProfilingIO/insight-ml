@@ -18,10 +18,13 @@ package com.insightml.data.features.stats;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.trees.ISplit;
 import com.insightml.models.trees.MseSplitCriterion;
@@ -39,10 +42,17 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 	@Override
 	public final Map<String, Double> run(final FeatureStatistics stats) {
-		final long start = System.currentTimeMillis();
-		final ThresholdSplitFinder thresholdSplitFinder = createSplitFinder(stats);
+		final ISamples<Sample, Double> instances = stats.getInstances();
+		final int labelIndex = stats.getLabelIndex();
 
-		final String[] feats = stats.getInstances().featureNames();
+		return run(instances, labelIndex);
+	}
+
+	public static @Nonnull Map<String, Double> run(final ISamples<?, Double> instances, final int labelIndex) {
+		final long start = System.currentTimeMillis();
+		final ThresholdSplitFinder thresholdSplitFinder = createSplitFinder(instances, labelIndex);
+
+		final String[] feats = instances.featureNames();
 		final Double[] result = Arrays.of(ParallelFor.run(i -> {
 			return Double.valueOf(compute(i, thresholdSplitFinder));
 		}, 0, feats.length, 1));
@@ -55,10 +65,9 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		return map;
 	}
 
-	private static ThresholdSplitFinder createSplitFinder(final FeatureStatistics stats) {
-		final SplitFinderContext context = new SplitFinderContext(stats.getInstances(), null, 10, 10,
-				stats.getLabelIndex());
-		final boolean[] subset = new boolean[stats.getInstances().size()];
+	private static ThresholdSplitFinder createSplitFinder(final ISamples<?, Double> instances, final int labelIndex) {
+		final SplitFinderContext context = new SplitFinderContext(instances, null, 10, 10, labelIndex);
+		final boolean[] subset = new boolean[instances.size()];
 		for (int i = 0; i < subset.length; ++i) {
 			subset[i] = true;
 		}
@@ -73,7 +82,6 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
-		final FeatureStatistics stats = new FeatureStatistics(instances, labelIndex);
-		return UiUtils.toString(Collections.sort(run(stats), SortOrder.DESCENDING), true, false);
+		return UiUtils.toString(Collections.sort(run(instances, labelIndex), SortOrder.DESCENDING), true, false);
 	}
 }

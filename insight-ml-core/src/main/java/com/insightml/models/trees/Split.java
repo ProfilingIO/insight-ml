@@ -46,6 +46,10 @@ public final class Split extends AbstractSplit implements Cloneable {
 		return fname;
 	}
 
+	public double getFeatureValueThreshold() {
+		return thresh;
+	}
+
 	public int getLastIndexNaN() {
 		return lastIndexNaN;
 	}
@@ -59,13 +63,13 @@ public final class Split extends AbstractSplit implements Cloneable {
 	@Override
 	public String explain(final double[] features) {
 		final int child = selectChild(features);
+		final double featureValue = features[feature];
 		if (child == 1) {
-			return fname + " (" + UiUtils.format(features[feature]) + ") > " + UiUtils.format(thresh);
+			return fname + " (" + UiUtils.format(featureValue) + ") > " + UiUtils.format(thresh);
+		} else if (child == 2) {
+			return fname + " (" + UiUtils.format(featureValue) + ") missing";
 		}
-		if (child == 2) {
-			return fname + " (" + UiUtils.format(features[feature]) + ") missing";
-		}
-		return fname + " (" + UiUtils.format(features[feature]) + ") \u2264 " + UiUtils.format(thresh);
+		return fname + " (" + UiUtils.format(featureValue) + ") \u2264 " + UiUtils.format(thresh);
 	}
 
 	@Override
@@ -84,7 +88,8 @@ public final class Split extends AbstractSplit implements Cloneable {
 
 	@Override
 	public String toString() {
+		final double weightSum = getWeightSum();
 		return fname + " \u2264 " + UiUtils.format(thresh) + " (" + UiUtils.format(improve) + "/"
-				+ UiUtils.format(getWeightSum()) + '=' + UiUtils.format(improve / getWeightSum()) + ")";
+				+ UiUtils.format(weightSum) + '=' + UiUtils.format(improve / weightSum) + ")";
 	}
 }

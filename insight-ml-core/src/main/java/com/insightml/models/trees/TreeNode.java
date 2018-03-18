@@ -92,6 +92,11 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		final int[] ordered = orderedIndexes[split.getFeature()];
 		final int indexNaN = split.getLastIndexNaN();
 		final int index = split.getLastIndexLeft();
+		return calculateSplit(ordered, subset, indexNaN, index);
+	}
+
+	public static boolean[][] calculateSplit(final int[] ordered, final boolean[] subset, final int indexNaN,
+			final int index) {
 		final boolean[][] splits = new boolean[3][subset.length];
 		for (int i = 0; i < ordered.length; ++i) {
 			final int idx = ordered[i];
