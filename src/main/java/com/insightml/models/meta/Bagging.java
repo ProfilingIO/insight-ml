@@ -27,6 +27,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
+import com.insightml.models.LearnerInput;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
@@ -65,10 +66,8 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 	}
 
 	@Override
-	public IModel<I, Double> run(final ISamples<? extends I, ? extends Double> train,
-			final ISamples<? extends I, ? extends Double> valid, final FeaturesConfig<? extends I, ?> config,
-			final int labelIndex) {
-		final ISamples<I, Double> samples = preprocess((ISamples<I, Double>) train);
+	public IModel<I, Double> run(final ISamples<I, Double> train, final int labelIndex) {
+		final ISamples<I, Double> samples = preprocess(train);
 		final int bags = (int) argument("bags");
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");
@@ -83,6 +82,18 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 			return 1;
 		}, 0, bags, 3, executor);
 		return new VoteModel<>(models, weights, strategy);
+	}
+
+	@Override
+	public IModel<I, Double> run(final LearnerInput<? extends I, ? extends Double> input) {
+		return run((ISamples<I, Double>) input.getTrain(), input.labelIndex);
+	}
+
+	@Override
+	public IModel<I, Double> run(final ISamples<? extends I, ? extends Double> train,
+			final ISamples<? extends I, ? extends Double> valid, final FeaturesConfig<? extends I, ?> config,
+			final int labelIndex) {
+		return run((ISamples<I, Double>) train, labelIndex);
 	}
 
 	protected ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,
