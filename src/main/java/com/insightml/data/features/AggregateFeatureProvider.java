@@ -33,15 +33,14 @@ public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureP
 	public AggregateFeatureProvider(final String name, final double defaultValue,
 			final List<IFeatureProvider<I>> providers) {
 		super(name, defaultValue);
-		this.providers = Check.size(providers, 1, 99);
+		this.providers = Check.size(providers, 2, 99);
 	}
 
 	@Override
-	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples,
-			final IArguments arguments) {
+	public final Pair<String[], Map<String, Stats>> featureNames(final IArguments arguments) {
 		final List<String> names = new LinkedList<>();
 		for (final IFeatureProvider<I> provider : providers) {
-			for (final String namee : provider.featureNames(samples, arguments).getFirst()) {
+			for (final String namee : provider.featureNames(arguments).getFirst()) {
 				names.add(namee);
 			}
 		}

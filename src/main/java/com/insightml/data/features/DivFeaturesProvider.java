@@ -37,8 +37,8 @@ public final class DivFeaturesProvider<I extends Sample> extends AbstractFeature
 	}
 
 	@Override
-	public Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples, final IArguments arguments) {
-		final CharSequence[] baseNames = baseProvider.featureNames(samples, arguments).getFirst();
+	public Pair<String[], Map<String, Stats>> featureNames(final IArguments arguments) {
+		final CharSequence[] baseNames = baseProvider.featureNames(arguments).getFirst();
 		final List<String> names = new LinkedList<>();
 		for (int i = 0; i < baseNames.length; ++i) {
 			if (!baseNames[i].toString().contains("/")) {

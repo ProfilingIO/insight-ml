@@ -35,8 +35,7 @@ public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractF
 	}
 
 	@Override
-	public final Pair<String[], Map<String, Stats>> featureNames(final Iterable<I> samples,
-			final IArguments arguments) {
+	public final Pair<String[], Map<String, Stats>> featureNames(final IArguments arguments) {
 		final List<Pair<String, String>> features = getFeatures();
 		final String[] names = new String[features.size()];
 		int i = -1;

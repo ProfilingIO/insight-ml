@@ -16,6 +16,7 @@
 package com.insightml.data;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -60,6 +61,13 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
 			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
 			final IFeatureFilter filter) {
+		this(examples.iterator(), exampleFeaturesProvider, minOccurrences, defaultValue, useDivFeaturesProvider,
+				filter);
+	}
+
+	public AnonymousFeaturesConfig(final Iterator<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
+			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
+			final IFeatureFilter filter) {
 		super(null, null);
 		this.provider = fromExamples(examples,
 				exampleFeaturesProvider,
@@ -91,12 +99,12 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		return filter;
 	}
 
-	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Iterable<S> examples,
+	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Iterator<S> examples,
 			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
 			final boolean useDivFeaturesProvider) {
 		final Map<String, Integer> names = new LinkedHashMap<>();
-		for (final S example : examples) {
-			simpleFeaturesProvider.apply(example, (k, v) -> names.merge(k, 1, Integer::sum));
+		while (examples.hasNext()) {
+			simpleFeaturesProvider.apply(examples.next(), (k, v) -> names.merge(k, 1, Integer::sum));
 		}
 		final Set<String> selected = new LinkedHashSet<>();
 		for (final Entry<String, Integer> entry : names.entrySet()) {

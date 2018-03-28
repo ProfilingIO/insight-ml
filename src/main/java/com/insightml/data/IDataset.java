@@ -36,7 +36,7 @@ public interface IDataset<S extends Sample, O> extends IReporter {
 
 	Iterable<S> loadTest(Integer labelIndex);
 
-	IPreprocessingPipeline<S> pipeline(Iterable<S> train);
+	IPreprocessingPipeline<S> pipeline();
 
 	FeaturesConfig<S, O> getFeaturesConfig(IArguments arguments);
 

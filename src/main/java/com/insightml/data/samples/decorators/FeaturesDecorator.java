@@ -77,7 +77,7 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 
 	@Override
 	public int size() {
-		return ref.size();
+		return features.length;
 	}
 
 	@Override

@@ -24,31 +24,24 @@ import com.insightml.utils.pipeline.PipelineSource;
 
 public class PreprocessingPipelineSupplier<S extends Sample> extends PipelineSource<PreprocessingPipeline<S>> {
 
-	private final Iterable<S> trainingSamples;
 	private final FeaturesConfig<S, ?> config;
 	private final IArguments arguments;
 
-	public PreprocessingPipelineSupplier(final Iterable<S> trainingSamples, final FeaturesConfig<S, ?> config,
-			final ISerializer serializer, final IArguments arguments) {
-		this.trainingSamples = trainingSamples;
+	public PreprocessingPipelineSupplier(final FeaturesConfig<S, ?> config, final ISerializer serializer,
+			final IArguments arguments) {
 		this.config = config;
 		this.arguments = arguments;
 
 		if (serializer != null) {
 			final String features = arguments.toString("features", "all");
-			serializeResult(
-					new File("cache/pipeline_" + trainingSamples.hashCode() + "_" + config.hashCode() + "_" + features),
-					serializer);
+			serializeResult(new File("cache/pipeline_" + config.hashCode() + "_" + features), serializer);
 			loadSerializedResultsIfAvailable(PreprocessingPipeline.class);
 		}
 	}
 
 	@Override
 	protected PreprocessingPipeline<S> load() {
-		return PreprocessingPipeline.create(trainingSamples,
-				config.newFeatureProvider(),
-				config.newFeatureFilter(),
-				config.getNormalization(),
-				arguments);
+		return PreprocessingPipeline
+				.create(config.newFeatureProvider(), config.newFeatureFilter(), config.getNormalization(), arguments);
 	}
 }

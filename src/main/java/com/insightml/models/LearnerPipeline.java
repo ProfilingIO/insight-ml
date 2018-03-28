@@ -131,8 +131,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 			if (config == null) {
 				config = origConfig;
 			}
-			pipe = new PreprocessingPipelineSupplier<>(train, (FeaturesConfig<S, O>) config, serializer, arguments)
-					.get();
+			pipe = new PreprocessingPipelineSupplier<>((FeaturesConfig<S, O>) config, serializer, arguments).get();
 		} else {
 			config = origConfig;
 		}

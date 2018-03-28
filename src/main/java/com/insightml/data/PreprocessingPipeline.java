@@ -61,11 +61,9 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	}
 
 	@Nonnull
-	public static <S extends Sample> PreprocessingPipeline<S> create(final Iterable<S> trainingSamples,
-			final IFeatureProvider<S> provider, final IFeatureFilter filter, final Normalization normalization,
-			final IArguments arguments) {
-		final Pair<String[], Map<String, Stats>> featureSelection = provider
-				.featureNames(new Samples<>(trainingSamples), arguments);
+	public static <S extends Sample> PreprocessingPipeline<S> create(final IFeatureProvider<S> provider,
+			final IFeatureFilter filter, final Normalization normalization, final IArguments arguments) {
+		final Pair<String[], Map<String, Stats>> featureSelection = provider.featureNames(arguments);
 		return new PreprocessingPipeline<>(provider, filter.allowedFeatures(featureSelection.getFirst()),
 				featureSelection.getSecond(), normalization, arguments);
 	}
@@ -100,6 +98,10 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	@Override
 	public String getReport() {
 		return provider.getReport();
+	}
+
+	public IArguments getArguments() {
+		return arguments;
 	}
 
 	@Override

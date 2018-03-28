@@ -33,7 +33,7 @@ public abstract class AbstractFeatureStatsTest {
 		for (final Pair<IDataset<?, ?>, ObjectiveFunction[]> dataset : TestDatasets.createInstances()) {
 			final Iterable<? extends Sample> inst = dataset.getFirst().loadAll();
 			if (!(inst.iterator().next().getExpected(0) instanceof String)) {
-				test(((IDataset) dataset.getFirst()).pipeline(inst).run(inst, true));
+				test(((IDataset) dataset.getFirst()).pipeline().run(inst, true));
 			}
 		}
 	}
