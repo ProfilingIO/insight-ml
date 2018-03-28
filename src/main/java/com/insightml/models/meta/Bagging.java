@@ -16,10 +16,11 @@
 package com.insightml.models.meta;
 
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.ISamples;
@@ -31,17 +32,9 @@ import com.insightml.models.LearnerInput;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.ResourceCloser;
-import com.insightml.utils.jobs.ParallelFor;
 
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
-
-	private static final ExecutorService executor;
-
-	static {
-		executor = Executors.newFixedThreadPool(16);
-		ResourceCloser.register(executor::shutdown);
-	}
+	private final Logger LOG = LoggerFactory.getLogger(getClass());
 
 	private final VoteStrategy strategy;
 
@@ -74,14 +67,20 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		final IModel<I, Double>[] models = new IModel[bags];
 		final double[] weights = new double[bags];
 		final ILearner<I, Double, Double>[] learner = getLearners();
-		ParallelFor.run(i -> {
-			final Random random = new Random((long) Math.pow(i + 2, 2));
-			final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, random);
-			models[i] = learner[i % learner.length].run(sampled, null, null, labelIndex);
+		for (int i = 0; i < bags; ++i) {
+			LOG.info("Running step {}/{}", i + 1, bags);
+			models[i] = model(labelIndex, samples, instancesSample, featureSample, learner, i);
 			weights[i] = 1;
-			return 1;
-		}, 0, bags, 3, executor);
+		}
 		return new VoteModel<>(models, weights, strategy);
+	}
+
+	private IModel<I, Double> model(final int labelIndex, final ISamples<I, Double> samples,
+			final double instancesSample, final double featureSample, final ILearner<I, Double, Double>[] learner,
+			final int i) {
+		final Random random = new Random((long) Math.pow(i + 2, 2));
+		final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, random);
+		return learner[i % learner.length].run(sampled, null, null, labelIndex);
 	}
 
 	@Override
