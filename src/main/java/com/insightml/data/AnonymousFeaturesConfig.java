@@ -41,11 +41,16 @@ import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 
 public final class AnonymousFeaturesConfig<S extends Sample, O> extends FeaturesConfig<S, O> {
-
 	private static final long serialVersionUID = -8466353461597201244L;
 
 	private final IFeatureProvider<S> provider;
 	private IFeatureFilter filter;
+
+	public AnonymousFeaturesConfig(final IFeatureProvider<S> provider, final IFeatureFilter filter) {
+		super(null, null);
+		this.provider = provider;
+		this.filter = filter;
+	}
 
 	public AnonymousFeaturesConfig(final String[] features, final SimpleFeaturesProvider<S> simpleFeaturesProvider,
 			final double defaultValue, final boolean useDivFeaturesProvider) {
@@ -106,6 +111,16 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		while (examples.hasNext()) {
 			simpleFeaturesProvider.apply(examples.next(), (k, v) -> names.merge(k, 1, Integer::sum));
 		}
+		return createFromFrequencies(simpleFeaturesProvider,
+				minOccurrences,
+				defaultValue,
+				useDivFeaturesProvider,
+				names);
+	}
+
+	public static <S extends Sample> IFeatureProvider<S> createFromFrequencies(
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
+			final boolean useDivFeaturesProvider, final Map<String, Integer> names) {
 		final Set<String> selected = new LinkedHashSet<>();
 		for (final Entry<String, Integer> entry : names.entrySet()) {
 			if (entry.getValue() >= minOccurrences) {

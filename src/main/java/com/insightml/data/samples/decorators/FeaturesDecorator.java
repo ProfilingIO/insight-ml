@@ -17,24 +17,26 @@ package com.insightml.data.samples.decorators;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
+import com.insightml.data.samples.AbstractSamples;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
-import com.insightml.math.Normalization;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.jobs.ParallelFor;
 
-public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecorator<S, E> {
+public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E> {
 	private static final long serialVersionUID = -2321252279857532465L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(FeaturesDecorator.class);
 
+	private ISamples<S, E> ref;
 	private String[] featureNames;
 	private double[][] features;
 	private int[][] orderedByFeatures;
@@ -43,15 +45,14 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 	}
 
 	public FeaturesDecorator(final ISamples<S, E> orig, final double[][] features, final String[] featureNames) {
-		super(orig);
+		this.ref = orig;
 		this.features = features;
 		this.featureNames = featureNames;
 	}
 
 	public FeaturesDecorator(final ISamples<S, E> orig, final IFeatureProvider prov, final String[] featureNames,
-			final Map<String, Stats> featureStats, final Normalization normalization, final boolean isTraining,
-			final IArguments arguments) {
-		super(orig);
+			final Map<String, Stats> featureStats, final boolean isTraining, final IArguments arguments) {
+		this.ref = orig;
 
 		this.featureNames = featureNames;
 
@@ -71,13 +72,23 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 	}
 
 	@Override
-	protected int getInstance(final int i) {
-		return i;
+	public int size() {
+		return features.length;
 	}
 
 	@Override
-	public int size() {
-		return features.length;
+	public S get(final int i) {
+		return ref.get(i);
+	}
+
+	@Override
+	public int getId(final int i) {
+		return ref.getId(i);
+	}
+
+	@Override
+	public int numLabels() {
+		return ref.numLabels();
 	}
 
 	@Override
@@ -154,6 +165,11 @@ public final class FeaturesDecorator<S extends Sample, E> extends AbstractDecora
 			idx[i] = idx[j];
 			idx[j] = tmp;
 		}
+	}
+
+	@Override
+	public final SamplesMapping<S, E> randomize(final Random random) {
+		throw new IllegalAccessError(this + "");
 	}
 
 	@Override

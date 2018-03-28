@@ -71,8 +71,7 @@ public final class PreprocessingPipeline<S extends Sample> extends AbstractConfi
 	@Override
 	public <E> ISamples<S, E> run(final Iterable<S> input, final boolean isTraining) {
 		final Samples<S, E> samples = new Samples<>(input, isTraining);
-		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, normalization, isTraining,
-				arguments);
+		return new FeaturesDecorator<>(samples, provider, featureNames, featureStats, isTraining, arguments);
 	}
 
 	@Override
