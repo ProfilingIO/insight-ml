@@ -16,9 +16,11 @@
 package com.insightml.models.meta;
 
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.Stats;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
+import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
 import com.insightml.utils.IArguments;
 
@@ -41,7 +43,7 @@ public class RandomForest extends Bagging<Sample> {
 	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
-			learner[i] = new RegTree(i + minDepth, minObs, false);
+			learner[i] = new RegTree(i + minDepth, minObs, 1, MseSplitCriterion::create, () -> new Stats(), false);
 		}
 		return learner;
 	}
