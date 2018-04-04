@@ -27,7 +27,6 @@ import com.insightml.models.IModel;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.jobs.AbstractJob;
 import com.insightml.utils.jobs.IJobBatch;
-import com.insightml.utils.jobs.ParallelFor;
 import com.insightml.utils.jobs.ThreadedClient;
 
 public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double>
@@ -88,18 +87,14 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 
 	@Override
 	public DistributionPrediction[] predictDistribution(final ISamples<? extends I, ?> instnces, final boolean debug) {
-		final IModel<I, Double>[] models = getModels();
 		final Stats[] map = new Stats[instnces.size()];
 		final List<Object>[] debg = new List[map.length];
 		for (int i = 0; i < map.length; ++i) {
 			map[i] = new Stats();
 			debg[i] = new ArrayList<>();
 		}
-		for (final DistributionPrediction[] preds : ParallelFor.run(
-				i -> ((DistributionModel<I>) models[i]).predictDistribution(instnces, debug),
-				0,
-				models.length,
-				1)) {
+		for (final IModel<I, Double> model : getModels()) {
+			final DistributionPrediction[] preds = ((DistributionModel<I>) model).predictDistribution(instnces, debug);
 			for (int j = 0; j < preds.length; ++j) {
 				map[j].add(preds[j].getPrediction());
 				debg[j].add(preds[j].getDebug());

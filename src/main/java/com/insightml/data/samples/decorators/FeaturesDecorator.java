@@ -29,7 +29,6 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.IArguments;
-import com.insightml.utils.jobs.ParallelFor;
 
 public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E> {
 	private static final long serialVersionUID = -2321252279857532465L;
@@ -57,18 +56,17 @@ public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E
 		this.featureNames = featureNames;
 
 		features = new double[orig.size()][];
-		ParallelFor.run(i -> {
+		for (int i = 0; i < features.length; ++i) {
 			try {
 				final S sample = orig.get(i);
 				features[i] = sample == null ? null
 						: Preconditions
 								.checkNotNull(prov.features(sample, featureNames, featureStats, isTraining, arguments));
-				return 1;
 			} catch (final Throwable e) {
 				LOG.error("{}", e, e);
 				throw e;
 			}
-		}, 0, features.length, 100);
+		}
 	}
 
 	@Override
