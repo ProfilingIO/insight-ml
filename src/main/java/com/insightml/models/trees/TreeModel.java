@@ -23,7 +23,6 @@ import com.insightml.math.types.SumMap;
 import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
-import com.insightml.utils.jobs.ParallelFor;
 
 public final class TreeModel extends AbstractIndependentFeaturesModel implements DistributionModel<Sample> {
 	private static final long serialVersionUID = -1127329976938652612L;
@@ -58,15 +57,11 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 			final boolean debug) {
 		final int[] featuresFilter = constractFeaturesFilter(instances);
 		final double[][] instancesFeatures = instances.features();
-		return ParallelFor.run(i -> predictDistribution(i, instancesFeatures, featuresFilter, debug),
-				0,
-				instancesFeatures.length,
-				1).toArray(new DistributionPrediction[instances.size()]);
-	}
-
-	private DistributionPrediction predictDistribution(final int instance, final double[][] instancesFeatures,
-			final int[] featuresFilter, final boolean debug) {
-		return predictDistribution(selectFeatures(instancesFeatures[instance], featuresFilter), debug);
+		final DistributionPrediction[] predictions = new DistributionPrediction[instancesFeatures.length];
+		for (int i = 0; i < predictions.length; ++i) {
+			predictions[i] = root.predictDistribution(selectFeatures(instancesFeatures[i], featuresFilter), debug);
+		}
+		return predictions;
 	}
 
 	@Override
