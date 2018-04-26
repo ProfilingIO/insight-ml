@@ -25,9 +25,6 @@ import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arrays;
-import com.insightml.utils.jobs.AbstractJob;
-import com.insightml.utils.jobs.IJobBatch;
-import com.insightml.utils.jobs.ThreadedClient;
 
 public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double>
 		implements DistributionModel<I> {
@@ -51,24 +48,11 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 	@Override
 	public Double[] apply(final ISamples<? extends I, ?> instnces) {
 		final IModel<I, Double>[] models = getModels();
-		final double[] weights = getWeights();
-		final IJobBatch<Object> batch = new ThreadedClient().newBatch();
 		final Double[][] predss = new Double[models.length][];
 		for (int m = 0; m < models.length; ++m) {
-			final int j = m;
-			batch.addJob(new AbstractJob<Object>("") {
-
-				private static final long serialVersionUID = -2963052506505226869L;
-
-				@Override
-				public Object run() {
-					predss[j] = models[j].apply(instnces);
-					return null;
-				}
-			});
+			predss[m] = models[m].apply(instnces);
 		}
-		batch.run();
-		return ensemble(weights, predss, strategy);
+		return ensemble(getWeights(), predss, strategy);
 	}
 
 	public static Double[] ensemble(final double[] weights, final Double[][] predss, final VoteStrategy strategy) {
