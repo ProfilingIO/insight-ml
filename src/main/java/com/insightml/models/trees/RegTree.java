@@ -101,19 +101,29 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 
 	public TreeModel run(final ISamples<Sample, Double> train, @Nullable final boolean[] featuresMask,
 			final int labelIndex) {
-		final Stats sRoot = new Stats();
-		sRoot.add(0, Vectors.sum(train.weights(labelIndex)));
-		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
+		final TreeNode root = createTreeRoot(train, labelIndex);
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, (int) argument("depth"),
 				(int) argument("minObs"), argument("minImprovement"), labelIndex);
-		final boolean[] subset = new boolean[train.size()];
-		for (int i = 0; i < subset.length; ++i) {
-			subset[i] = true;
-		}
+		final boolean[] subset = makeTrainingSubset(train);
 		final String nodePrediction = getNodePredictionMode();
 		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, statisticsFactory, parallelize)
 				.compute();
 		return new TreeModel(root, train.featureNames());
+	}
+
+	public static TreeNode createTreeRoot(final ISamples<Sample, Double> train, final int labelIndex) {
+		final Stats sRoot = new Stats();
+		sRoot.add(0, Vectors.sum(train.weights(labelIndex)));
+		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
+		return root;
+	}
+
+	public static boolean[] makeTrainingSubset(final ISamples<Sample, Double> train) {
+		final boolean[] subset = new boolean[train.size()];
+		for (int i = 0; i < subset.length; ++i) {
+			subset[i] = true;
+		}
+		return subset;
 	}
 
 	private String getNodePredictionMode() {

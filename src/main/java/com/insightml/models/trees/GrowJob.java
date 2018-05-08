@@ -30,7 +30,7 @@ import com.insightml.math.statistics.MutableStatistics;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.JobPool;
 
-final class GrowJob extends RecursiveAction {
+public final class GrowJob extends RecursiveAction {
 	private static final long serialVersionUID = 1788913869138107684L;
 
 	private static final ExecutorService executor;
@@ -63,7 +63,7 @@ final class GrowJob extends RecursiveAction {
 	}
 
 	@Override
-	protected void compute() {
+	public void compute() {
 		final Split best = findBestSplit();
 		// TODO: Do crossval here to reject split, if necessary
 		if (best == null || best.getImprovement() < 0.00000000001) {
