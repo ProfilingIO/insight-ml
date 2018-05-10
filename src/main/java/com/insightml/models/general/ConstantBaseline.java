@@ -18,12 +18,13 @@ package com.insightml.models.general;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractLearner;
 import com.insightml.models.LearnerInput;
+import com.insightml.utils.Arguments;
 
 public final class ConstantBaseline<E> extends AbstractLearner<Sample, Object, E> {
 	private final E constant;
 
 	public ConstantBaseline(final E constant) {
-		super(null);
+		super(new Arguments());
 		this.constant = constant;
 	}
 
