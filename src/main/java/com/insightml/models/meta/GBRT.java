@@ -33,7 +33,12 @@ public class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
 			final int maxDepth, final int minObs) {
-		super(arguments, it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, 1, true));
+		this(arguments, it, shrink, bag, minDepth, maxDepth, minObs, true);
+	}
+
+	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
+			final int maxDepth, final int minObs, final boolean parallelize) {
+		super(arguments, it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, 1, parallelize));
 	}
 
 	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
