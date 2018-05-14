@@ -142,7 +142,7 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 		throw new IllegalArgumentException("Unknown mode: " + nodePred);
 	}
 
-	static final class StatsSupplier implements Supplier<MutableStatistics>, Serializable {
+	public static final class StatsSupplier implements Supplier<MutableStatistics>, Serializable {
 		private static final long serialVersionUID = 7222508288626338172L;
 
 		@Override
