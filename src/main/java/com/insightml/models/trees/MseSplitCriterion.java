@@ -15,6 +15,8 @@
  */
 package com.insightml.models.trees;
 
+import java.io.Serializable;
+
 import com.insightml.math.statistics.IStats;
 
 public final class MseSplitCriterion implements SplitCriterion {
@@ -67,5 +69,18 @@ public final class MseSplitCriterion implements SplitCriterion {
 	@Override
 	public double score(final int feature, final int bestLastIndexLeft, final double bestImprovement) {
 		return bestImprovement;
+	}
+
+	public static MseSplitCriterionFactory factory() {
+		return new MseSplitCriterionFactory();
+	}
+
+	public static final class MseSplitCriterionFactory implements SplitCriterionFactory, Serializable {
+		private static final long serialVersionUID = 2681661396690754579L;
+
+		@Override
+		public SplitCriterion create(final SplitFinderContext context, final boolean[] subset) {
+			return MseSplitCriterion.create(context, subset);
+		}
 	}
 }

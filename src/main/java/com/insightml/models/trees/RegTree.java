@@ -15,6 +15,7 @@
  */
 package com.insightml.models.trees;
 
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -32,32 +33,35 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 
-public class RegTree extends AbstractDoubleLearner<Double> {
+public class RegTree extends AbstractDoubleLearner<Double> implements Serializable {
+	private static final long serialVersionUID = 1517682772459402265L;
+
 	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
 	private final Supplier<MutableStatistics> statisticsFactory;
 
 	public RegTree(final IArguments arguments) {
-		this(arguments, MseSplitCriterion::create);
+		this(arguments, MseSplitCriterion.factory());
 	}
 
 	public RegTree(final IArguments arguments, final SplitCriterionFactory splitCriterionFactory) {
 		super(arguments);
 		this.splitCriterionFactory = splitCriterionFactory;
 		parallelize = true;
-		statisticsFactory = () -> new Stats();
+		statisticsFactory = new StatsSupplier();
 	}
 
 	public RegTree(final int depth, final int minobs, final boolean parallelize) {
-		this(depth, minobs, 1, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
+		this(depth, minobs, 1, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize);
 	}
 
 	public RegTree(final int depth, final int minobs, final double minImprovement, final boolean parallelize) {
-		this(depth, minobs, minImprovement, 1, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
+		this(depth, minobs, minImprovement, 1, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(),
+				parallelize);
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred, final boolean parallelize) {
-		this(depth, minobs, nodePred, MseSplitCriterion::create, () -> new SimpleStatistics(), parallelize);
+		this(depth, minobs, nodePred, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize);
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred,
@@ -136,6 +140,24 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 			return "meandian";
 		}
 		throw new IllegalArgumentException("Unknown mode: " + nodePred);
+	}
+
+	static final class StatsSupplier implements Supplier<MutableStatistics>, Serializable {
+		private static final long serialVersionUID = 7222508288626338172L;
+
+		@Override
+		public MutableStatistics get() {
+			return new Stats();
+		}
+	}
+
+	static final class SimpleStatisticsSupplier implements Supplier<MutableStatistics>, Serializable {
+		private static final long serialVersionUID = -39356810665839873L;
+
+		@Override
+		public MutableStatistics get() {
+			return new SimpleStatistics();
+		}
 	}
 
 }
