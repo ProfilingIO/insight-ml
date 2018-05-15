@@ -100,6 +100,8 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 	private static final class Fold<I extends Sample, E, P> extends AbstractJob<Predictions<E, P>[]> {
 		private static final long serialVersionUID = 8592592353685668153L;
 
+		private static final Logger logger = LoggerFactory.getLogger(Fold.class);
+
 		private final int fold;
 		private final int actualFold;
 		private final int folds;
@@ -108,7 +110,6 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 		private final FeaturesConfig<I, P> config;
 		private final Iterable<I> labled;
 		private final ILearnerPipeline<I, P>[] learner;
-		private final Logger logger = LoggerFactory.getLogger(Fold.class);
 
 		Fold(final FeaturesConfig<I, P> config, final Iterable<I> shuffled, final ILearnerPipeline<I, P>[] loader,
 				final int fold, final int actualFold, final int folds, final int label) {
