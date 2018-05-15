@@ -44,7 +44,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	private static final long serialVersionUID = -8466353461597201244L;
 
 	private final IFeatureProvider<S> provider;
-	private IFeatureFilter filter;
+	private final IFeatureFilter filter;
 
 	public AnonymousFeaturesConfig(final IFeatureProvider<S> provider, final IFeatureFilter filter) {
 		super(null, null);
@@ -56,6 +56,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 			final double defaultValue, final boolean useDivFeaturesProvider) {
 		super(null, null);
 		this.provider = provider(features, simpleFeaturesProvider, defaultValue, useDivFeaturesProvider);
+		this.filter = new IgnoreFeatureFilter();
 	}
 
 	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
