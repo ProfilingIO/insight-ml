@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.data.samples.ISamples;
+import com.insightml.data.samples.Sample;
 import com.insightml.models.Predictions;
 
 public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjectiveFunction<E, P> {
@@ -35,12 +36,16 @@ public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjec
 				final int labelIndex = preds.getLabelIndex();
 				final E[] exp = preds.getExpected();
 				final double[] weights = preds.getWeights();
+				final ISamples<? extends Sample, ? extends E> samples = preds.getSamples();
 				for (int i = 0; i < weights.length; ++i) {
 					if (exp[i] == null) {
 						continue;
 					}
 					final double weight = weights[i];
-					sum += instance(preds.getPredictions()[i], exp[i], preds.getSample(i), labelIndex) * weight;
+					sum += instance(preds.getPredictions()[i],
+							exp[i],
+							samples == null ? null : samples.get(i),
+							labelIndex) * weight;
 					weightSum += weight;
 				}
 			}
