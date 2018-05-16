@@ -34,7 +34,7 @@ public abstract class AbstractObjectiveFunctionFrame<E, P> extends AbstractObjec
 			for (final Predictions<? extends E, ? extends P> preds : predz) {
 				final int labelIndex = preds.getLabelIndex();
 				final E[] exp = preds.getExpected();
-				final double[] weights = preds.getSamples().weights(labelIndex);
+				final double[] weights = preds.getWeights();
 				for (int i = 0; i < weights.length; ++i) {
 					if (exp[i] == null) {
 						continue;
