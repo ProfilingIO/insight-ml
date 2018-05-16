@@ -38,7 +38,7 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
-	private final Logger LOG = LoggerFactory.getLogger(getClass());
+	private transient Logger LOG = LoggerFactory.getLogger(Bagging.class);
 
 	private final VoteStrategy strategy;
 
