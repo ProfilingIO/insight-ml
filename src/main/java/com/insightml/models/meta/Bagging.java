@@ -38,8 +38,6 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
-	private transient Logger LOG = LoggerFactory.getLogger(getClass());
-
 	private final VoteStrategy strategy;
 
 	public Bagging(final IArguments arguments, final ILearner<I, Double, Double>... learner) {
@@ -75,8 +73,9 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		final ISamples<I, Double> samples = preprocess(train);
 		final int bags = getNumberOfBags();
 		final List<BagResult<I>> result = new ArrayList<>(bags);
+		final Logger log = LoggerFactory.getLogger(getClass());
 		for (int i = 0; i < bags; ++i) {
-			LOG.info("Running bag {}/{}", i + 1, bags);
+			log.info("Running bag {}/{}", i + 1, bags);
 			result.add(new BagResult<>(i, computeBag(i, samples, labelIndex), 1));
 		}
 		return combine(result, strategy);
