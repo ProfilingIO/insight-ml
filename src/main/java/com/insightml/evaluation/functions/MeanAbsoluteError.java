@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.Predictions;
 
@@ -47,9 +48,10 @@ public final class MeanAbsoluteError extends AbstractObjectiveFunctionFrame<Numb
 				final Number[] pred = preds.getPredictions();
 				final Number[] exp = preds.getExpected();
 				final int labelIndex = preds.getLabelIndex();
+				final ISamples<? extends Sample, ? extends Number> samples = preds.getSamples();
 				for (int i = 0; i < pred.length; ++i) {
 					if (exp[i] != null) {
-						stats.addValue(instance(pred[i], exp[i], preds.getSample(i), labelIndex));
+						stats.addValue(instance(pred[i], exp[i], samples == null ? null : samples.get(i), labelIndex));
 					}
 				}
 			}

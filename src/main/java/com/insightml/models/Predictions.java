@@ -77,7 +77,7 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 	}
 
 	public Sample getSample(final int i) {
-		return samples.get(i);
+		return samples == null ? null : samples.get(i);
 	}
 
 	public E[] getExpected() {
