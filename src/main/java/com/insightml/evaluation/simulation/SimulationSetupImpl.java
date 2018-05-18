@@ -43,8 +43,8 @@ public final class SimulationSetupImpl<I extends Sample, E, P> extends AbstractC
 		this.datasetName = Check.notEmpty(datasetName, "datasetName");
 		this.config = config;
 		this.labelIndex = labelIndex;
-		this.learner = Check.size(learner, 1, 14);
-		this.objectives = Check.size(objectives, 1, 14);
+		this.learner = Check.size(learner, 1, 100);
+		this.objectives = Check.size(objectives, 1, 30);
 		this.report = report;
 		this.client = Preconditions.checkNotNull(client);
 	}
