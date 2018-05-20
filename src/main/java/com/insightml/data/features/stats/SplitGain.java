@@ -17,6 +17,7 @@ package com.insightml.data.features.stats;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -31,9 +32,7 @@ import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
 import com.insightml.models.trees.SplitFinderContext;
 import com.insightml.models.trees.TreeNode;
-import com.insightml.utils.Arrays;
 import com.insightml.utils.Collections;
-import com.insightml.utils.Collections.SortOrder;
 import com.insightml.utils.jobs.ParallelFor;
 import com.insightml.utils.ui.UiUtils;
 import com.insightml.utils.ui.reports.IUiProvider;
@@ -58,27 +57,27 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final ISamples<Sample, Double> instances = stats.getInstances();
 		final int labelIndex = stats.getLabelIndex();
 
-		return run(instances, labelIndex, maxDepth, minObs);
+		return run(instances, labelIndex, maxDepth, minObs).entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().varianceReduction));
 	}
 
-	public static @Nonnull Map<String, Double> run(final ISamples<?, Double> instances, final int labelIndex,
+	public static @Nonnull Map<String, SplitGainInfo> run(final ISamples<?, Double> instances, final int labelIndex,
 			final int maxDepth, final int minObs) {
 		final long start = System.currentTimeMillis();
 
 		final String[] feats = instances.featureNames();
-		final Double[] result = Arrays.of(ParallelFor
-				.run(i -> Double.valueOf(compute(i, instances, labelIndex, maxDepth, minObs)), 0, feats.length, 1));
-		final Map<String, Double> map = new HashMap<>(feats.length);
-		for (int i = 0; i < feats.length; ++i) {
-			map.put(feats[i], result[i]);
+		final Map<String, SplitGainInfo> map = new HashMap<>(feats.length);
+		for (final SplitGainInfo info : ParallelFor
+				.run(i -> compute(i, feats[i], instances, labelIndex, maxDepth, minObs), 0, feats.length, 1)) {
+			map.put(info.featureName, info);
 		}
 
 		LOG.info("Computed statistics in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 		return map;
 	}
 
-	private static double compute(final int feature, final ISamples train, final int labelIndex, final int maxDepth,
-			final int minObs) {
+	private static SplitGainInfo compute(final int feature, final String featureName, final ISamples train,
+			final int labelIndex, final int maxDepth, final int minObs) {
 		final boolean[] featuresMask = new boolean[train.numFeatures()];
 		featuresMask[feature] = true;
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, maxDepth, minObs, 0, labelIndex);
@@ -88,13 +87,47 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final String nodePrediction = "mean";
 		new GrowJob(root, context, subset, 1, nodePrediction, MseSplitCriterion::create, () -> new Stats(), false)
 				.compute();
-		return root.featureImportance(true).sumAll();
+		final double varianceReduction = root.featureImportance(true).sumAll();
+		final String rulePresentation = root.getRule() == null ? null : root.getRule().getRulePresentation();
+		final TreeNode[] children = root.getChildren();
+		return new SplitGainInfo(featureName, varianceReduction, rulePresentation,
+				children == null ? null : children[0].getMean(), children == null ? null : children[1].getMean());
 	}
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
-		return UiUtils.toString(Collections.sort(run(instances, labelIndex, maxDepth, minObs), SortOrder.DESCENDING),
-				true,
-				false);
+		return UiUtils.toString(Collections.sortDesc(run(instances, labelIndex, maxDepth, minObs)), true, false);
+	}
+
+	public static final class SplitGainInfo implements Comparable<SplitGainInfo> {
+		private final String featureName;
+		private final double varianceReduction;
+		private final String rule;
+		private final Double predictionLeft;
+		private final Double predictionRight;
+
+		public SplitGainInfo(final String featureName, final double varianceReduction, final String rule,
+				final Double predictionLeft, final Double predictionRight) {
+			this.featureName = featureName;
+			this.varianceReduction = varianceReduction;
+			this.rule = rule;
+			this.predictionLeft = predictionLeft;
+			this.predictionRight = predictionRight;
+		}
+
+		@Override
+		public int compareTo(final SplitGainInfo o) {
+			final int comp = Double.compare(varianceReduction, o.varianceReduction);
+			if (comp != 0) {
+				return comp;
+			}
+			return featureName.compareTo(o.featureName);
+		}
+
+		@Override
+		public String toString() {
+			return UiUtils.fill(UiUtils.format(varianceReduction), 12) + (rule == null ? ""
+					: rule + " -> " + UiUtils.format(predictionLeft) + "; else " + UiUtils.format(predictionRight));
+		}
 	}
 }

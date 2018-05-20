@@ -86,10 +86,14 @@ public final class Split extends AbstractSplit implements Cloneable {
 		return Objects.hash(feature, thresh);
 	}
 
+	public String getRulePresentation() {
+		return fname + " \u2264 " + UiUtils.format(thresh);
+	}
+
 	@Override
 	public String toString() {
 		final double weightSum = getWeightSum();
-		return fname + " \u2264 " + UiUtils.format(thresh) + " (" + UiUtils.format(improve) + "/"
-				+ UiUtils.format(weightSum) + '=' + UiUtils.format(improve / weightSum) + ")";
+		return getRulePresentation() + " (" + UiUtils.format(improve) + "/" + UiUtils.format(weightSum) + '='
+				+ UiUtils.format(improve / weightSum) + ")";
 	}
 }

@@ -49,6 +49,18 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		mean = prediction;
 	}
 
+	public Split getRule() {
+		return rule;
+	}
+
+	public TreeNode[] getChildren() {
+		return children;
+	}
+
+	public double getMean() {
+		return mean;
+	}
+
 	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
 		if (!debug) {
 			return new DistributionPrediction(predictDistributionNoDebug(features), null);

@@ -78,7 +78,7 @@ public class Correlation implements Comparable<Correlation> {
 
 	@Override
 	public final int compareTo(final Correlation o) {
-		return Double.valueOf(o.getMean()).compareTo(getMean());
+		return Double.valueOf(Math.max(o.pearson, o.spearman)).compareTo(Math.max(pearson, spearman));
 	}
 
 	public final String getText() {
@@ -86,9 +86,7 @@ public class Correlation implements Comparable<Correlation> {
 		final SimpleFormatter formatter = new SimpleFormatter(5, true);
 		builder.append("Covariance: " + UiUtils.fill(formatter.format(getCovariance()), 12));
 		builder.append("Pearson: " + UiUtils.fill(formatter.format(getPearson()), 12));
-		builder.append("Spearman: " + UiUtils.fill(formatter.format(getSpearman()), 12));
-		builder.append("Mean: " + UiUtils.fill(formatter.format(getMean()), 12));
-		builder.append("Diff: " + formatter.format(Math.abs(getPearson() - getSpearman())));
+		builder.append("Spearman: " + formatter.format(getSpearman()));
 		return builder.toString();
 	}
 

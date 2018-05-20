@@ -176,6 +176,21 @@ public final class Collections {
 		return sorted;
 	}
 
+	public static <T, N extends Comparable<N>> Map<T, N> sortDesc(final Map<T, N> map) {
+		final TreeMap<T, N> sorted = new TreeMap<>((o1, o2) -> {
+			if (o1 == o2) {
+				return 0;
+			}
+			final N v1 = map.get(o1);
+			final N v2 = map.get(o2);
+			final int comp = v1.compareTo(v2);
+			Check.state(comp != 0);
+			return -comp;
+		});
+		sorted.putAll(map);
+		return sorted;
+	}
+
 	public static <K, V> Map<K, V> subMap(final Map<K, V> sorted, final int n) {
 		if (Check.num(n, 1, 9999999) >= sorted.size()) {
 			return sorted;
