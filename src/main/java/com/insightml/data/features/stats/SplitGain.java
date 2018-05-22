@@ -16,11 +16,13 @@
 package com.insightml.data.features.stats;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
+import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
 import com.insightml.models.trees.SplitFinderContext;
 import com.insightml.models.trees.TreeNode;
+import com.insightml.utils.Arrays;
 import com.insightml.utils.Collections;
 import com.insightml.utils.jobs.ParallelFor;
 import com.insightml.utils.ui.UiUtils;
@@ -90,24 +93,58 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final double varianceReduction = root.featureImportance(true).sumAll();
 		final String rulePresentation = root.getRule() == null ? null : root.getRule().getRulePresentation();
 		final TreeNode[] children = root.getChildren();
-		return new SplitGainInfo(featureName, varianceReduction, rulePresentation,
+		return new SplitGainInfo(feature, featureName, varianceReduction, rulePresentation,
 				children == null ? null : children[0].getMean(), children == null ? null : children[1].getMean());
 	}
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
-		return UiUtils.toString(Collections.sortDesc(run(instances, labelIndex, maxDepth, minObs)), true, false);
+		final SplitGainInfo[] sorted = Arrays
+				.of(Collections.sortDesc(run(instances, labelIndex, maxDepth, minObs)).values(), SplitGainInfo.class);
+		final Map<String, String> result = new LinkedHashMap<>(sorted.length);
+		final double[][] features = instances.features();
+		for (int i = 0; i < sorted.length; ++i) {
+			double bestCor = 0;
+			int bestCorrFeature = 0;
+			if (i < 50) {
+				for (int j = 0; j < i; ++j) {
+					try {
+						final double[] fi = new double[features.length];
+						final double[] fj = new double[features.length];
+						for (int s = 0; s < fi.length; ++s) {
+							fi[s] = features[s][sorted[i].featureIndex];
+							fj[s] = features[s][sorted[j].featureIndex];
+						}
+						final double corr = new PearsonsCorrelation().correlation(fi, fj);
+						if (corr > bestCor) {
+							bestCor = corr;
+							bestCorrFeature = sorted[j].featureIndex;
+						}
+					} catch (final Exception e) {
+						LOG.error("{} for {} vs {}", e.getMessage(), sorted[i].featureName, sorted[j].featureName, e);
+					}
+				}
+			}
+			result.put(sorted[i].featureName,
+					sorted[i].toString() + (bestCor != 0
+							? "\t" + UiUtils.format(bestCor) + " corr with " + instances.featureNames()[bestCorrFeature]
+							: ""));
+		}
+		return UiUtils.toString(result, true, false);
 	}
 
 	public static final class SplitGainInfo implements Comparable<SplitGainInfo> {
+		private final int featureIndex;
 		private final String featureName;
+
 		private final double varianceReduction;
 		private final String rule;
 		private final Double predictionLeft;
 		private final Double predictionRight;
 
-		public SplitGainInfo(final String featureName, final double varianceReduction, final String rule,
-				final Double predictionLeft, final Double predictionRight) {
+		public SplitGainInfo(final int featureIndex, final String featureName, final double varianceReduction,
+				final String rule, final Double predictionLeft, final Double predictionRight) {
+			this.featureIndex = featureIndex;
 			this.featureName = featureName;
 			this.varianceReduction = varianceReduction;
 			this.rule = rule;

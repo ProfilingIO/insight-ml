@@ -87,13 +87,13 @@ public final class Split extends AbstractSplit implements Cloneable {
 	}
 
 	public String getRulePresentation() {
-		return fname + " \u2264 " + UiUtils.format(thresh);
+		return " \u2264 " + UiUtils.format(thresh);
 	}
 
 	@Override
 	public String toString() {
 		final double weightSum = getWeightSum();
-		return getRulePresentation() + " (" + UiUtils.format(improve) + "/" + UiUtils.format(weightSum) + '='
+		return fname + getRulePresentation() + " (" + UiUtils.format(improve) + "/" + UiUtils.format(weightSum) + '='
 				+ UiUtils.format(improve / weightSum) + ")";
 	}
 }
