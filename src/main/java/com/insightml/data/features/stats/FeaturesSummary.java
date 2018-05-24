@@ -15,10 +15,10 @@
  */
 package com.insightml.data.features.stats;
 
-import org.apache.commons.math3.util.Pair;
+import java.util.TreeSet;
 
+import com.google.common.collect.Sets;
 import com.insightml.data.samples.ISamples;
-import com.insightml.utils.jobs.Threaded;
 import com.insightml.utils.ui.reports.IUiProvider;
 
 public final class FeaturesSummary implements IUiProvider<ISamples<?, Double>> {
@@ -27,13 +27,8 @@ public final class FeaturesSummary implements IUiProvider<ISamples<?, Double>> {
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
 		final StringBuilder builder = new StringBuilder(1024);
 		final FeatureStatistics stats = new FeatureStatistics(instances, labelIndex);
-		for (final Pair<String, String> feat : new Threaded<String, String>() {
-			@Override
-			protected String exec(final int i, final String feature) {
-				return stats.toString(feature) + "\n";
-			}
-		}.run(instances.featureNames(), 1)) {
-			builder.append(feat.getSecond());
+		for (final String featureName : new TreeSet<>(Sets.newHashSet(instances.featureNames()))) {
+			builder.append(stats.toString(featureName) + "\n");
 		}
 		return builder.toString();
 	}

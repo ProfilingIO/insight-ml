@@ -117,7 +117,7 @@ public final class FeatureStatistics extends AbstractClass {
 	}
 
 	String toString(final String feature) {
-		final StringBuilder builder = new StringBuilder(UiUtils.fill(feature, 40));
+		final StringBuilder builder = new StringBuilder(UiUtils.fill(feature, 50));
 		final SimpleFormatter formatter = new SimpleFormatter(5, true);
 		final Double min = getMin(feature);
 		final Double max = getMax(feature);

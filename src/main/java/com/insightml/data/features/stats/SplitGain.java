@@ -125,10 +125,12 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 					}
 				}
 			}
+			final String featureStr = sorted[i].toString();
 			result.put(sorted[i].featureName,
-					sorted[i].toString() + (bestCor != 0
-							? "\t" + UiUtils.format(bestCor) + " corr with " + instances.featureNames()[bestCorrFeature]
-							: ""));
+					bestCor != 0
+							? UiUtils.fill(featureStr, 60) + UiUtils.format(bestCor) + " corr with "
+									+ instances.featureNames()[bestCorrFeature]
+							: featureStr);
 		}
 		return UiUtils.toString(result, true, false);
 	}
