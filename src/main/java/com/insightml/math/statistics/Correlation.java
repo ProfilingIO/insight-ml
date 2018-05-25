@@ -78,7 +78,8 @@ public class Correlation implements Comparable<Correlation> {
 
 	@Override
 	public final int compareTo(final Correlation o) {
-		return Double.valueOf(Math.max(o.pearson, o.spearman)).compareTo(Math.max(pearson, spearman));
+		return Double.valueOf(Math.max(Math.abs(o.pearson), Math.abs(o.spearman)))
+				.compareTo(Math.max(Math.abs(pearson), Math.abs(spearman)));
 	}
 
 	public final String getText() {
