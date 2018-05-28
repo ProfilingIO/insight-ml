@@ -70,6 +70,20 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 		return builder.toString();
 	}
 
+	public static String getCsv(final ISamples<?, Double> instances, final int labelIndex) {
+		final ArrayList<FeatureCorrelation> features = Lists.newArrayList(correlation(instances, labelIndex));
+		Collections.sort(features);
+		final StringBuilder builder = new StringBuilder(512);
+		builder.append("Feature,Covariance,Pearson,Spearman\n");
+		for (final FeatureCorrelation feature : features) {
+			builder.append(feature.getFeature() + ',');
+			builder.append(UiUtils.format(feature.getCovariance()) + ',');
+			builder.append(UiUtils.format(feature.getPearson()) + ',');
+			builder.append(UiUtils.format(feature.getSpearman()) + '\n');
+		}
+		return builder.toString();
+	}
+
 	public static void displayGui(final IChartGui gui, final ISamples<?, Double> train, final ISamples<?, Double> test,
 			final int labelIndex) {
 		for (final FeatureCorrelation feature : correlation(train, labelIndex)) {

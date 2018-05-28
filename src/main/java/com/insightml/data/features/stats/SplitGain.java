@@ -99,40 +99,73 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
-		final SplitGainInfo[] sorted = Arrays
-				.of(Collections.sortDesc(run(instances, labelIndex, maxDepth, minObs)).values(), SplitGainInfo.class);
+		final SplitGainInfo[] sorted = getRankedSplitGains(instances, labelIndex);
 		final Map<String, String> result = new LinkedHashMap<>(sorted.length);
 		final double[][] features = instances.features();
 		for (int i = 0; i < sorted.length; ++i) {
-			double bestCor = 0;
-			int bestCorrFeature = 0;
-			if (i < 50) {
-				for (int j = 0; j < i; ++j) {
-					try {
-						final double[] fi = new double[features.length];
-						final double[] fj = new double[features.length];
-						for (int s = 0; s < fi.length; ++s) {
-							fi[s] = features[s][sorted[i].featureIndex];
-							fj[s] = features[s][sorted[j].featureIndex];
-						}
-						final double corr = new PearsonsCorrelation().correlation(fi, fj);
-						if (corr > bestCor) {
-							bestCor = corr;
-							bestCorrFeature = sorted[j].featureIndex;
-						}
-					} catch (final Exception e) {
-						LOG.error("{} for {} vs {}", e.getMessage(), sorted[i].featureName, sorted[j].featureName, e);
-					}
-				}
-			}
+			final FeatureCorrelation bestCor = findStrongestCorrelation(i, sorted, features);
 			final String featureStr = sorted[i].toString();
 			result.put(sorted[i].featureName,
-					bestCor != 0
-							? UiUtils.fill(featureStr, 60) + UiUtils.format(bestCor) + " corr with "
-									+ instances.featureNames()[bestCorrFeature]
+					bestCor.bestCor != 0
+							? UiUtils.fill(featureStr, 60) + UiUtils.format(bestCor.bestCor) + " corr with "
+									+ instances.featureNames()[bestCor.bestCorrFeature]
 							: featureStr);
 		}
 		return UiUtils.toString(result, true, false);
+	}
+
+	public String getCsv(final ISamples<?, Double> instances, final int labelIndex) {
+		final SplitGainInfo[] sorted = getRankedSplitGains(instances, labelIndex);
+		final StringBuilder result = new StringBuilder();
+		result.append("Feature, Gain, Top rule, Strongest correlation, Strongest correlation feature\n");
+		final double[][] features = instances.features();
+		for (int i = 0; i < sorted.length; ++i) {
+			final FeatureCorrelation bestCor = findStrongestCorrelation(i, sorted, features);
+			result.append(sorted[i].featureName + ',');
+			result.append(UiUtils.format(sorted[i].varianceReduction) + ',');
+			result.append(sorted[i].formatRule());
+			if (bestCor.bestCor > 0) {
+				result.append(',' + UiUtils.format(bestCor.bestCor) + ',');
+				result.append(instances.featureNames()[bestCor.bestCorrFeature]);
+			}
+			result.append('\n');
+		}
+		return result.toString();
+	}
+
+	private SplitGainInfo[] getRankedSplitGains(final ISamples<?, Double> instances, final int labelIndex) {
+		return Arrays.of(Collections.sortDesc(run(instances, labelIndex, maxDepth, minObs)).values(),
+				SplitGainInfo.class);
+	}
+
+	private static FeatureCorrelation findStrongestCorrelation(final int i, final SplitGainInfo[] sorted,
+			final double[][] features) {
+		final FeatureCorrelation bestCor = new FeatureCorrelation();
+		if (i < 50) {
+			for (int j = 0; j < i; ++j) {
+				try {
+					final double[] fi = new double[features.length];
+					final double[] fj = new double[features.length];
+					for (int s = 0; s < fi.length; ++s) {
+						fi[s] = features[s][sorted[i].featureIndex];
+						fj[s] = features[s][sorted[j].featureIndex];
+					}
+					final double corr = new PearsonsCorrelation().correlation(fi, fj);
+					if (corr > bestCor.bestCor) {
+						bestCor.bestCor = corr;
+						bestCor.bestCorrFeature = sorted[j].featureIndex;
+					}
+				} catch (final Exception e) {
+					LOG.error("{} for {} vs {}", e.getMessage(), sorted[i].featureName, sorted[j].featureName, e);
+				}
+			}
+		}
+		return bestCor;
+	}
+
+	private static final class FeatureCorrelation {
+		private double bestCor = 0;
+		private int bestCorrFeature = 0;
 	}
 
 	public static final class SplitGainInfo implements Comparable<SplitGainInfo> {
@@ -165,8 +198,12 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 		@Override
 		public String toString() {
-			return UiUtils.fill(UiUtils.format(varianceReduction), 12) + (rule == null ? ""
-					: rule + " -> " + UiUtils.format(predictionLeft) + "; else " + UiUtils.format(predictionRight));
+			return UiUtils.fill(UiUtils.format(varianceReduction), 12) + formatRule();
+		}
+
+		private String formatRule() {
+			return rule == null ? ""
+					: rule + " -> " + UiUtils.format(predictionLeft) + "; else " + UiUtils.format(predictionRight);
 		}
 	}
 }
