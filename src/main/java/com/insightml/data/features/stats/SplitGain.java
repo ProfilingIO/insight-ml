@@ -117,7 +117,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	public String getCsv(final ISamples<?, Double> instances, final int labelIndex) {
 		final SplitGainInfo[] sorted = getRankedSplitGains(instances, labelIndex);
 		final StringBuilder result = new StringBuilder();
-		result.append("Feature, Gain, Top rule, Strongest correlation, Strongest correlation feature\n");
+		result.append("Feature,Gain,Top rule,Strongest correlation,Strongest correlation feature\n");
 		final double[][] features = instances.features();
 		for (int i = 0; i < sorted.length; ++i) {
 			final FeatureCorrelation bestCor = findStrongestCorrelation(i, sorted, features);
