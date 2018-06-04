@@ -33,6 +33,7 @@ import com.insightml.models.trees.GrowJob;
 import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
 import com.insightml.models.trees.SplitFinderContext;
+import com.insightml.models.trees.TreeModel;
 import com.insightml.models.trees.TreeNode;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Collections;
@@ -68,10 +69,27 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 			final int maxDepth, final int minObs) {
 		final long start = System.currentTimeMillis();
 
+		final Stats labelStats = new Stats();
+		final Double[] labels = instances.expected(labelIndex);
+		final double[] weights = instances.weights(labelIndex);
+		for (int i = 0; i < labels.length; ++i) {
+			labelStats.add(labels[i], weights[i]);
+		}
+		final double prior = labelStats.getMean();
+		final Stats errorStats = new Stats();
+		for (int i = 0; i < labels.length; ++i) {
+			final double error = labels[i] - prior;
+			errorStats.add(error * error, weights[i]);
+		}
+		final double totalError = errorStats.getWeightedSum();
+
 		final String[] feats = instances.featureNames();
 		final Map<String, SplitGainInfo> map = new HashMap<>(feats.length);
-		for (final SplitGainInfo info : ParallelFor
-				.run(i -> compute(i, feats[i], instances, labelIndex, maxDepth, minObs), 0, feats.length, 1)) {
+		for (final SplitGainInfo info : ParallelFor.run(
+				i -> compute(i, feats[i], instances, labelIndex, maxDepth, minObs, totalError),
+				0,
+				feats.length,
+				1)) {
 			map.put(info.featureName, info);
 		}
 
@@ -80,7 +98,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	}
 
 	private static SplitGainInfo compute(final int feature, final String featureName, final ISamples train,
-			final int labelIndex, final int maxDepth, final int minObs) {
+			final int labelIndex, final int maxDepth, final int minObs, final double totalError) {
 		final boolean[] featuresMask = new boolean[train.numFeatures()];
 		featuresMask[feature] = true;
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, maxDepth, minObs, 0, labelIndex);
@@ -90,9 +108,17 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final String nodePrediction = "mean";
 		new GrowJob(root, context, subset, 1, nodePrediction, MseSplitCriterion::create, () -> new Stats(), false)
 				.compute();
-		final double varianceReduction = root.featureImportance(true).sumAll();
 		final String rulePresentation = root.getRule() == null ? null : root.getRule().getRulePresentation();
 		final TreeNode[] children = root.getChildren();
+
+		final double[] predictions = new TreeModel(root, train.featureNames()).predictDouble(train);
+		final Stats errorStats = new Stats();
+		for (int i = 0; i < context.expected.length; ++i) {
+			final double error = context.expected[i] - predictions[i];
+			errorStats.add(error * error, context.weights[i]);
+		}
+		final double varianceReduction = 1 - errorStats.getWeightedSum() / totalError;
+
 		return new SplitGainInfo(feature, featureName, varianceReduction, rulePresentation,
 				children == null ? null : children[0].getMean(), children == null ? null : children[1].getMean());
 	}

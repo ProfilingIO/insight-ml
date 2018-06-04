@@ -115,7 +115,7 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 		return new TreeModel(root, train.featureNames());
 	}
 
-	public static TreeNode createTreeRoot(final ISamples<Sample, Double> train, final int labelIndex) {
+	public static TreeNode createTreeRoot(final ISamples<?, Double> train, final int labelIndex) {
 		final Stats sRoot = new Stats();
 		sRoot.add(0, Vectors.sum(train.weights(labelIndex)));
 		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
