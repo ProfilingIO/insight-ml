@@ -15,15 +15,24 @@
  */
 package com.insightml.data.features.selection;
 
+import com.insightml.data.features.IFeatureProvider;
+import com.insightml.data.samples.Sample;
 import com.insightml.utils.types.AbstractClass;
 
-public final class IgnoreFeatureFilter extends AbstractClass implements IFeatureFilter {
-
+public final class IgnoreFeatureFilter extends AbstractClass implements IFeatureFilter, FeatureFilterFactory {
 	private static final long serialVersionUID = -7692774720196688190L;
+
+	private static IgnoreFeatureFilter INSTANCE = new IgnoreFeatureFilter();
+
+	@Override
+	public <I extends Sample> IFeatureFilter createFilter(final Iterable<I> instances,
+			final IFeatureProvider<I> provider, final int labelIndex) {
+		return INSTANCE;
+	}
 
 	@Override
 	public void ignoreFeature(final String feature) {
-		throw new IllegalAccessError();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

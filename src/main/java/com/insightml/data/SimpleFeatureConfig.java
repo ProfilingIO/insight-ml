@@ -47,7 +47,7 @@ public final class SimpleFeatureConfig<I extends Sample, P> extends FeaturesConf
 	}
 
 	@Override
-	public IFeatureFilter newFeatureFilter() {
+	public IFeatureFilter newFeatureFilter(final Iterable<I> instances, final int labelIndex) {
 		return filter;
 	}
 

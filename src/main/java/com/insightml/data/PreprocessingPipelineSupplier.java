@@ -24,11 +24,13 @@ import com.insightml.utils.pipeline.PipelineSource;
 
 public class PreprocessingPipelineSupplier<S extends Sample> extends PipelineSource<PreprocessingPipeline<S>> {
 
+	private final Iterable<S> trainingSamples;
 	private final FeaturesConfig<S, ?> config;
 	private final IArguments arguments;
 
-	public PreprocessingPipelineSupplier(final FeaturesConfig<S, ?> config, final ISerializer serializer,
-			final IArguments arguments) {
+	public PreprocessingPipelineSupplier(final Iterable<S> trainingSamples, final FeaturesConfig<S, ?> config,
+			final ISerializer serializer, final IArguments arguments) {
+		this.trainingSamples = trainingSamples;
 		this.config = config;
 		this.arguments = arguments;
 
@@ -41,7 +43,9 @@ public class PreprocessingPipelineSupplier<S extends Sample> extends PipelineSou
 
 	@Override
 	protected PreprocessingPipeline<S> load() {
-		return PreprocessingPipeline
-				.create(config.newFeatureProvider(), config.newFeatureFilter(), config.getNormalization(), arguments);
+		return PreprocessingPipeline.create(config.newFeatureProvider(),
+				config.newFeatureFilter(trainingSamples, 0),
+				config.getNormalization(),
+				arguments);
 	}
 }

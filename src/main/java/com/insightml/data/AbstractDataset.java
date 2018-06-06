@@ -49,7 +49,7 @@ public abstract class AbstractDataset<I extends Sample, P> extends AbstractModul
 
 	@Override
 	public final PreprocessingPipeline<I> pipeline() {
-		return new PreprocessingPipelineSupplier<>(getFeaturesConfig(null), null, null).get();
+		return new PreprocessingPipelineSupplier<>(loadTraining(null), getFeaturesConfig(null), null, null).get();
 	}
 
 	@Override

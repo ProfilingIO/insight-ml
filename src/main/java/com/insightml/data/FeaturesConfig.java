@@ -38,7 +38,7 @@ public abstract class FeaturesConfig<I extends Sample, P> extends AbstractModule
 
 	public abstract IFeatureProvider<I> newFeatureProvider();
 
-	public abstract IFeatureFilter newFeatureFilter();
+	public abstract IFeatureFilter newFeatureFilter(Iterable<I> instances, int labelIndex);
 
 	public final Normalization getNormalization() {
 		return normalization;

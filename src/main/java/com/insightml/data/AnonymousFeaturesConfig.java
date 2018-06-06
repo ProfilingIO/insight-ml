@@ -35,6 +35,7 @@ import com.insightml.data.features.FeaturesConsumer;
 import com.insightml.data.features.GeneralFeatureProvider;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.SimpleFeaturesProvider;
+import com.insightml.data.features.selection.FeatureFilterFactory;
 import com.insightml.data.features.selection.IFeatureFilter;
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
 import com.insightml.data.samples.Sample;
@@ -44,9 +45,9 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	private static final long serialVersionUID = -8466353461597201244L;
 
 	private final IFeatureProvider<S> provider;
-	private final IFeatureFilter filter;
+	private final FeatureFilterFactory filter;
 
-	public AnonymousFeaturesConfig(final IFeatureProvider<S> provider, final IFeatureFilter filter) {
+	public AnonymousFeaturesConfig(final IFeatureProvider<S> provider, final FeatureFilterFactory filter) {
 		super(null, null);
 		this.provider = provider;
 		this.filter = filter;
@@ -60,20 +61,20 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
-			final double defaultValue, final boolean useDivFeaturesProvider, final IFeatureFilter filter) {
+			final double defaultValue, final boolean useDivFeaturesProvider, final FeatureFilterFactory filter) {
 		this(examples, exampleFeaturesProvider, 1, defaultValue, useDivFeaturesProvider, filter);
 	}
 
 	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
 			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
-			final IFeatureFilter filter) {
+			final FeatureFilterFactory filter) {
 		this(examples.iterator(), exampleFeaturesProvider, minOccurrences, defaultValue, useDivFeaturesProvider,
 				filter);
 	}
 
 	public AnonymousFeaturesConfig(final Iterator<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
 			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
-			final IFeatureFilter filter) {
+			final FeatureFilterFactory filter) {
 		super(null, null);
 		this.provider = fromExamples(examples,
 				exampleFeaturesProvider,
@@ -101,8 +102,8 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	@Override
-	public IFeatureFilter newFeatureFilter() {
-		return filter;
+	public IFeatureFilter newFeatureFilter(final Iterable<S> instances, final int labelIndex) {
+		return filter.createFilter(instances, provider, labelIndex);
 	}
 
 	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Iterator<S> examples,
