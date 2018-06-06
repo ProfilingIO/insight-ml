@@ -100,6 +100,11 @@ public final class FeatureStatistics extends AbstractClass {
 		return stat == null ? null : stat.getStandardDeviation();
 	}
 
+	public Double getVariance(final String feature) {
+		final DescriptiveStatistics stat = stats.get(feature);
+		return stat == null ? null : stat.getVariance();
+	}
+
 	private int getDistinct(final String feature) {
 		final DescriptiveStatistics stat = stats.get(feature);
 		if (stat == null) {
