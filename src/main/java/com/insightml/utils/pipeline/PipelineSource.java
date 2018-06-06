@@ -65,7 +65,7 @@ public abstract class PipelineSource<T> implements PipelineElement {
 					logger.error("{}", e, e);
 				}
 			}
-			logger.info("Loaded source from provider in {} ms", Long.valueOf(System.currentTimeMillis() - start));
+			logger.debug("Loaded source from provider in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 			return result;
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);

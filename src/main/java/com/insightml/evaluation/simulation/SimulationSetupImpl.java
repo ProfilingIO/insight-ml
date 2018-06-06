@@ -40,7 +40,7 @@ public final class SimulationSetupImpl<I extends Sample, E, P> extends AbstractC
 	public SimulationSetupImpl(final String datasetName, final FeaturesConfig<I, P> config, final Integer labelIndex,
 			final ILearnerPipeline<I, P>[] learner, final IClient client, final boolean report,
 			final ObjectiveFunction<? super E, ? super P>[] objectives) {
-		this.datasetName = Check.notEmpty(datasetName, "datasetName");
+		this.datasetName = datasetName;
 		this.config = config;
 		this.labelIndex = labelIndex;
 		this.learner = Check.size(learner, 1, 100);

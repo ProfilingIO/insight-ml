@@ -24,57 +24,73 @@ import com.insightml.utils.Check;
 
 public final class LearnerArguments implements Iterable<Argument> {
 
-    private final Map<String, Argument> map = new LinkedHashMap<>();
+	private final Map<String, Argument> map = new LinkedHashMap<>();
 
-    public void add(final String arg, final Double def, final double min, final double max) {
-        map.put(arg, new Argument(arg, def, min, max));
-    }
+	public void add(final String arg, final Double def, final double min, final double max) {
+		double parameterSearchStepSize = (max - min) * 1.0 / 15;
+		if (max > 1 && max % 1 == 0 && min % 1 == 0) {
+			parameterSearchStepSize = Math.max(1, Math.round(parameterSearchStepSize));
+		}
+		add(arg, def, min, max, parameterSearchStepSize);
+	}
 
-    public Argument get(final String arg) {
-        return Check.notNull(map.get(arg), "The argument " + arg + " is not registered.");
-    }
+	public void add(final String arg, final Double def, final double min, final double max,
+			final double parameterSearchStepSize) {
+		map.put(arg, new Argument(arg, def, min, max, parameterSearchStepSize));
+	}
 
-    public int size() {
-        return map.size();
-    }
+	public Argument get(final String arg) {
+		return Check.notNull(map.get(arg), "The argument " + arg + " is not registered.");
+	}
 
-    @Override
-    public Iterator<Argument> iterator() {
-        return map.values().iterator();
-    }
+	public int size() {
+		return map.size();
+	}
 
-    public static final class Argument {
+	@Override
+	public Iterator<Argument> iterator() {
+		return map.values().iterator();
+	}
 
-        private final String arg;
-        private final Double def;
-        private final double min;
-        private final double max;
+	public static final class Argument {
 
-        public Argument(final String arg, final Double def, final double min, final double max) {
-            this.arg = arg;
-            this.def = def;
-            this.min = min;
-            this.max = Check.num(max, min, 999999999);
-        }
+		private final String arg;
+		private final Double def;
+		private final double min;
+		private final double max;
+		private final double parameterSearchStepSize;
 
-        public String getName() {
-            return arg;
-        }
+		public Argument(final String arg, final Double def, final double min, final double max,
+				final double parameterSearchStepSize) {
+			this.arg = arg;
+			this.def = def;
+			this.min = min;
+			this.max = Check.num(max, min, 999999999);
+			this.parameterSearchStepSize = parameterSearchStepSize;
+		}
 
-        public Double getDefault() {
-            return def;
-        }
+		public String getName() {
+			return arg;
+		}
 
-        public double getMin() {
-            return min;
-        }
+		public Double getDefault() {
+			return def;
+		}
 
-        public double getMax() {
-            return max;
-        }
+		public double getMin() {
+			return min;
+		}
 
-        public double validate(final double val) {
-            return Check.num(val, min, max, arg);
-        }
-    }
+		public double getMax() {
+			return max;
+		}
+
+		public double getParameterSearchStepSize() {
+			return parameterSearchStepSize;
+		}
+
+		public double validate(final double val) {
+			return Check.num(val, min, max, arg);
+		}
+	}
 }

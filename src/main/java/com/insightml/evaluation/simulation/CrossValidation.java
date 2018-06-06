@@ -19,8 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.Sample;
@@ -100,8 +98,6 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 	private static final class Fold<I extends Sample, E, P> extends AbstractJob<Predictions<E, P>[]> {
 		private static final long serialVersionUID = 8592592353685668153L;
 
-		private static final Logger logger = LoggerFactory.getLogger(Fold.class);
-
 		private final int fold;
 		private final int actualFold;
 		private final int folds;
@@ -133,10 +129,6 @@ public final class CrossValidation<I extends Sample> extends AbstractSimulation<
 				final ModelPipeline<I, P> model = learner[i].run(sets.getFirst(), sets.getSecond(), config, label);
 				preds[i] = Predictions
 						.create(actualFold, model, sets.getSecond(), (int) (System.currentTimeMillis() - start));
-				logger.info("Completed {} on {} train and {} test samples",
-						getTitle(),
-						sets.getFirst().size(),
-						sets.getSecond().size());
 			}
 			return preds;
 		}

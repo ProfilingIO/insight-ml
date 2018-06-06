@@ -18,7 +18,7 @@ package com.insightml.evaluation.simulation.optimization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.insightml.data.IDataset;
+import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.ISimulation;
@@ -28,100 +28,107 @@ import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerArguments.Argument;
 import com.insightml.models.LearnerPipeline;
 import com.insightml.utils.Arguments;
-import com.insightml.utils.Check;
-import com.insightml.utils.IArguments;
 import com.insightml.utils.jobs.IClient;
 
 public final class ParameterOptimizer<I extends Sample, E, P> {
 	private static final Logger LOG = LoggerFactory.getLogger(ParameterOptimizer.class);
 
 	private final ISimulation<I> simulation;
-	private final ObjectiveFunction<E, P> objective;
+	private final ObjectiveFunction<? super E, ? super P> objective;
 	private final IClient client;
 
-	public ParameterOptimizer(final ISimulation<I> simulation, final ObjectiveFunction<E, P> objective,
+	public ParameterOptimizer(final ISimulation<I> simulation, final ObjectiveFunction<? super E, ? super P> objective,
 			final IClient client) {
 		this.simulation = simulation;
 		this.objective = objective;
 		this.client = client;
 	}
 
-	public void run(final ILearner<Sample, Object, Object> learner, final IDataset<I, P> dataset,
-			final IArguments args) {
-		final Iterable<I> train = dataset.loadTraining(null);
+	public Arguments run(final ILearner<I, E, P> learner, final Iterable<I> train,
+			final FeaturesConfig<I, P> featuresConfig) {
 		final LearnerArguments argz = learner.arguments();
 		final double[] params = new double[argz.size()];
 		final double[] stepSize = new double[params.length];
 		int i = -1;
-		final Arguments ar = ((Arguments) args).copy();
+		final Arguments ar = (Arguments) learner.getOriginalArguments();
 		for (final Argument arg : argz) {
-			params[++i] = args.toDouble(arg.getName(), arg.getDefault());
-			final double min = arg.getMin();
-			final double max = arg.getMax();
-			stepSize[i] = Check.num((max - min) * 1.0 / 15, 0.000001, 99);
-			if (max > 1 && max % 1 == 0 && min % 1 == 0) {
-				stepSize[i] = Math.max(1, Math.round(stepSize[i]));
-			}
-			ar.set(arg.getName(), params[i]);
+			params[++i] = ar.toDouble(arg.getName(), arg.getDefault());
+			stepSize[i] = arg.getParameterSearchStepSize();
 		}
-		double best = run(learner, ar, argz.iterator().next(), params[0], train, dataset);
-		LOG.info("Baseline: " + best);
+		double best = simulate(learner, train, featuresConfig);
+		LOG.info("Baseline: " + best + " for " + ar);
 		while (true) {
 			i = -1;
-			double newBest = best;
-			double last = best;
+			int foundNewBest = i;
 			for (final Argument arg : argz) {
-				double val = params[++i] - stepSize[i];
-				final double left = val >= arg.getMin() ? Math.max(newBest, run(learner, ar, arg, val, train, dataset))
-						: -999;
+				++i;
+				if (stepSize[i] == 0) {
+					continue;
+				}
+				double val = params[i] - stepSize[i];
+				final double left = val >= arg.getMin() ? run(learner, ar, arg, val, train, featuresConfig) : -999;
+				if (left > -999) {
+					log(left, ar, left > best);
+				}
 				val = params[i] + stepSize[i];
-				final double right = val <= arg.getMax() ? Math.max(newBest, run(learner, ar, arg, val, train, dataset))
-						: -999;
+				final double right = val <= arg.getMax() ? run(learner, ar, arg, val, train, featuresConfig) : -999;
+				if (right > -999) {
+					log(right, ar, right > best);
+				}
 				double score = Math.max(left, right);
-				if (score > last) {
-					if (score > newBest) {
-						newBest = score;
-						log(newBest, ar);
+
+				val = left > right ? params[i] - stepSize[i] : params[i] + stepSize[i];
+				ar.set(arg.getName(), val, true);
+
+				if (score > best) {
+					best = score;
+					foundNewBest = i;
+					params[i] = val;
+				}
+
+				final double dir = left > right ? -1 : 1;
+				int stepsSinceLastBest = 0;
+				while (true) {
+					val += dir * stepSize[i];
+					if (val < arg.getMin() || val > arg.getMax()) {
+						break;
 					}
-					params[i] = left > right ? params[i] - stepSize[i] : val;
-					final double dir = left > right ? -1 : 1;
-					last = score;
-					while (true) {
-						val += dir * stepSize[i];
-						if (val < arg.getMin() || val > arg.getMax()) {
-							break;
-						}
-						score = run(learner, ar, arg, val, train, dataset);
-						if (score > newBest) {
-							newBest = score;
-							log(newBest, ar);
-						} else if (score <= last) {
-							break;
-						}
+					score = run(learner, ar, arg, val, train, featuresConfig);
+					log(score, ar, score > best);
+					if (score > best) {
+						best = score;
 						params[i] = val;
+						foundNewBest = i;
+						stepsSinceLastBest = 0;
+					} else if (++stepsSinceLastBest > 5) {
+						break;
 					}
 				}
-				ar.set(arg.getName(), params[i]);
-				last = score;
+				ar.set(arg.getName(), params[i], true);
 			}
-			if (newBest <= best) {
+			// no need to do another iteration
+			if (foundNewBest <= 0) {
 				break;
 			}
-			best = newBest;
-			log(newBest, ar);
 		}
+		return ar;
 	}
 
-	private double run(final ILearner<Sample, Object, Object> learner, final Arguments args, final Argument arg,
-			final double value, final Iterable<I> train, final IDataset<I, P> dataset) {
-		args.set(arg.getName(), arg.validate(value));
-		final SimulationSetupImpl setup = new SimulationSetupImpl<>(dataset.getName(), dataset.getFeaturesConfig(args),
-				null, new LearnerPipeline[] { new LearnerPipeline(learner, true), }, client, true,
+	private double run(final ILearner<I, E, P> learner, final Arguments args, final Argument arg, final double value,
+			final Iterable<I> train, final FeaturesConfig<I, P> featuresConfig) {
+		args.set(arg.getName(), arg.validate(value), true);
+		return simulate(learner, train, featuresConfig);
+	}
+
+	private double simulate(final ILearner<I, E, P> learner, final Iterable<I> train,
+			final FeaturesConfig<I, P> featuresConfig) {
+		final SimulationSetupImpl setup = new SimulationSetupImpl<>(null, featuresConfig, null,
+				new LearnerPipeline[] { new LearnerPipeline(learner, true), }, client, false,
 				new ObjectiveFunction[] { objective });
 		return simulation.run(train, setup)[0].getNormalizedResult();
 	}
 
-	private static void log(final double newBest, final Arguments ar) {
-		LOG.info("Found new best: " + newBest + " using " + ar);
+	private static void log(final double score, final Arguments ar, final boolean isNewBest) {
+		LOG.info("Found new result: {} using {}{}", score, ar, isNewBest ? " - new best" : "");
 	}
 }

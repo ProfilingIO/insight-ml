@@ -20,7 +20,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 
-public interface ISamples<S extends Sample, E> extends Serializable {
+public interface ISamples<S extends Sample, E> extends Iterable<S>, Serializable {
 
 	S get(int i);
 

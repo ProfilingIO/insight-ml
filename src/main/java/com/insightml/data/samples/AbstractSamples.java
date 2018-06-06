@@ -15,6 +15,7 @@
  */
 package com.insightml.data.samples;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -86,4 +87,30 @@ public abstract class AbstractSamples<S extends Sample, E> implements ISamples<S
 		return filterFeatures(keep);
 	}
 
+	@Override
+	public Iterator<S> iterator() {
+		return new SamplesIterator<>(this);
+	}
+
+	static final class SamplesIterator<S extends Sample> implements Iterator<S> {
+		private final ISamples<S, ?> samples;
+
+		private int i = 0;
+
+		SamplesIterator(final ISamples<S, ?> samples) {
+			this.samples = samples;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return i + 1 <= samples.size();
+		}
+
+		@Override
+		public S next() {
+			final S next = samples.get(i);
+			++i;
+			return next;
+		}
+	}
 }

@@ -48,7 +48,7 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 	protected AbstractSimulation(final String name, final SimulationResultConsumer simulationResultConsumer,
 			final ISerializer serializer) {
 		super(name);
-		this.simulationResultConsumer = Preconditions.checkNotNull(simulationResultConsumer);
+		this.simulationResultConsumer = simulationResultConsumer;
 		this.serializer = serializer;
 	}
 
@@ -121,7 +121,9 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			final String subfolder) {
 		final String learn = performance.getModelName();
 		Check.length(learn, 2, 250);
-		simulationResultConsumer.accept(this, learn, performance, setup);
+		if (simulationResultConsumer != null) {
+			simulationResultConsumer.accept(this, learn, performance, setup);
+		}
 		if (setup.doDump()) {
 			dump(subfolder, setup.getDatasetName(), learn, (SimulationResults<E, P>) performance);
 		}
