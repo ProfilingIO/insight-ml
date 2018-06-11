@@ -25,20 +25,29 @@ import com.insightml.evaluation.simulation.ISimulation;
 import com.insightml.models.AbstractLearner;
 import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
+import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerInput;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.jobs.IClient;
 
 public final class ParameterOptimizerLearner<I extends Sample, E, P> extends AbstractLearner<I, E, P> {
 	private final ILearner<I, E, P> learner;
+	private final LearnerArguments parameters;
 	private final ISimulation<I> simulation;
 	private final ObjectiveFunction<? super E, ? super P> objective;
 	private final IClient client;
 
 	public ParameterOptimizerLearner(final ILearner<I, E, P> learner, final ISimulation<I> simulation,
 			final ObjectiveFunction<? super E, ? super P> objective, final IClient client) {
+		this(learner, learner.arguments(), simulation, objective, client);
+	}
+
+	public ParameterOptimizerLearner(final ILearner<I, E, P> learner, final LearnerArguments parameters,
+			final ISimulation<I> simulation, final ObjectiveFunction<? super E, ? super P> objective,
+			final IClient client) {
 		super(new Arguments());
 		this.learner = learner;
+		this.parameters = parameters;
 		this.simulation = simulation;
 		this.objective = objective;
 		this.client = client;
@@ -49,7 +58,7 @@ public final class ParameterOptimizerLearner<I extends Sample, E, P> extends Abs
 		final Arguments args = (Arguments) learner.getOriginalArguments();
 
 		final Arguments best = new ParameterOptimizer<I, E, P>(simulation, objective, client)
-				.run(learner, (Iterable<I>) input.getTrain(), (FeaturesConfig<I, P>) input.config);
+				.run(learner, parameters, (Iterable<I>) input.getTrain(), (FeaturesConfig<I, P>) input.config);
 
 		for (final Entry<String, Serializable> arg : best.entrySet()) {
 			args.set(arg.getKey(), arg.getValue(), true);

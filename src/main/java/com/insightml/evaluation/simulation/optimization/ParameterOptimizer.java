@@ -46,12 +46,16 @@ public final class ParameterOptimizer<I extends Sample, E, P> {
 
 	public Arguments run(final ILearner<I, E, P> learner, final Iterable<I> train,
 			final FeaturesConfig<I, P> featuresConfig) {
-		final LearnerArguments argz = learner.arguments();
-		final double[] params = new double[argz.size()];
+		return run(learner, learner.arguments(), train, featuresConfig);
+	}
+
+	public Arguments run(final ILearner<I, E, P> learner, final LearnerArguments parameters, final Iterable<I> train,
+			final FeaturesConfig<I, P> featuresConfig) {
+		final double[] params = new double[parameters.size()];
 		final double[] stepSize = new double[params.length];
 		int i = -1;
 		final Arguments ar = (Arguments) learner.getOriginalArguments();
-		for (final Argument arg : argz) {
+		for (final Argument arg : parameters) {
 			params[++i] = ar.toDouble(arg.getName(), arg.getDefault());
 			stepSize[i] = arg.getParameterSearchStepSize();
 		}
@@ -60,7 +64,7 @@ public final class ParameterOptimizer<I extends Sample, E, P> {
 		while (true) {
 			i = -1;
 			int foundNewBest = i;
-			for (final Argument arg : argz) {
+			for (final Argument arg : parameters) {
 				++i;
 				if (stepSize[i] == 0) {
 					continue;
