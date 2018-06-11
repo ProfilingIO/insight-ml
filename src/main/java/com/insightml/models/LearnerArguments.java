@@ -26,17 +26,18 @@ public final class LearnerArguments implements Iterable<Argument> {
 
 	private final Map<String, Argument> map = new LinkedHashMap<>();
 
-	public void add(final String arg, final Double def, final double min, final double max) {
+	public LearnerArguments add(final String arg, final Double def, final double min, final double max) {
 		double parameterSearchStepSize = (max - min) * 1.0 / 15;
 		if (max > 1 && max % 1 == 0 && min % 1 == 0) {
 			parameterSearchStepSize = Math.max(1, Math.round(parameterSearchStepSize));
 		}
-		add(arg, def, min, max, parameterSearchStepSize);
+		return add(arg, def, min, max, parameterSearchStepSize);
 	}
 
-	public void add(final String arg, final Double def, final double min, final double max,
+	public LearnerArguments add(final String arg, final Double def, final double min, final double max,
 			final double parameterSearchStepSize) {
 		map.put(arg, new Argument(arg, def, min, max, parameterSearchStepSize));
+		return this;
 	}
 
 	public Argument get(final String arg) {
