@@ -28,19 +28,22 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 	private final boolean[] subset;
 	private final int samples;
 	private final SplitCriterion splitCriterion;
+	private final int minObs;
 	private final Supplier<MutableStatistics> statisticsFactory;
 
 	public ThresholdSplitFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
-			final SplitCriterion splitCriterion, final Supplier<MutableStatistics> statisticsFactory) {
+			final SplitCriterion splitCriterion, final int minObs,
+			final Supplier<MutableStatistics> statisticsFactory) {
 		this.context = context;
 		this.subset = subset;
 		this.samples = samples;
 		this.splitCriterion = splitCriterion;
+		this.minObs = minObs;
 		this.statisticsFactory = statisticsFactory;
 	}
 
 	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
-			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory,
+			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory, final int minObs,
 			final Supplier<MutableStatistics> statisticsFactory) {
 		int samples = 0;
 		for (int i = 0; i < context.weights.length; ++i) {
@@ -48,7 +51,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 				++samples;
 			}
 		}
-		return new ThresholdSplitFinder(context, subset, samples, splitCriterionFactory.create(context, subset),
+		return new ThresholdSplitFinder(context, subset, samples, splitCriterionFactory.create(context, subset), minObs,
 				statisticsFactory);
 	}
 
@@ -68,7 +71,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		MutableStatistics statsNaN = statisticsFactory.get();
 		int lastIndexNaN = -1;
 
-		final int max = samples - context.minObs;
+		final int max = samples - minObs;
 		final int bla = ordered.length;
 
 		for (int i = 0; i < -bla; ++i) {
@@ -88,7 +91,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		// there are too few observations of missing values, or too many such no
 		// further split can be made
 		// TODO: also allow missing vs non-missing splits
-		if (lastIndexNaN + 1 < context.minObs || lastIndexNaN + 1 > samples - context.minObs * 2) {
+		if (lastIndexNaN + 1 < minObs || lastIndexNaN + 1 > samples - minObs * 2) {
 			statsNaN = statisticsFactory.get();
 			lastIndexNaN = -1;
 			// if there are not enough observations of missing values, count
@@ -104,7 +107,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 				continue;
 			}
 			final double value = context.features[idx][feature];
-			if (left >= context.minObs && value != curThr) {
+			if (left >= minObs && value != curThr) {
 				final double improvement = localCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
 				if (improvement > bestImprovement) {
 					bestSplitL = currentSplitL.copy();

@@ -53,7 +53,10 @@ public abstract class AbstractFeatureProvider<I extends Sample> implements IFeat
 		return array;
 	}
 
-	@SuppressWarnings("unused")
+	/**
+	 * @param featureName
+	 * @param featureStats
+	 */
 	protected double handleMissingValue(final String featureName, final Map<String, Stats> featureStats) {
 		return defaultValue;
 	}

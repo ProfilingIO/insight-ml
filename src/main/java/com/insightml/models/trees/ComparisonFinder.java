@@ -25,13 +25,15 @@ final class ComparisonFinder extends RecursiveTask<ISplit> {
 	private static final long serialVersionUID = -7881568314142752784L;
 
 	private final SplitFinderContext context;
+	private final int minObs;
 	private final int feature;
 	private final double labelSum;
 	private final double weightSum;
 
-	public ComparisonFinder(final SplitFinderContext context, final double labelSum, final double weightSum,
-			final int feature) {
+	public ComparisonFinder(final SplitFinderContext context, final int minObs, final double labelSum,
+			final double weightSum, final int feature) {
 		this.context = context;
+		this.minObs = minObs;
 		this.labelSum = labelSum;
 		this.weightSum = weightSum;
 		this.feature = feature;
@@ -52,14 +54,14 @@ final class ComparisonFinder extends RecursiveTask<ISplit> {
 				final int length = context.expected.length;
 				for (int j = 0; j < length; ++j) {
 					if (context.features[j][feature] < context.features[j][i]) {
-						if (++left >= length - context.minObs) {
+						if (++left >= length - minObs) {
 							continue f;
 						}
 						labelSumL.add(context.expected[j], context.weights[j]);
 					}
 				}
 
-				if (left >= context.minObs) {
+				if (left >= minObs) {
 					final double improvement = MseSplitCriterion.improvement(labelSumL, null, labelSum, weightSum);
 					if (!GrowJob.isFirstBetter(bestImprovement, improvement, i, bestFeature2)) {
 						bestImprovement = improvement;

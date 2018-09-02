@@ -28,7 +28,6 @@ public abstract class Proxy<T> extends AbstractClass implements Supplier<T> {
 		lock = this;
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public final T get() {
 		if (object == null) {

@@ -106,12 +106,13 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 	public TreeModel run(final ISamples<Sample, Double> train, @Nullable final boolean[] featuresMask,
 			final int labelIndex) {
 		final TreeNode root = createTreeRoot(train, labelIndex);
+		final int minObs = (int) argument("minObs");
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, (int) argument("depth"),
-				(int) argument("minObs"), argument("minImprovement"), labelIndex);
+				argument("minImprovement"), labelIndex);
 		final boolean[] subset = makeTrainingSubset(train);
 		final String nodePrediction = getNodePredictionMode();
-		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, statisticsFactory, parallelize)
-				.compute();
+		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, minObs, statisticsFactory,
+				parallelize).compute();
 		return new TreeModel(root, train.featureNames());
 	}
 

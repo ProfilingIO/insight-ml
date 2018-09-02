@@ -46,11 +46,12 @@ public final class GrowJob extends RecursiveAction {
 	private final int depth;
 	private final String nodePrediction;
 	private final SplitCriterionFactory splitCriterionFactory;
+	private final int minObs;
 	private final boolean parallelize;
 	private final Supplier<MutableStatistics> statisticsFactory;
 
 	public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth,
-			final String nodePrediction, final SplitCriterionFactory splitCriterionFactory,
+			final String nodePrediction, final SplitCriterionFactory splitCriterionFactory, final int minObs,
 			final Supplier<MutableStatistics> statisticsFactory, final boolean parallelize) {
 		parent = left;
 		this.context = context;
@@ -58,6 +59,7 @@ public final class GrowJob extends RecursiveAction {
 		this.depth = depth;
 		this.nodePrediction = nodePrediction;
 		this.splitCriterionFactory = splitCriterionFactory;
+		this.minObs = minObs;
 		this.statisticsFactory = statisticsFactory;
 		this.parallelize = parallelize;
 	}
@@ -71,7 +73,7 @@ public final class GrowJob extends RecursiveAction {
 		}
 		final DescriptiveStatistics[] nodeStats = nodeStats(best);
 		final IStats statsNaN = best.getStatsNaN();
-		final TreeNode[] children = new TreeNode[statsNaN.getN() >= context.minObs ? 3 : 2];
+		final TreeNode[] children = new TreeNode[statsNaN.getN() >= minObs ? 3 : 2];
 		children[0] = new TreeNode(prediction(nodeStats[0]), best.getStatsL());
 		children[1] = new TreeNode(prediction(nodeStats[1]), best.getStatsR());
 		if (children.length == 3) {
@@ -80,9 +82,9 @@ public final class GrowJob extends RecursiveAction {
 		final boolean[][] split = parent.split(best, children, context.orderedInstances, subset);
 		if (depth < context.maxDepth) {
 			for (int i = 0; i < children.length; ++i) {
-				if (split[i].length >= context.minObs * 2) {
+				if (split[i].length >= minObs * 2) {
 					new GrowJob(children[i], context, split[i], depth + 1, nodePrediction, splitCriterionFactory,
-							statisticsFactory, parallelize).compute();
+							minObs, statisticsFactory, parallelize).compute();
 				}
 			}
 		}
@@ -118,7 +120,7 @@ public final class GrowJob extends RecursiveAction {
 
 	private Split findBestSplit() {
 		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder
-				.createThresholdSplitFinder(context, subset, splitCriterionFactory, statisticsFactory);
+				.createThresholdSplitFinder(context, subset, splitCriterionFactory, minObs, statisticsFactory);
 		return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 	}
 

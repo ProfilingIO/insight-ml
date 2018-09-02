@@ -72,7 +72,10 @@ public abstract class PipelineSource<T> implements PipelineElement {
 		}
 	}
 
-	protected void deserializationCallback(@SuppressWarnings("unused") final @Nonnull T result) {
+	/**
+	 * @param result
+	 */
+	protected void deserializationCallback(final @Nonnull T result) {
 	}
 
 	public final void consume(final PipelineConsumer<T> consumer) throws Exception {
