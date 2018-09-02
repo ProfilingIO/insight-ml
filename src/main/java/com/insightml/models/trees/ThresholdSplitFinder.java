@@ -40,6 +40,11 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		this.splitCriterion = splitCriterion;
 		this.minObs = minObs;
 		this.statisticsFactory = statisticsFactory;
+
+		if (samples < minObs * 2) {
+			throw new IllegalArgumentException(
+					"Requires at least " + minObs * 2 + " samples to find a split, but only got " + samples);
+		}
 	}
 
 	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
