@@ -119,8 +119,17 @@ public final class GrowJob extends RecursiveAction {
 	}
 
 	private Split findBestSplit() {
-		final ThresholdSplitFinder thresholdSplitFinder = ThresholdSplitFinder
-				.createThresholdSplitFinder(context, subset, splitCriterionFactory, minObs, statisticsFactory);
+		int samples = 0;
+		for (int i = 0; i < context.weights.length; ++i) {
+			if (subset[i]) {
+				++samples;
+			}
+		}
+		if (samples < minObs * 2) {
+			return null;
+		}
+		final ThresholdSplitFinder thresholdSplitFinder = new ThresholdSplitFinder(context, subset, samples,
+				splitCriterionFactory.create(context, subset), minObs, statisticsFactory);
 		return parallelize ? findBestSplitParallel(thresholdSplitFinder) : findBestSplit(thresholdSplitFinder);
 	}
 

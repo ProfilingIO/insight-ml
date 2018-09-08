@@ -47,19 +47,6 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		}
 	}
 
-	public static ThresholdSplitFinder createThresholdSplitFinder(final SplitFinderContext context,
-			final boolean[] subset, final SplitCriterionFactory splitCriterionFactory, final int minObs,
-			final Supplier<MutableStatistics> statisticsFactory) {
-		int samples = 0;
-		for (int i = 0; i < context.weights.length; ++i) {
-			if (subset[i]) {
-				++samples;
-			}
-		}
-		return new ThresholdSplitFinder(context, subset, samples, splitCriterionFactory.create(context, subset), minObs,
-				statisticsFactory);
-	}
-
 	@Override
 	public Split apply(final int feature) {
 		double curThr = -9999999;
