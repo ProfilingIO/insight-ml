@@ -41,8 +41,8 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 	BoostingModel() {
 	}
 
-	public BoostingModel(final DoubleModel first, final List<DoublePair<DoubleModel>> steps) {
-		super(null);
+	public BoostingModel(final DoubleModel first, final List<DoublePair<DoubleModel>> steps, final String[] features) {
+		super(features);
 		this.first = first;
 		this.steps = steps;
 	}

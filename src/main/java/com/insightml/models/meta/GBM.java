@@ -32,12 +32,14 @@ import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.evaluation.functions.MSE;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.math.optimization.AbstractOptimizable;
-import com.insightml.models.AbstractIndependentFeaturesModel;
 import com.insightml.models.DoubleModel;
 import com.insightml.models.ILearner;
+import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
+import com.insightml.models.LearnerInput;
 import com.insightml.models.regression.SimpleRegression;
 import com.insightml.models.trees.RegTree;
+import com.insightml.models.trees.TreeModel;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.IArguments;
@@ -79,6 +81,11 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 	}
 
 	@Override
+	public IModel<Sample, Double> run(final LearnerInput<? extends Sample, ? extends Double> input) {
+		return run(input.getTrain(), input.valid, input.config, input.labelIndex);
+	}
+
+	@Override
 	@Nonnull
 	public BoostingModel run(final ISamples<? extends Sample, ? extends Double> samples,
 			final ISamples<? extends Sample, ? extends Double> valid, final FeaturesConfig<? extends Sample, ?> config,
@@ -103,7 +110,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 				continue;
 			}
 			try {
-				final AbstractIndependentFeaturesModel fit = ((RegTree) learner[i % learner.length])
+				final TreeModel fit = ((RegTree) learner[i % learner.length])
 						.run(subset, featuresMask(subset.numFeatures(), random), labelIndex);
 				final Pair<Double, double[]> update = fitGamma(fit,
 						preds,
@@ -118,7 +125,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 				logger.error("{}", e);
 			}
 		}
-		return new BoostingModel(first, steps);
+		return new BoostingModel(first, steps, samples.featureNames());
 	}
 
 	private boolean[] featuresMask(final int dimensionality, final Random random) {
