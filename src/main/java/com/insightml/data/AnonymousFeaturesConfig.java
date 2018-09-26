@@ -153,21 +153,22 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	public static final class SimpleFeatureProvider<S extends Sample> extends GeneralFeatureProvider<S> {
-		private final List<Pair<String, String>> features;
+		private final String[] featureNames;
 		private final SimpleFeaturesProvider<S> simpleFeaturesProvider;
 
 		public SimpleFeatureProvider(final String[] featureNames,
 				final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
 			super("features", defaultValue);
-			this.features = new LinkedList<>();
-			for (final CharSequence feat : featureNames) {
-				features.add(new Pair<>(feat.toString(), ""));
-			}
+			this.featureNames = featureNames;
 			this.simpleFeaturesProvider = simpleFeaturesProvider;
 		}
 
 		@Override
 		protected List<Pair<String, String>> getFeatures() {
+			final List<Pair<String, String>> features = new LinkedList<>();
+			for (final CharSequence feat : featureNames) {
+				features.add(new Pair<>(feat.toString(), ""));
+			}
 			return features;
 		}
 
@@ -179,7 +180,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(features);
+			return Objects.hash(getFeatures());
 		}
 	}
 
