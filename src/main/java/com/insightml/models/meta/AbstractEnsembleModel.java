@@ -34,8 +34,8 @@ abstract class AbstractEnsembleModel<I extends Sample, E> extends AbstractModel<
 	AbstractEnsembleModel() {
 	}
 
-	AbstractEnsembleModel(final IModel<I, E>[] models, final double[] weights) {
-		super(null);
+	AbstractEnsembleModel(final IModel<I, E>[] models, final double[] weights, final String[] features) {
+		super(features);
 		this.models = models;
 		this.weights = weights;
 	}

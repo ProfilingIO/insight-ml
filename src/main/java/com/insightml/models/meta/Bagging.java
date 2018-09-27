@@ -78,7 +78,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 			log.info("Running bag {}/{}", i + 1, bags);
 			result.add(new BagResult<>(i, computeBag(i, samples, labelIndex), 1));
 		}
-		return combine(result, strategy);
+		return combine(result, strategy, samples.featureNames());
 	}
 
 	public IModel<I, Double> computeBag(final int index, final ISamples<I, Double> samples, final int labelIndex) {
@@ -90,7 +90,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 	}
 
 	public static <I extends Sample> VoteModel<I> combine(final Collection<BagResult<I>> bags,
-			final VoteStrategy strategy) {
+			final VoteStrategy strategy, final String[] features) {
 		final IModel<I, Double>[] models = new IModel[bags.size()];
 		final double[] weights = new double[models.length];
 		for (final BagResult<I> bag : bags) {
@@ -98,7 +98,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 			models[i] = bag.model;
 			weights[i] = bag.weight;
 		}
-		return new VoteModel<>(models, weights, strategy);
+		return new VoteModel<>(models, weights, strategy, features);
 	}
 
 	public ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,

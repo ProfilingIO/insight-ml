@@ -40,8 +40,9 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 	VoteModel() {
 	}
 
-	public VoteModel(final IModel<I, Double>[] models, final double[] weights, final VoteStrategy strategy) {
-		super(models, weights);
+	public VoteModel(final IModel<I, Double>[] models, final double[] weights, final VoteStrategy strategy,
+			final String[] features) {
+		super(models, weights, features);
 		this.strategy = strategy;
 	}
 
