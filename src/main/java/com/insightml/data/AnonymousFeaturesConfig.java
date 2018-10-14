@@ -16,15 +16,15 @@
 package com.insightml.data;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -60,19 +60,12 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		this.filter = new IgnoreFeatureFilter();
 	}
 
-	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
+	public AnonymousFeaturesConfig(final Stream<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
 			final double defaultValue, final boolean useDivFeaturesProvider, final FeatureFilterFactory filter) {
 		this(examples, exampleFeaturesProvider, 1, defaultValue, useDivFeaturesProvider, filter);
 	}
 
-	public AnonymousFeaturesConfig(final Iterable<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
-			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
-			final FeatureFilterFactory filter) {
-		this(examples.iterator(), exampleFeaturesProvider, minOccurrences, defaultValue, useDivFeaturesProvider,
-				filter);
-	}
-
-	public AnonymousFeaturesConfig(final Iterator<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
+	public AnonymousFeaturesConfig(final Stream<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
 			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
 			final FeatureFilterFactory filter) {
 		super(null, null);
@@ -84,12 +77,12 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		this.filter = Preconditions.checkNotNull(filter);
 	}
 
-	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Iterable<S> examples,
+	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Stream<S> examples,
 			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final double defaultValue) {
 		return of(examples, exampleFeaturesProvider, 1, defaultValue);
 	}
 
-	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Iterable<S> examples,
+	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Stream<S> examples,
 			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final int minOccurrences,
 			final double defaultValue) {
 		return new AnonymousFeaturesConfig<>(examples, exampleFeaturesProvider, minOccurrences, defaultValue, false,
@@ -106,13 +99,11 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		return filter.createFilter(instances, provider, labelIndex);
 	}
 
-	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Iterator<S> examples,
+	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Stream<S> examples,
 			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
 			final boolean useDivFeaturesProvider) {
-		final Map<String, Integer> names = new LinkedHashMap<>();
-		while (examples.hasNext()) {
-			simpleFeaturesProvider.apply(examples.next(), (k, v) -> names.merge(k, 1, Integer::sum));
-		}
+		final Map<String, Integer> names = new ConcurrentHashMap<>();
+		examples.forEach(s -> simpleFeaturesProvider.apply(s, (k, v) -> names.merge(k, 1, Integer::sum)));
 		return createFromFrequencies(simpleFeaturesProvider,
 				minOccurrences,
 				defaultValue,
@@ -123,12 +114,12 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	public static <S extends Sample> IFeatureProvider<S> createFromFrequencies(
 			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
 			final boolean useDivFeaturesProvider, final Map<String, Integer> names) {
-		final Set<String> selected = new LinkedHashSet<>();
+		final Set<String> selected = new TreeSet<>();
 		for (final Entry<String, Integer> entry : names.entrySet()) {
 			if (entry.getValue() >= minOccurrences) {
 				selected.add(entry.getKey());
 			}
-		}
+		} 
 		return provider(selected.toArray(new String[selected.size()]),
 				simpleFeaturesProvider,
 				defaultValue,

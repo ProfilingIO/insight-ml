@@ -15,6 +15,8 @@
  */
 package com.insightml.data;
 
+import java.util.Collection;
+
 import javax.annotation.Nonnull;
 
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
@@ -34,8 +36,8 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 		this.config = config;
 	}
 
-	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final @Nonnull Iterable<S> instances) {
-		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances,
+	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> instances) {
+		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances.stream(),
 				SimpleSample::loadFeatures, -9999999.0, false, new IgnoreFeatureFilter()));
 	}
 
