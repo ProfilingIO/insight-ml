@@ -27,10 +27,10 @@ import com.insightml.utils.IArguments;
 
 public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I, O> {
 
-	private final @Nonnull Iterable<I> training;
+	private final @Nonnull Collection<I> training;
 	private final FeaturesConfig<I, O> config;
 
-	public SimpleDataset(final String name, final @Nonnull Iterable<I> training, final FeaturesConfig<I, O> config) {
+	public SimpleDataset(final String name, final @Nonnull Collection<I> training, final FeaturesConfig<I, O> config) {
 		super(name);
 		this.training = training;
 		this.config = config;
@@ -53,7 +53,7 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 	}
 
 	@Override
-	public Iterable<I> loadAll() {
-		return loadTraining(null);
+	public Collection<I> loadAll() {
+		return training;
 	}
 }
