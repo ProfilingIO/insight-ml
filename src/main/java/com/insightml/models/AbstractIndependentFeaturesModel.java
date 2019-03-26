@@ -15,6 +15,8 @@
  */
 package com.insightml.models;
 
+import java.util.Arrays;
+
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
@@ -46,6 +48,10 @@ public abstract class AbstractIndependentFeaturesModel extends AbstractIndepende
 		final double[] result = new double[instancesFeatures.length];
 		for (int i = 0; i < result.length; ++i) {
 			result[i] = predict(instancesFeatures[i], featuresFilter);
+			if (Double.isNaN(result[i])) {
+				throw new IllegalStateException(
+						getName() + " predicted NaN for " + Arrays.toString(instancesFeatures[i]));
+			}
 		}
 		return result;
 	}

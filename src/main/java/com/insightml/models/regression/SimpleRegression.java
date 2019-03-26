@@ -34,6 +34,12 @@ public final class SimpleRegression {
 	}
 
 	public void addData(final double x, final double y, final double weight) {
+		if (Double.isNaN(x)) {
+			throw new IllegalArgumentException();
+		}
+		if (Double.isNaN(y)) {
+			throw new IllegalArgumentException();
+		}
 		if (n == 0) {
 			xbar = x * weight;
 			ybar = y * weight;
@@ -58,6 +64,9 @@ public final class SimpleRegression {
 
 	public double[] regress() {
 		final double slope = sumXY == 0 ? 0 : sumXY / sumXX;
+		if (Double.isNaN(slope)) {
+			throw new IllegalStateException();
+		}
 		if (hasIntercept) {
 			return new double[] { (sumY - slope * sumX) / n, slope };
 		}

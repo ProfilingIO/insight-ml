@@ -15,6 +15,7 @@
  */
 package com.insightml.data;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,7 +120,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 			if (entry.getValue() >= minOccurrences) {
 				selected.add(entry.getKey());
 			}
-		} 
+		}
 		return provider(selected.toArray(new String[selected.size()]),
 				simpleFeaturesProvider,
 				defaultValue,
@@ -143,7 +144,10 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		return Objects.hash(provider, filter);
 	}
 
-	public static final class SimpleFeatureProvider<S extends Sample> extends GeneralFeatureProvider<S> {
+	public static final class SimpleFeatureProvider<S extends Sample> extends GeneralFeatureProvider<S>
+			implements Serializable {
+		private static final long serialVersionUID = -2214993269905079503L;
+
 		private final String[] featureNames;
 		private final SimpleFeaturesProvider<S> simpleFeaturesProvider;
 

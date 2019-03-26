@@ -15,7 +15,11 @@
  */
 package com.insightml.math.statistics;
 
-public class SimpleStatistics implements MutableStatistics {
+import java.io.Serializable;
+
+public class SimpleStatistics implements MutableStatistics, Serializable {
+	private static final long serialVersionUID = 8907182889325610117L;
+
 	private long n;
 	private double sum;
 	private double weightedSum;

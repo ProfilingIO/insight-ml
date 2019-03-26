@@ -43,7 +43,7 @@ public final class FeaturesReport extends AbstractModule
 			builder.append(append(new FeaturesSummary(), instances) + "\n\n");
 		}
 		if (instances.numLabels() > 0) {
-			if (instances.numFeatures() < 300) {
+			if (instances.numFeatures() < 500) {
 				builder.append(append(new SplitGain(), instances) + "\n\n");
 			}
 			builder.append(append(new FeaturesCorrelation(), instances) + "\n\n");
