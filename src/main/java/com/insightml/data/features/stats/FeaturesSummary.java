@@ -15,9 +15,9 @@
  */
 package com.insightml.data.features.stats;
 
-import java.util.TreeSet;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.Sets;
 import com.insightml.data.samples.ISamples;
 import com.insightml.utils.ui.reports.IUiProvider;
 
@@ -25,12 +25,9 @@ public final class FeaturesSummary implements IUiProvider<ISamples<?, Double>> {
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
-		final StringBuilder builder = new StringBuilder(1024);
 		final FeatureStatistics stats = new FeatureStatistics(instances, labelIndex);
-		for (final String featureName : new TreeSet<>(Sets.newHashSet(instances.featureNames()))) {
-			builder.append(stats.toString(featureName) + "\n");
-		}
-		return builder.toString();
+		return Arrays.stream(instances.featureNames()).parallel().map(stats::toString).sorted()
+				.collect(Collectors.joining("\n"));
 	}
 
 }
