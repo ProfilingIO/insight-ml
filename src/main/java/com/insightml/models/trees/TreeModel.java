@@ -59,7 +59,8 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 		final double[][] instancesFeatures = instances.features();
 		final DistributionPrediction[] predictions = new DistributionPrediction[instancesFeatures.length];
 		for (int i = 0; i < predictions.length; ++i) {
-			predictions[i] = root.predictDistribution(selectFeatures(instancesFeatures[i], featuresFilter), debug);
+			predictions[i] = root.predictDistribution(featuresFilter == null ? instancesFeatures[i]
+					: selectFeatures(instancesFeatures[i], featuresFilter), debug);
 		}
 		return predictions;
 	}

@@ -43,24 +43,24 @@ public final class FeaturesReport extends AbstractModule
 			builder.append(append(new FeaturesSummary(), instances) + "\n\n");
 		}
 		if (instances.numLabels() > 0) {
-			if (instances.numFeatures() < 500) {
-				builder.append(append(new SplitGain(), instances) + "\n\n");
-			}
 			builder.append(append(new FeaturesCorrelation(), instances) + "\n\n");
+			if (instances.numFeatures() < 500) {
+				builder.append(append(new SplitGain(6, 300), instances) + "\n\n");
+			}
 		}
 
-		return builder.toString();
+		return builder.toString().trim();
 	}
 
 	private String append(final IUiProvider<ISamples<?, Double>> provider, final ISamples<?, Double> instances) {
 		final String reportClass = provider.getClass().getSimpleName();
-		return reportClass + getLegendWithLB(true, reportClass)
+		return reportClass + getLegendWithLB(reportClass)
 				+ "\n------------------------------------------------------------------------------------------------\n"
 				+ provider.getText(instances, labelIndex);
 	}
 
-	private static String getLegendWithLB(final boolean showLegend, final String reportClass) {
-		final String res = showLegend ? getLegend(reportClass) : null;
+	private static String getLegendWithLB(final String reportClass) {
+		final String res = getLegend(reportClass);
 		return res == null ? "" : "\n" + res + "\n";
 	}
 

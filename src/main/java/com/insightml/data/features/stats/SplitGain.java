@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,19 +70,8 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 			final int maxDepth, final int minObs) {
 		final long start = System.currentTimeMillis();
 
-		final Stats labelStats = new Stats();
-		final Double[] labels = instances.expected(labelIndex);
-		final double[] weights = instances.weights(labelIndex);
-		for (int i = 0; i < labels.length; ++i) {
-			labelStats.add(labels[i], weights[i]);
-		}
-		final double prior = labelStats.getMean();
-		final Stats errorStats = new Stats();
-		for (int i = 0; i < labels.length; ++i) {
-			final double error = labels[i] - prior;
-			errorStats.add(error * error, weights[i]);
-		}
-		final double totalError = errorStats.getWeightedSum();
+		final Pair<Stats, Stats> labelAndErrorStats = labelAndErrorStats(instances, labelIndex);
+		final double totalError = labelAndErrorStats.getSecond().getWeightedSum();
 
 		final String[] feats = instances.featureNames();
 		final Map<String, SplitGainInfo> map = new HashMap<>(feats.length);
@@ -95,6 +85,22 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 		LOG.info("Computed statistics in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 		return map;
+	}
+
+	private static Pair<Stats, Stats> labelAndErrorStats(final ISamples<?, Double> instances, final int labelIndex) {
+		final Stats labelStats = new Stats();
+		final Double[] labels = instances.expected(labelIndex);
+		final double[] weights = instances.weights(labelIndex);
+		for (int i = 0; i < labels.length; ++i) {
+			labelStats.add(labels[i], weights[i]);
+		}
+		final double prior = labelStats.getMean();
+		final Stats errorStats = new Stats();
+		for (int i = 0; i < labels.length; ++i) {
+			final double error = labels[i] - prior;
+			errorStats.add(error * error, weights[i]);
+		}
+		return new Pair<>(labelStats, errorStats);
 	}
 
 	private static SplitGainInfo compute(final int feature, final String featureName, final ISamples train,
@@ -125,6 +131,13 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
+		final StringBuilder text = new StringBuilder();
+
+		final Pair<Stats, Stats> labelAndErrorStats = labelAndErrorStats(instances, labelIndex);
+		final double totalError = labelAndErrorStats.getSecond().getWeightedSum();
+		text.append("Label stats: " + labelAndErrorStats.getFirst() + '\n');
+		text.append("Total variance: " + (float) totalError + "\n\n");
+
 		final SplitGainInfo[] sorted = getRankedSplitGains(instances, labelIndex);
 		final Map<String, String> result = new LinkedHashMap<>(sorted.length);
 		final double[][] features = instances.features();
@@ -137,7 +150,10 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 									+ instances.featureNames()[bestCor.bestCorrFeature]
 							: featureStr);
 		}
-		return UiUtils.toString(result, true, false);
+
+		text.append(UiUtils.toString(result, true, false));
+
+		return text.toString();
 	}
 
 	public String getCsv(final ISamples<?, Double> instances, final int labelIndex) {

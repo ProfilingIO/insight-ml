@@ -197,8 +197,9 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 		}
 		return getN()
 				+ (getN() > 0
-						? ", " + formatter.format(getSum()) + ", " + formatter.format(getMean()) + " ["
-								+ formatter.format(getMin()) + ", " + formatter.format(getMax()) + "]"
+						? ", " + formatter.format(getSum()) + ", " + formatter.format(getMean()) + " +/- "
+								+ formatter.format(getStandardDeviation()) + " [" + formatter.format(getMin()) + ", "
+								+ formatter.format(getMax()) + "]"
 						: "");
 	}
 }
