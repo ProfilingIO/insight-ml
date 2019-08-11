@@ -16,14 +16,20 @@
 package com.insightml.models.meta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
+import com.google.common.base.Joiner;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
 import com.insightml.models.IModel;
+import com.insightml.models.trees.TreeNode.TreePredictionInfo;
 import com.insightml.utils.Arrays;
 
 public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double>
@@ -73,10 +79,10 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 	@Override
 	public DistributionPrediction[] predictDistribution(final ISamples<? extends I, ?> instnces, final boolean debug) {
 		final Stats[] map = new Stats[instnces.size()];
-		final List<Object>[] debg = new List[map.length];
+		final VoteModelDebug[] debg = new VoteModelDebug[map.length];
 		for (int i = 0; i < map.length; ++i) {
 			map[i] = new Stats();
-			debg[i] = new ArrayList<>();
+			debg[i] = new VoteModelDebug();
 		}
 		for (final IModel<I, Double> model : getModels()) {
 			final DistributionPrediction[] preds = ((DistributionModel<I>) model).predictDistribution(instnces, debug);
@@ -108,6 +114,39 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			// return stats.getN() * 1.0 / sum;
 		default:
 			throw new IllegalArgumentException();
+		}
+	}
+
+	public static final class VoteModelDebug {
+		private final Map<String, Double> impactByFeature = new HashMap<>();
+		private final List<Object> singleModelDebug = new ArrayList<>();
+
+		public Map<String, Double> getImpactByFeature() {
+			return impactByFeature;
+		}
+
+		public List<Object> getSingleModelDebug() {
+			return singleModelDebug;
+		}
+
+		public void add(final Object debug) {
+			if (debug instanceof TreePredictionInfo) {
+				for (final Entry<String, Double> feature : ((TreePredictionInfo) debug).getImpactByFeature()
+						.entrySet()) {
+					impactByFeature.merge(feature.getKey(), feature.getValue(), Double::sum);
+				}
+				singleModelDebug.add(((TreePredictionInfo) debug).getAppliedRules());
+			} else {
+				singleModelDebug.add(debug);
+			}
+		}
+
+		@Override
+		public String toString() {
+			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
+					(k1, k2) -> Double.compare(Math.abs(impactByFeature.get(k2)), Math.abs(impactByFeature.get(k1))));
+			sortedFeatures.putAll(impactByFeature);
+			return sortedFeatures + "\n" + Joiner.on('\n').join(singleModelDebug);
 		}
 	}
 }

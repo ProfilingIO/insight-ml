@@ -17,8 +17,10 @@ package com.insightml.models.trees;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import com.google.common.base.Preconditions;
@@ -81,15 +83,21 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return children[rule.selectChild(features)].predictDistributionNoDebug(features);
 	}
 
-	private List<String> makeDebugOutput(final double[] features, final int moveRight,
+	private TreePredictionInfo makeDebugOutput(final double[] features, final int moveRight,
 			final DistributionPrediction pred) {
-		final List<String> debugValue = Lists
-				.newArrayList(rule.explain(features) + " \u2192 " + presentPrediction(children[moveRight].stats));
-		final Object childDebug = pred.getDebug();
+		final TreeNode branch = children[moveRight];
+		final List<String> appliedRules = Lists
+				.newArrayList(rule.explain(features) + " \u2192 " + presentPrediction(branch.stats));
+		final Map<String, Double> impactByFeature = new HashMap<>();
+		impactByFeature.put(rule.getFeatureName(), branch.mean - mean);
+		final TreePredictionInfo childDebug = (TreePredictionInfo) pred.getDebug();
 		if (childDebug != null) {
-			debugValue.addAll((Collection<? extends String>) childDebug);
+			appliedRules.addAll(childDebug.appliedRules);
+			for (final Entry<String, Double> feat : childDebug.impactByFeature.entrySet()) {
+				impactByFeature.merge(feat.getKey(), feat.getValue(), Double::sum);
+			}
 		}
-		return debugValue;
+		return new TreePredictionInfo(appliedRules, impactByFeature);
 	}
 
 	boolean[][] split(final Split split, final TreeNode[] childrenn, final int[][] orderedIndexes,
@@ -193,5 +201,28 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(rule, Arrays.deepHashCode(children), mean);
+	}
+
+	public static final class TreePredictionInfo {
+		private final List<String> appliedRules;
+		private final Map<String, Double> impactByFeature;
+
+		public TreePredictionInfo(final List<String> appliedRules, final Map<String, Double> impactByFeature) {
+			this.appliedRules = appliedRules;
+			this.impactByFeature = impactByFeature;
+		}
+
+		public List<String> getAppliedRules() {
+			return appliedRules;
+		}
+
+		public Map<String, Double> getImpactByFeature() {
+			return impactByFeature;
+		}
+
+		@Override
+		public String toString() {
+			return "impactByFeature=" + impactByFeature + ", appliedRules=" + appliedRules;
+		}
 	}
 }

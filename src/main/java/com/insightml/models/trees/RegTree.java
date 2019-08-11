@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
-import com.insightml.math.Vectors;
 import com.insightml.math.statistics.MutableStatistics;
 import com.insightml.math.statistics.SimpleStatistics;
 import com.insightml.math.statistics.Stats;
@@ -118,7 +117,13 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 
 	public static TreeNode createTreeRoot(final ISamples<?, Double> train, final int labelIndex) {
 		final Stats sRoot = new Stats();
-		sRoot.add(0, Vectors.sum(train.weights(labelIndex)));
+		final Double[] labels = train.expected(labelIndex);
+		final double[] weights = train.weights(labelIndex);
+		for (int i = 0; i < labels.length; ++i) {
+			if (labels[i] != null) {
+				sRoot.add(labels[i], weights[i]);
+			}
+		}
 		final TreeNode root = new TreeNode(sRoot.getMean(), sRoot);
 		return root;
 	}
