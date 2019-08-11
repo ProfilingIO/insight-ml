@@ -15,20 +15,25 @@
  */
 package com.insightml.models.meta;
 
+import java.util.function.Supplier;
+
 import com.insightml.evaluation.functions.MSE;
 import com.insightml.evaluation.functions.ObjectiveFunction;
+import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
+import com.insightml.models.trees.RegTree.SimpleStatisticsSupplier;
 import com.insightml.utils.IArguments;
 
 public class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments) {
-		super(arguments, new MSE(), getLearner(arguments, true), null);
+		super(arguments, new MSE(), getLearner(arguments, new SimpleStatisticsSupplier(), true), null);
 	}
 
 	public GBRT(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final Baseline predefinedBaseline) {
-		super(arguments, objective, getLearner(arguments, true), predefinedBaseline);
+		super(arguments, objective, getLearner(arguments, new SimpleStatisticsSupplier(), true), predefinedBaseline);
 	}
 
 	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
@@ -38,28 +43,33 @@ public class GBRT extends GBM {
 
 	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
 			final int maxDepth, final int minObs, final boolean parallelize) {
-		super(arguments, it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, 1, parallelize));
+		super(arguments, it, shrink, bag, new MSE(),
+				getLearner(minDepth, maxDepth, minObs, 1, new SimpleStatisticsSupplier(), parallelize));
 	}
 
 	public GBRT(final IArguments arguments, final int it, final double shrink, final double bag, final int minDepth,
 			final int maxDepth, final int minObs, final int nodePred) {
-		super(arguments, it, shrink, bag, new MSE(), getLearner(minDepth, maxDepth, minObs, nodePred, true));
+		super(arguments, it, shrink, bag, new MSE(),
+				getLearner(minDepth, maxDepth, minObs, nodePred, new SimpleStatisticsSupplier(), true));
 	}
 
-	public static RegTree[] getLearner(final IArguments arguments, final boolean parallelize) {
+	public static RegTree[] getLearner(final IArguments arguments, final Supplier<MutableStatistics> statisticsFactory,
+			final boolean parallelize) {
 		// TODO: Change back to min/max params
 		return getLearner(arguments.toInt("depth", 4),
 				arguments.toInt("depth", 4),
 				arguments.toInt("minObs", 10),
 				arguments.toInt("nodePred", 1),
+				statisticsFactory,
 				parallelize);
 	}
 
 	private static RegTree[] getLearner(final int minDepth, final int maxDepth, final int minObs, final int nodePred,
-			final boolean parallelize) {
+			final Supplier<MutableStatistics> statisticsFactory, final boolean parallelize) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
-			learner[i] = new RegTree(i + minDepth, minObs, nodePred, parallelize);
+			learner[i] = new RegTree(i + minDepth, minObs, nodePred, MseSplitCriterion.factory(), statisticsFactory,
+					parallelize);
 		}
 		return learner;
 	}

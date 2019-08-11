@@ -152,7 +152,7 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 		}
 	}
 
-	static final class SimpleStatisticsSupplier implements Supplier<MutableStatistics>, Serializable {
+	public static final class SimpleStatisticsSupplier implements Supplier<MutableStatistics>, Serializable {
 		private static final long serialVersionUID = -39356810665839873L;
 
 		@Override
