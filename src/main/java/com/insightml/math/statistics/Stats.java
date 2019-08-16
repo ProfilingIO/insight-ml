@@ -162,9 +162,15 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	}
 
 	public Interval confRange95(final boolean hardMinMax) {
+		return confRange(2, hardMinMax);
+	}
+
+	public Interval confRange(final double standardDeviations, final boolean hardMinMax) {
 		final double std = getStandardDeviation();
-		final double confMin = hardMinMax ? Math.max(min, mean - std * 2) : mean - std * 2;
-		final double confMax = hardMinMax ? Math.min(max, mean + std * 2) : mean + std * 2;
+		final double confMin = hardMinMax ? Math.max(min, mean - std * standardDeviations)
+				: mean - std * standardDeviations;
+		final double confMax = hardMinMax ? Math.min(max, mean + std * standardDeviations)
+				: mean + std * standardDeviations;
 		return new Interval(confMin, confMax);
 	}
 
