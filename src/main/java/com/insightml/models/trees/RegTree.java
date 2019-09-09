@@ -85,7 +85,7 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 		args.add("depth", 4.0, 1, 24, 1);
 		args.add("minObs", 10.0, 1, 10000, 10);
 		args.add("minImprovement", 0.0, 0, 1000, 0);
-		args.add("nodePred", 1.0, 1, 3, 1);
+		args.add("nodePred", 1.0, 1, 4, 1);
 		return args;
 	}
 
@@ -144,6 +144,8 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 			return "median";
 		} else if (nodePred == 3) {
 			return "meandian";
+		} else if (nodePred == 4) {
+			return "mean-smoothed";
 		}
 		throw new IllegalArgumentException("Unknown mode: " + nodePred);
 	}

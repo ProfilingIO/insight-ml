@@ -98,6 +98,12 @@ public final class GrowJob extends RecursiveAction {
 			return stats.getPercentile(50);
 		case "meandian":
 			return (stats.getMean() + stats.getPercentile(50)) / 2;
+		case "mean-smoothed":
+			final DescriptiveStatistics statz2 = new DescriptiveStatistics(stats);
+			for (int i = 0; i < 10; ++i) {
+				statz2.addValue(parent.mean);
+			}
+			return statz2.getMean();
 		default:
 			throw new IllegalArgumentException(nodePrediction);
 		}

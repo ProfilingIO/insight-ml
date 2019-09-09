@@ -37,6 +37,10 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 		this.root = root;
 	}
 
+	public TreeNode getRoot() {
+		return root;
+	}
+
 	@Override
 	public double predict(final double[] features) {
 		TreeNode node = root;
