@@ -53,7 +53,7 @@ public class RandomForest extends Bagging<Sample> {
 		final LearnerArguments args = super.arguments();
 		args.add("depth", 4.0, 2, 24);
 		args.add("minObs", 10.0, 10, 10000);
-		args.add("nodePred", 1.0, 1, 3);
+		args.add("nodePred", 1.0, 1, 4);
 		return args;
 	}
 

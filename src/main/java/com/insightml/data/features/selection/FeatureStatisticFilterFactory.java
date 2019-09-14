@@ -17,6 +17,7 @@ package com.insightml.data.features.selection;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import com.insightml.data.PreprocessingPipeline;
@@ -53,5 +54,10 @@ public final class FeatureStatisticFilterFactory implements FeatureFilterFactory
 		}
 
 		return new ManualSelectionFilter(ignoredFeatures, false);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(stats, threshold, threshIsMin);
 	}
 }

@@ -18,6 +18,7 @@ package com.insightml.data.features.stats;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -58,7 +59,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	}
 
 	@Override
-	public final Map<String, Double> run(final FeatureStatistics stats) {
+	public Map<String, Double> run(final FeatureStatistics stats) {
 		final ISamples<Sample, Double> instances = stats.getInstances();
 		final int labelIndex = stats.getLabelIndex();
 
@@ -209,6 +210,11 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 			}
 		}
 		return bestCor;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(maxDepth, minObs);
 	}
 
 	private static final class FeatureCorrelation {

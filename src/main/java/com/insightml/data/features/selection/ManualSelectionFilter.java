@@ -19,15 +19,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.insightml.utils.io.IoUtils;
 
 public final class ManualSelectionFilter extends AbstractFeatureFilter {
 	private static final long serialVersionUID = 7510425912816873996L;
-
-	private final Logger logger = LoggerFactory.getLogger(ManualSelectionFilter.class);
 
 	private final boolean isKeep;
 
@@ -37,9 +32,6 @@ public final class ManualSelectionFilter extends AbstractFeatureFilter {
 
 	public ManualSelectionFilter(final Set<String> features, final boolean isKeep) {
 		super(isKeep ? features : new HashSet<String>(), isKeep ? new HashSet<String>() : features);
-		if (!isKeep) {
-			logger.info("Filtering out {}", features);
-		}
 		this.isKeep = isKeep;
 	}
 
