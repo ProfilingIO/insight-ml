@@ -71,6 +71,11 @@ public class ModelPipeline<I extends Sample, P> extends AbstractConfigurable imp
 		return Arrays.of(result);
 	}
 
+	@Override
+	public DistributionPrediction[] predictDistribution(final Iterable<? extends I> test, final boolean debug) {
+		return ((DistributionModel<I>) model).predictDistribution(preprocess(test), debug);
+	}
+
 	public SumMap<String> featureImportance() {
 		return model.featureImportance();
 	}

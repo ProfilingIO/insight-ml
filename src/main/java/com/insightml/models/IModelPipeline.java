@@ -19,12 +19,21 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.ImmutableList;
 import com.insightml.data.samples.Sample;
 
 public interface IModelPipeline<I extends Sample, P> extends Serializable {
 
 	@Nonnull
 	P[] run(final Iterable<? extends I> test);
+
+	@Nonnull
+	default DistributionPrediction predictDistribution(final @Nonnull I sample, final boolean debug) {
+		return predictDistribution(ImmutableList.of(sample), debug)[0];
+	}
+
+	@Nonnull
+	DistributionPrediction[] predictDistribution(Iterable<? extends I> samples, boolean debug);
 
 	int getLabelIndex();
 

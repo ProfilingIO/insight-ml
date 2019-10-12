@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import com.insightml.data.features.SimpleFeaturesProvider;
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.SimpleSample;
@@ -34,6 +35,12 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 		super(name);
 		this.training = training;
 		this.config = config;
+	}
+
+	public static <S extends Sample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> samples,
+			final SimpleFeaturesProvider<S> featuresProvider) {
+		return new SimpleDataset<>("SimpleDataset", samples,
+				AnonymousFeaturesConfig.of(samples.stream(), featuresProvider, 0));
 	}
 
 	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> instances) {
