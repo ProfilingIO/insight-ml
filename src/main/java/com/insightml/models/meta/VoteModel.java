@@ -16,13 +16,15 @@
 package com.insightml.models.meta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Joiner;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.Stats;
@@ -125,10 +127,6 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			return impactByFeature;
 		}
 
-		public List<Object> getSingleModelDebug() {
-			return singleModelDebug;
-		}
-
 		public void add(final Object debug) {
 			if (debug instanceof TreePredictionInfo) {
 				for (final Entry<String, Double> feature : ((TreePredictionInfo) debug).getImpactByFeature()
@@ -136,7 +134,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 					impactByFeature.merge(feature.getKey(), feature.getValue(), Double::sum);
 				}
 				singleModelDebug.add(((TreePredictionInfo) debug).getAppliedRules());
-			} else {
+			} else if (debug != null) {
 				singleModelDebug.add(debug);
 			}
 		}
@@ -146,7 +144,17 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
 					(k1, k2) -> Double.compare(Math.abs(impactByFeature.get(k2)), Math.abs(impactByFeature.get(k1))));
 			sortedFeatures.putAll(impactByFeature);
-			return sortedFeatures + "\n" + Joiner.on('\n').join(singleModelDebug);
+			final StringBuilder str = new StringBuilder(sortedFeatures.toString());
+			for (final Object debug : singleModelDebug) {
+				str.append('\n');
+				if (debug instanceof Collection) {
+					str.append(((Collection) debug).stream().map(e -> e instanceof Supplier ? ((Supplier) e).get() : e)
+							.collect(Collectors.joining(", ")));
+				} else {
+					str.append(debug);
+				}
+			}
+			return str.toString();
 		}
 	}
 }

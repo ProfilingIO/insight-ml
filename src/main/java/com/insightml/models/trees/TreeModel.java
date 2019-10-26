@@ -48,7 +48,7 @@ public final class TreeModel extends AbstractIndependentFeaturesModel implements
 			if (node.rule == null) {
 				return node.mean;
 			}
-			node = node.children[node.rule.selectChild(features)];
+			node = node.rule.selectChild(features, node.children);
 		}
 	}
 

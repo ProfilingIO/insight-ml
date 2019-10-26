@@ -27,6 +27,11 @@ import com.insightml.utils.IArguments;
 
 public class GBRT extends GBM {
 
+	public static final String DEPTH = "depth";
+	public static final String MIN_OBS = "minObs";
+	public static final String NODE_PRED = "nodePred";
+	public static final String PARALLELIZE = "parallelize";
+
 	public GBRT(final IArguments arguments) {
 		super(arguments, new MSE(), getLearner(arguments, new SimpleStatisticsSupplier(), true), null);
 	}
@@ -56,12 +61,12 @@ public class GBRT extends GBM {
 	public static RegTree[] getLearner(final IArguments arguments, final Supplier<MutableStatistics> statisticsFactory,
 			final boolean parallelize) {
 		// TODO: Change back to min/max params
-		return getLearner(arguments.toInt("depth", 4),
-				arguments.toInt("depth", 4),
-				arguments.toInt("minObs", 10),
-				arguments.toInt("nodePred", 1),
+		return getLearner(arguments.toInt(DEPTH, 4),
+				arguments.toInt(DEPTH, 4),
+				arguments.toInt(MIN_OBS, 10),
+				arguments.toInt(NODE_PRED, 1),
 				statisticsFactory,
-				parallelize);
+				arguments.bool(PARALLELIZE, parallelize));
 	}
 
 	private static RegTree[] getLearner(final int minDepth, final int maxDepth, final int minObs, final int nodePred,

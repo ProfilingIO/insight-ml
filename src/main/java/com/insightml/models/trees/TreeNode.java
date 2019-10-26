@@ -16,15 +16,15 @@
 package com.insightml.models.trees;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.insightml.math.statistics.IStats;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
@@ -69,39 +69,24 @@ public final class TreeNode extends AbstractClass implements Serializable {
 
 	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
 		if (!debug) {
-			return new DistributionPrediction(predictDistributionNoDebug(features), null);
-		}
-		if (rule == null) {
-			return new DistributionPrediction(stats, null);
-		}
-		final int moveRight = rule.selectChild(features);
-		final DistributionPrediction pred = children[moveRight].predictDistribution(features, debug);
-		return new DistributionPrediction(pred.getPrediction(),
-				debug ? makeDebugOutput(features, moveRight, pred) : null);
-	}
-
-	private IStats predictDistributionNoDebug(final double[] features) {
-		if (rule == null) {
-			return stats;
-		}
-		return children[rule.selectChild(features)].predictDistributionNoDebug(features);
-	}
-
-	private TreePredictionInfo makeDebugOutput(final double[] features, final int moveRight,
-			final DistributionPrediction pred) {
-		final TreeNode branch = children[moveRight];
-		final List<String> appliedRules = Lists
-				.newArrayList(rule.explain(features) + " \u2192 " + presentPrediction(branch.stats));
-		final Map<String, Double> impactByFeature = new HashMap<>();
-		impactByFeature.put(rule.getFeatureName(), branch.mean - mean);
-		final TreePredictionInfo childDebug = (TreePredictionInfo) pred.getDebug();
-		if (childDebug != null) {
-			appliedRules.addAll(childDebug.appliedRules);
-			for (final Entry<String, Double> feat : childDebug.impactByFeature.entrySet()) {
-				impactByFeature.merge(feat.getKey(), feat.getValue(), Double::sum);
+			for (TreeNode node = this;; node = node.rule.selectChild(features, node.children)) {
+				if (node.rule == null) {
+					return new DistributionPrediction(node.stats, null);
+				}
 			}
 		}
-		return new TreePredictionInfo(appliedRules, impactByFeature);
+		final List<Supplier<String>> appliedRules = new ArrayList<>();
+		final Map<String, Double> impactByFeature = new HashMap<>();
+		for (TreeNode node = this;;) {
+			final Split nodeRule = node.rule;
+			if (nodeRule == null) {
+				return new DistributionPrediction(node.stats, new TreePredictionInfo(appliedRules, impactByFeature));
+			}
+			final TreeNode child = nodeRule.selectChild(features, node.children);
+			appliedRules.add(() -> nodeRule.explain(features) + " \u2192 " + presentPrediction(child.stats));
+			impactByFeature.merge(nodeRule.getFeatureName(), child.mean - node.mean, Double::sum);
+			node = child;
+		}
 	}
 
 	boolean[][] split(final Split split, final TreeNode[] childrenn, final int[][] orderedIndexes,
@@ -160,8 +145,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		print("", true, builder);
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
-			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true, true));
+			builder.append(UiUtils
+					.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING), true, true));
 		}
 		return builder.toString();
 	}
@@ -208,25 +193,21 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	}
 
 	public static final class TreePredictionInfo {
-		private final List<String> appliedRules;
+		private final List<Supplier<String>> appliedRules;
 		private final Map<String, Double> impactByFeature;
 
-		public TreePredictionInfo(final List<String> appliedRules, final Map<String, Double> impactByFeature) {
+		public TreePredictionInfo(final List<Supplier<String>> appliedRules,
+				final Map<String, Double> impactByFeature) {
 			this.appliedRules = appliedRules;
 			this.impactByFeature = impactByFeature;
 		}
 
-		public List<String> getAppliedRules() {
+		public List<Supplier<String>> getAppliedRules() {
 			return appliedRules;
 		}
 
 		public Map<String, Double> getImpactByFeature() {
 			return impactByFeature;
-		}
-
-		@Override
-		public String toString() {
-			return "impactByFeature=" + impactByFeature + ", appliedRules=" + appliedRules;
 		}
 	}
 }
