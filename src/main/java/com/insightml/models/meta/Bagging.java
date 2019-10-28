@@ -34,6 +34,7 @@ import com.insightml.models.IModel;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerInput;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
+import com.insightml.models.trees.RegTree;
 import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 
@@ -82,11 +83,18 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 	}
 
 	public IModel<I, Double> computeBag(final int index, final ISamples<I, Double> samples, final int labelIndex) {
+		final ILearner<I, Double, Double>[] learners = getLearners();
+		final ILearner<I, Double, Double> learner = learners[index % learners.length];
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");
-		final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, index);
-		final ILearner<I, Double, Double>[] learner = getLearners();
-		return learner[index % learner.length].run(sampled, null, null, labelIndex);
+		final Random random = new Random((long) Math.pow(index + 2, 2));
+		if (learner instanceof RegTree) {
+			return (IModel<I, Double>) ((RegTree) learner).run(
+					(ISamples) (instancesSample < 1 ? samples.sample(instancesSample, random).getFirst() : samples),
+					GBM.featuresMask(samples.numFeatures(), featureSample, random), labelIndex);
+		}
+		final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, random);
+		return learner.run(sampled, null, null, labelIndex);
 	}
 
 	public static <I extends Sample> VoteModel<I> combine(final Collection<BagResult<I>> bags,

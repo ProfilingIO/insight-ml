@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.util.Pair;
@@ -101,23 +102,15 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		final List<DoublePair<DoubleModel>> steps = new ArrayList<>(iterations);
 		final ILearner<Sample, Double, Double>[] learner = getLearners();
 		for (int i = 0; i < iterations; ++i) {
-			final ISamples<Sample, Double> subset = subset((ISamples<Sample, Double>) samples,
-					preds,
-					expected,
-					random,
+			final ISamples<Sample, Double> subset = subset((ISamples<Sample, Double>) samples, preds, expected, random,
 					labelIndex);
 			if (subset == null) {
 				continue;
 			}
 			try {
-				final TreeModel fit = ((RegTree) learner[i % learner.length])
-						.run(subset, featuresMask(subset.numFeatures(), random), labelIndex);
-				final Pair<Double, double[]> update = fitGamma(fit,
-						preds,
-						samples,
-						expected,
-						weights,
-						i + 1,
+				final TreeModel fit = ((RegTree) learner[i % learner.length]).run(subset,
+						featuresMask(subset.numFeatures(), random), labelIndex);
+				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, expected, weights, i + 1,
 						labelIndex);
 				steps.add(new DoublePair<>(fit, shrinkage * update.getFirst()));
 				preds = update.getSecond();
@@ -130,6 +123,11 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 
 	private boolean[] featuresMask(final int dimensionality, final Random random) {
 		final double ratio = argument("fbag");
+		return featuresMask(dimensionality, ratio, random);
+	}
+
+	@Nullable
+	static boolean[] featuresMask(final int dimensionality, final double ratio, final Random random) {
 		if (ratio >= 1) {
 			return null;
 		}
