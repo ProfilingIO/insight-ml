@@ -27,6 +27,9 @@ import java.util.stream.Collectors;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.FullStatistics;
+import com.insightml.math.statistics.IStats;
+import com.insightml.math.statistics.MutableStatistics;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
@@ -80,16 +83,18 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 
 	@Override
 	public DistributionPrediction[] predictDistribution(final ISamples<? extends I, ?> instnces, final boolean debug) {
-		final Stats[] map = new Stats[instnces.size()];
+		final MutableStatistics[] map = new Stats[instnces.size()];
 		final VoteModelDebug[] debg = new VoteModelDebug[map.length];
-		for (int i = 0; i < map.length; ++i) {
-			map[i] = new Stats();
-			debg[i] = new VoteModelDebug();
-		}
 		for (final IModel<I, Double> model : getModels()) {
 			final DistributionPrediction[] preds = ((DistributionModel<I>) model).predictDistribution(instnces, debug);
 			for (int j = 0; j < preds.length; ++j) {
-				map[j].add(preds[j].getPrediction());
+				final IStats prediction = preds[j].getPrediction();
+				if (map[j] == null) {
+					// we can only aggregate to full statistics if also the base model predictions are full statistics
+					map[j] = prediction instanceof FullStatistics ? new FullStatistics() : new Stats();
+					debg[j] = new VoteModelDebug();
+				}
+				map[j].add(prediction);
 				debg[j].add(preds[j].getDebug());
 			}
 		}

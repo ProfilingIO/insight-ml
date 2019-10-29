@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.FullStatistics;
 import com.insightml.math.statistics.MutableStatistics;
 import com.insightml.math.statistics.SimpleStatistics;
 import com.insightml.math.statistics.Stats;
@@ -165,6 +166,15 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 		@Override
 		public MutableStatistics get() {
 			return new SimpleStatistics();
+		}
+	}
+
+	public static final class FullStatisticsSupplier implements Supplier<MutableStatistics>, Serializable {
+		private static final long serialVersionUID = -39356810665839873L;
+
+		@Override
+		public MutableStatistics get() {
+			return new FullStatistics();
 		}
 	}
 

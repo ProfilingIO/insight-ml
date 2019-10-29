@@ -19,4 +19,6 @@ public interface MutableStatistics extends IStats {
 
 	void add(double value, double weight);
 
+	void add(IStats stats);
+
 }

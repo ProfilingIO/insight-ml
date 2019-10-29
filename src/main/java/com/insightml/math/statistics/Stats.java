@@ -74,6 +74,7 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	 * @param othr
 	 *            Another stats object to add to the current stats.
 	 */
+	@Override
 	public void add(final IStats othr) {
 		add(othr, 1);
 	}
@@ -84,7 +85,7 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	 * @param othr
 	 *            Another stats object to add to the current stats.
 	 */
-	public void add(final IStats othr, double weight) {
+	public void add(final IStats othr, final double weight) {
 		final Stats other = (Stats) othr;
 		final double delta = other.mean - mean;
 		mean = (sumweight * mean + other.sumweight * other.mean * weight) / (sumweight + other.sumweight * weight);

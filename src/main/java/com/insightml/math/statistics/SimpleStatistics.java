@@ -44,6 +44,14 @@ public class SimpleStatistics implements MutableStatistics, Serializable {
 	}
 
 	@Override
+	public void add(final IStats stats) {
+		n += stats.getN();
+		sum += stats.getSum();
+		weightedSum += stats.getWeightedSum();
+		sumOfWeights += stats.getSumOfWeights();
+	}
+
+	@Override
 	public long getN() {
 		return n;
 	}

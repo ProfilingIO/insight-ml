@@ -21,13 +21,17 @@ import com.insightml.models.LearnerArguments;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
+import com.insightml.models.trees.RegTree.FullStatisticsSupplier;
 import com.insightml.models.trees.RegTree.StatsSupplier;
 import com.insightml.utils.IArguments;
 
 public class RandomForest extends Bagging<Sample> {
 
 	public RandomForest(final IArguments arguments) {
-		super(arguments, GBRT.getLearner(arguments, new StatsSupplier(), false));
+		super(arguments,
+				GBRT.getLearner(arguments,
+						arguments.bool("fullStatistics", false) ? new FullStatisticsSupplier() : new StatsSupplier(),
+						false));
 	}
 
 	public RandomForest(final int trees, final int depth, final int minObs, final double isample, final double fsample,
