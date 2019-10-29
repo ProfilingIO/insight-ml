@@ -22,7 +22,8 @@ public class FullStatistics implements MutableStatistics {
 
 	@Override
 	public double getSumOfWeights() {
-		// since we do not support weighting, the sum of weights equals the number of observation
+		// since we do not support weighting, the sum of weights equals the number of
+		// observation
 		return getN();
 	}
 
@@ -79,6 +80,10 @@ public class FullStatistics implements MutableStatistics {
 		for (final double value : ((FullStatistics) stats).delegate.getValues()) {
 			delegate.addValue(value);
 		}
+	}
+
+	public double getPercentile(final double percentile) {
+		return delegate.getPercentile(percentile);
 	}
 
 }

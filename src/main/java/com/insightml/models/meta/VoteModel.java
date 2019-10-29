@@ -83,14 +83,15 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 
 	@Override
 	public DistributionPrediction[] predictDistribution(final ISamples<? extends I, ?> instnces, final boolean debug) {
-		final MutableStatistics[] map = new Stats[instnces.size()];
+		final MutableStatistics[] map = new MutableStatistics[instnces.size()];
 		final VoteModelDebug[] debg = new VoteModelDebug[map.length];
 		for (final IModel<I, Double> model : getModels()) {
 			final DistributionPrediction[] preds = ((DistributionModel<I>) model).predictDistribution(instnces, debug);
 			for (int j = 0; j < preds.length; ++j) {
 				final IStats prediction = preds[j].getPrediction();
 				if (map[j] == null) {
-					// we can only aggregate to full statistics if also the base model predictions are full statistics
+					// we can only aggregate to full statistics if also the base model predictions
+					// are full statistics
 					map[j] = prediction instanceof FullStatistics ? new FullStatistics() : new Stats();
 					debg[j] = new VoteModelDebug();
 				}
