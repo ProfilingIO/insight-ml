@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
 import com.insightml.math.statistics.IStats;
@@ -75,7 +74,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 				}
 			}
 		}
-		final List<Supplier<String>> appliedRules = new ArrayList<>();
+		final List<TreeDecisionDebug> appliedRules = new ArrayList<>();
 		final Map<String, Double> impactByFeature = new HashMap<>();
 		for (TreeNode node = this;;) {
 			final Split nodeRule = node.rule;
@@ -83,7 +82,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 				return new DistributionPrediction(node.stats, new TreePredictionInfo(appliedRules, impactByFeature));
 			}
 			final TreeNode child = nodeRule.selectChild(features, node.children);
-			appliedRules.add(() -> nodeRule.explain(features) + " \u2192 " + presentPrediction(child.stats));
+			appliedRules.add(new TreeDecisionDebug(nodeRule, child, features));
 			impactByFeature.merge(nodeRule.getFeatureName(), child.mean - node.mean, Double::sum);
 			node = child;
 		}
@@ -193,21 +192,45 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	}
 
 	public static final class TreePredictionInfo {
-		private final List<Supplier<String>> appliedRules;
+		private final List<TreeDecisionDebug> appliedRules;
 		private final Map<String, Double> impactByFeature;
 
-		public TreePredictionInfo(final List<Supplier<String>> appliedRules,
+		public TreePredictionInfo(final List<TreeDecisionDebug> appliedRules,
 				final Map<String, Double> impactByFeature) {
 			this.appliedRules = appliedRules;
 			this.impactByFeature = impactByFeature;
 		}
 
-		public List<Supplier<String>> getAppliedRules() {
+		public List<TreeDecisionDebug> getAppliedRules() {
 			return appliedRules;
 		}
 
 		public Map<String, Double> getImpactByFeature() {
 			return impactByFeature;
+		}
+	}
+
+	public static final class TreeDecisionDebug {
+		private final Split nodeRule;
+		private final TreeNode child;
+		private final double[] features;
+
+		public TreeDecisionDebug(final Split nodeRule, final TreeNode child, final double[] features) {
+			this.nodeRule = nodeRule;
+			this.child = child;
+			this.features = features;
+		}
+
+		public Split getNodeRule() {
+			return nodeRule;
+		}
+
+		public TreeNode getChild() {
+			return child;
+		}
+
+		public String getPresentation() {
+			return nodeRule.explain(features) + " \u2192 " + presentPrediction(child.stats);
 		}
 	}
 }

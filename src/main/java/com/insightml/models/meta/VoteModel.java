@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.insightml.data.samples.ISamples;
@@ -34,6 +33,7 @@ import com.insightml.math.statistics.Stats;
 import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
 import com.insightml.models.IModel;
+import com.insightml.models.trees.TreeNode.TreeDecisionDebug;
 import com.insightml.models.trees.TreeNode.TreePredictionInfo;
 import com.insightml.utils.Arrays;
 
@@ -145,6 +145,10 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			}
 		}
 
+		public List<Object> getSingleModelDebug() {
+			return singleModelDebug;
+		}
+
 		@Override
 		public String toString() {
 			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
@@ -154,7 +158,8 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			for (final Object debug : singleModelDebug) {
 				str.append('\n');
 				if (debug instanceof Collection) {
-					str.append(((Collection) debug).stream().map(e -> e instanceof Supplier ? ((Supplier) e).get() : e)
+					str.append(((Collection) debug).stream()
+							.map(e -> e instanceof TreeDecisionDebug ? ((TreeDecisionDebug) e).getPresentation() : e)
 							.collect(Collectors.joining(", ")));
 				} else {
 					str.append(debug);

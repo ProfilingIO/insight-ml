@@ -92,6 +92,10 @@ public final class SumMap<T> extends AbstractSumMap<T, Double> {
 			}
 		}
 
+		public AtomicDouble remove(final T key) {
+			return map.remove(key);
+		}
+
 		public boolean isEmpty() {
 			return map.isEmpty();
 		}
