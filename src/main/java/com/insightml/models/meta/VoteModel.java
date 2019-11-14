@@ -130,7 +130,10 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		private final List<Object> singleModelDebug = new ArrayList<>();
 
 		public Map<String, Double> getImpactByFeature() {
-			return impactByFeature;
+			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
+					(k1, k2) -> Double.compare(Math.abs(impactByFeature.get(k2)), Math.abs(impactByFeature.get(k1))));
+			sortedFeatures.putAll(impactByFeature);
+			return sortedFeatures;
 		}
 
 		public void add(final Object debug) {
@@ -151,10 +154,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 
 		@Override
 		public String toString() {
-			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
-					(k1, k2) -> Double.compare(Math.abs(impactByFeature.get(k2)), Math.abs(impactByFeature.get(k1))));
-			sortedFeatures.putAll(impactByFeature);
-			final StringBuilder str = new StringBuilder(sortedFeatures.toString());
+			final StringBuilder str = new StringBuilder(getImpactByFeature().toString());
 			for (final Object debug : singleModelDebug) {
 				str.append('\n');
 				if (debug instanceof Collection) {
