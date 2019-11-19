@@ -19,9 +19,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.samples.AbstractSamples;
@@ -33,8 +30,6 @@ import com.insightml.utils.jobs.ParallelFor;
 
 public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E> {
 	private static final long serialVersionUID = -2321252279857532465L;
-
-	private static final Logger LOG = LoggerFactory.getLogger(FeaturesDecorator.class);
 
 	private ISamples<S, E> ref;
 	private String[] featureNames;
@@ -58,16 +53,11 @@ public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E
 
 		features = new double[orig.size()][];
 		ParallelFor.run(i -> {
-			try {
-				final S sample = orig.get(i);
-				features[i] = sample == null ? null
-						: Preconditions
-								.checkNotNull(prov.features(sample, featureNames, featureStats, isTraining, arguments));
-				return 1;
-			} catch (final Throwable e) {
-				LOG.error("{}", e, e);
-				throw e;
-			}
+			final S sample = orig.get(i);
+			features[i] = sample == null ? null
+					: Preconditions
+							.checkNotNull(prov.features(sample, featureNames, featureStats, isTraining, arguments));
+			return 1;
 		}, 0, features.length, 950);
 	}
 
