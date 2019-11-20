@@ -15,7 +15,10 @@
  */
 package com.insightml.models.meta;
 
+import java.util.function.Supplier;
+
 import com.insightml.data.samples.Sample;
+import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
@@ -28,10 +31,10 @@ import com.insightml.utils.IArguments;
 public class RandomForest extends Bagging<Sample> {
 
 	public RandomForest(final IArguments arguments) {
-		super(arguments,
-				GBRT.getLearner(arguments,
-						arguments.bool("fullStatistics", false) ? new FullStatisticsSupplier() : new StatsSupplier(),
-						false));
+		super(arguments, GBRT.getLearner(arguments,
+				(Supplier<StatsBuilder<?>>) (arguments.bool("fullStatistics", false) ? new FullStatisticsSupplier()
+						: new StatsSupplier()),
+				false));
 	}
 
 	public RandomForest(final int trees, final int depth, final int minObs, final double isample, final double fsample,

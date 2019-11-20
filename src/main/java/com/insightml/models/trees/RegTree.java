@@ -23,9 +23,11 @@ import javax.annotation.Nullable;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.FullStatistics;
-import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.math.statistics.FullStatisticsBuilder;
+import com.insightml.math.statistics.MutableStatsBuilder;
 import com.insightml.math.statistics.SimpleStatistics;
 import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.models.AbstractDoubleLearner;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerInput;
@@ -38,7 +40,7 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 
 	private final SplitCriterionFactory splitCriterionFactory;
 	private final boolean parallelize;
-	private final Supplier<MutableStatistics> statisticsFactory;
+	private final Supplier<? extends StatsBuilder<?>> statisticsFactory;
 
 	public RegTree(final IArguments arguments) {
 		this(arguments, MseSplitCriterion.factory());
@@ -65,14 +67,14 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred,
-			final SplitCriterionFactory splitCriterionFactory, final Supplier<MutableStatistics> statisticsFactory,
-			final boolean parallelize) {
+			final SplitCriterionFactory splitCriterionFactory,
+			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize) {
 		this(depth, minobs, 0, nodePred, splitCriterionFactory, statisticsFactory, parallelize);
 	}
 
 	public RegTree(final int depth, final int minobs, final double minImprovement, final int nodePred,
-			final SplitCriterionFactory splitCriterionFactory, final Supplier<MutableStatistics> statisticsFactory,
-			final boolean parallelize) {
+			final SplitCriterionFactory splitCriterionFactory,
+			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize) {
 		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs), "minImprovement",
 				String.valueOf(minImprovement), "nodePred", String.valueOf(nodePred)));
 		this.parallelize = parallelize;
@@ -151,30 +153,30 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 		throw new IllegalArgumentException("Unknown mode: " + nodePred);
 	}
 
-	public static final class StatsSupplier implements Supplier<MutableStatistics>, Serializable {
+	public static final class StatsSupplier implements Supplier<StatsBuilder<Stats>>, Serializable {
 		private static final long serialVersionUID = 7222508288626338172L;
 
 		@Override
-		public MutableStatistics get() {
-			return new Stats();
+		public StatsBuilder<Stats> get() {
+			return new MutableStatsBuilder<>(new Stats());
 		}
 	}
 
-	public static final class SimpleStatisticsSupplier implements Supplier<MutableStatistics>, Serializable {
+	public static final class SimpleStatisticsSupplier implements Supplier<StatsBuilder<?>>, Serializable {
 		private static final long serialVersionUID = -39356810665839873L;
 
 		@Override
-		public MutableStatistics get() {
-			return new SimpleStatistics();
+		public StatsBuilder<?> get() {
+			return new MutableStatsBuilder<>(new SimpleStatistics());
 		}
 	}
 
-	public static final class FullStatisticsSupplier implements Supplier<MutableStatistics>, Serializable {
+	public static final class FullStatisticsSupplier implements Supplier<StatsBuilder<FullStatistics>>, Serializable {
 		private static final long serialVersionUID = -39356810665839873L;
 
 		@Override
-		public MutableStatistics get() {
-			return new FullStatistics();
+		public StatsBuilder<FullStatistics> get() {
+			return new FullStatisticsBuilder();
 		}
 	}
 

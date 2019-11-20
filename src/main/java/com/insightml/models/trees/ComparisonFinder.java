@@ -17,6 +17,7 @@ package com.insightml.models.trees;
 
 import java.util.concurrent.RecursiveTask;
 
+import com.insightml.math.statistics.MutableStatsBuilder;
 import com.insightml.math.statistics.Stats;
 import com.insightml.utils.ui.UiUtils;
 
@@ -49,7 +50,7 @@ final class ComparisonFinder extends RecursiveTask<ISplit> {
 		f: for (int i = 0; i < context.featureNames.length; ++i) {
 			if (i != feature) {
 				int left = 0;
-				final Stats labelSumL = new Stats();
+				final MutableStatsBuilder<Stats> labelSumL = new MutableStatsBuilder<>(new Stats());
 
 				final int length = context.expected.length;
 				for (int j = 0; j < length; ++j) {

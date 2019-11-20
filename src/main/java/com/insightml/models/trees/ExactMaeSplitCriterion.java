@@ -21,7 +21,7 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.commons.math3.stat.ranking.NaNStrategy;
 
 import com.insightml.math.Vectors;
-import com.insightml.math.statistics.IStats;
+import com.insightml.math.statistics.StatsBuilder;
 
 public final class ExactMaeSplitCriterion implements SplitCriterion {
 	private static final Median medianCalculator = new Median().withNaNStrategy(NaNStrategy.FAILED);
@@ -76,8 +76,8 @@ public final class ExactMaeSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
-	public double improvement(final @Nullable IStats sumL, final @Nullable IStats sumNaN, final int feature,
-			final int lastIndexLeft) {
+	public double improvement(final @Nullable StatsBuilder<?> sumL, final @Nullable StatsBuilder<?> sumNaN,
+			final int feature, final int lastIndexLeft) {
 		final int[] ordered = context.orderedInstances[feature];
 
 		final int bla = ordered.length;

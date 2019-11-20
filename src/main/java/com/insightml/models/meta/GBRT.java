@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 import com.insightml.evaluation.functions.MSE;
 import com.insightml.evaluation.functions.ObjectiveFunction;
-import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
 import com.insightml.models.trees.RegTree.SimpleStatisticsSupplier;
@@ -58,7 +58,7 @@ public class GBRT extends GBM {
 				getLearner(minDepth, maxDepth, minObs, nodePred, new SimpleStatisticsSupplier(), true));
 	}
 
-	public static RegTree[] getLearner(final IArguments arguments, final Supplier<MutableStatistics> statisticsFactory,
+	public static RegTree[] getLearner(final IArguments arguments, final Supplier<StatsBuilder<?>> statisticsFactory,
 			final boolean parallelize) {
 		// TODO: Change back to min/max params
 		return getLearner(arguments.toInt(DEPTH, 4),
@@ -70,7 +70,7 @@ public class GBRT extends GBM {
 	}
 
 	private static RegTree[] getLearner(final int minDepth, final int maxDepth, final int minObs, final int nodePred,
-			final Supplier<MutableStatistics> statisticsFactory, final boolean parallelize) {
+			final Supplier<StatsBuilder<?>> statisticsFactory, final boolean parallelize) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
 			learner[i] = new RegTree(i + minDepth, minObs, nodePred, MseSplitCriterion.factory(), statisticsFactory,

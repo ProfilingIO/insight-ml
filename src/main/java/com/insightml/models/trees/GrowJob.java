@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.math.statistics.IStats;
-import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.utils.ResourceCloser;
 import com.insightml.utils.jobs.JobPool;
 
@@ -48,11 +48,11 @@ public final class GrowJob extends RecursiveAction {
 	private final SplitCriterionFactory splitCriterionFactory;
 	private final int minObs;
 	private final boolean parallelize;
-	private final Supplier<MutableStatistics> statisticsFactory;
+	private final Supplier<StatsBuilder<?>> statisticsFactory;
 
 	public GrowJob(final TreeNode left, final SplitFinderContext context, final boolean[] subset, final int depth,
 			final String nodePrediction, final SplitCriterionFactory splitCriterionFactory, final int minObs,
-			final Supplier<MutableStatistics> statisticsFactory, final boolean parallelize) {
+			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize) {
 		parent = left;
 		this.context = context;
 		this.subset = subset;
@@ -60,7 +60,7 @@ public final class GrowJob extends RecursiveAction {
 		this.nodePrediction = nodePrediction;
 		this.splitCriterionFactory = splitCriterionFactory;
 		this.minObs = minObs;
-		this.statisticsFactory = statisticsFactory;
+		this.statisticsFactory = (Supplier<StatsBuilder<?>>) statisticsFactory;
 		this.parallelize = parallelize;
 	}
 

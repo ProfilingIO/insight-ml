@@ -19,7 +19,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import com.insightml.math.statistics.IStats;
-import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.math.statistics.StatsBuilder;
 
 public final class ThresholdSplitFinder implements IntFunction<Split> {
 	public static final double VALUE_MISSING = Double.NEGATIVE_INFINITY;
@@ -29,11 +29,10 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 	private final int samples;
 	private final SplitCriterion splitCriterion;
 	private final int minObs;
-	private final Supplier<MutableStatistics> statisticsFactory;
+	private final Supplier<StatsBuilder<?>> statisticsFactory;
 
 	public ThresholdSplitFinder(final SplitFinderContext context, final boolean[] subset, final int samples,
-			final SplitCriterion splitCriterion, final int minObs,
-			final Supplier<MutableStatistics> statisticsFactory) {
+			final SplitCriterion splitCriterion, final int minObs, final Supplier<StatsBuilder<?>> statisticsFactory) {
 		this.context = context;
 		this.subset = subset;
 		this.samples = samples;
@@ -59,8 +58,8 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		double bestImprovement = context.minImprovement - 0.000000001;
 		int bestLastIndexLeft = -1;
 
-		final MutableStatistics currentSplitL = statisticsFactory.get();
-		MutableStatistics statsNaN = statisticsFactory.get();
+		final StatsBuilder<?> currentSplitL = statisticsFactory.get();
+		StatsBuilder<?> statsNaN = statisticsFactory.get();
 		int lastIndexNaN = -1;
 
 		final int max = samples - minObs;
@@ -102,7 +101,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			if (left >= minObs && value != curThr) {
 				final double improvement = localCriterion.improvement(currentSplitL, statsNaN, feature, i - 1);
 				if (improvement > bestImprovement) {
-					bestSplitL = currentSplitL.copy();
+					bestSplitL = currentSplitL.create();
 					bestThreshold = curThr;
 					bestImprovement = improvement;
 					bestLastIndexLeft = i - 1;
@@ -120,12 +119,12 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		}
 		final IStats statsR = createStatsRight(ordered, bestLastIndexLeft);
 		final double score = localCriterion.score(feature, bestLastIndexLeft, bestImprovement);
-		return new Split(bestThreshold, bestSplitL, statsR, statsNaN, score, lastIndexNaN, bestLastIndexLeft, feature,
-				context.featureNames);
+		return new Split(bestThreshold, bestSplitL, statsR, statsNaN.create(), score, lastIndexNaN, bestLastIndexLeft,
+				feature, context.featureNames);
 	}
 
 	private IStats createStatsRight(final int[] ordered, final int bestLastIndexLeft) {
-		final MutableStatistics statsR = statisticsFactory.get();
+		final StatsBuilder<?> statsR = statisticsFactory.get();
 		final int bla = ordered.length;
 		for (int i = bestLastIndexLeft + 1; i < bla; ++i) {
 			final int idx = ordered[i];
@@ -134,7 +133,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 			}
 			statsR.add(context.expected[idx], context.weights[idx]);
 		}
-		return statsR;
+		return statsR.create();
 	}
 
 }

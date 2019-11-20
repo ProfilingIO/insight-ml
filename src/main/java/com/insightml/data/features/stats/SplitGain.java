@@ -34,6 +34,7 @@ import com.insightml.math.statistics.Stats;
 import com.insightml.models.trees.GrowJob;
 import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
+import com.insightml.models.trees.RegTree.StatsSupplier;
 import com.insightml.models.trees.SplitFinderContext;
 import com.insightml.models.trees.TreeModel;
 import com.insightml.models.trees.TreeNode;
@@ -113,8 +114,8 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 		final TreeNode root = RegTree.createTreeRoot(train, labelIndex);
 		final String nodePrediction = "mean";
-		new GrowJob(root, context, subset, 1, nodePrediction, MseSplitCriterion::create, minObs, Stats::new, false)
-				.compute();
+		new GrowJob(root, context, subset, 1, nodePrediction, MseSplitCriterion::create, minObs, new StatsSupplier(),
+				false).compute();
 		final String rulePresentation = root.getRule() == null ? null : root.getRule().getRulePresentation();
 		final TreeNode[] children = root.getChildren();
 

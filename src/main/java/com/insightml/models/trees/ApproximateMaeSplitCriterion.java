@@ -19,7 +19,7 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.commons.math3.stat.ranking.NaNStrategy;
 
 import com.insightml.math.Vectors;
-import com.insightml.math.statistics.IStats;
+import com.insightml.math.statistics.StatsBuilder;
 
 public class ApproximateMaeSplitCriterion implements SplitCriterion {
 	private static final Median medianCalculator = new Median().withNaNStrategy(NaNStrategy.FAILED);
@@ -42,7 +42,8 @@ public class ApproximateMaeSplitCriterion implements SplitCriterion {
 	}
 
 	@Override
-	public double improvement(final IStats sumL, final IStats sumNaN, final int featureIndex, final int lastIndexLeft) {
+	public double improvement(final StatsBuilder<?> sumL, final StatsBuilder<?> sumNaN, final int featureIndex,
+			final int lastIndexLeft) {
 		return mseSplitCriterion.improvement(sumL, sumNaN, featureIndex, lastIndexLeft);
 	}
 

@@ -27,9 +27,11 @@ import java.util.stream.Collectors;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.FullStatistics;
+import com.insightml.math.statistics.FullStatisticsBuilder;
 import com.insightml.math.statistics.IStats;
-import com.insightml.math.statistics.MutableStatistics;
+import com.insightml.math.statistics.MutableStatsBuilder;
 import com.insightml.math.statistics.Stats;
+import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
 import com.insightml.models.IModel;
@@ -83,7 +85,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 
 	@Override
 	public DistributionPrediction[] predictDistribution(final ISamples<? extends I, ?> instnces, final boolean debug) {
-		final MutableStatistics[] map = new MutableStatistics[instnces.size()];
+		final StatsBuilder<?>[] map = new StatsBuilder<?>[instnces.size()];
 		final VoteModelDebug[] debg = new VoteModelDebug[map.length];
 		for (final IModel<I, Double> model : getModels()) {
 			final DistributionPrediction[] preds = ((DistributionModel<I>) model).predictDistribution(instnces, debug);
@@ -92,7 +94,8 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 				if (map[j] == null) {
 					// we can only aggregate to full statistics if also the base model predictions
 					// are full statistics
-					map[j] = prediction instanceof FullStatistics ? new FullStatistics() : new Stats();
+					map[j] = prediction instanceof FullStatistics ? new FullStatisticsBuilder()
+							: new MutableStatsBuilder<>(new Stats());
 					debg[j] = new VoteModelDebug();
 				}
 				map[j].add(prediction);
@@ -101,7 +104,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		}
 		final DistributionPrediction[] result = new DistributionPrediction[map.length];
 		for (int i = 0; i < map.length; ++i) {
-			result[i] = new DistributionPrediction(map[i], debg[i]);
+			result[i] = new DistributionPrediction(map[i].create(), debg[i]);
 		}
 		return result;
 	}
