@@ -86,7 +86,7 @@ public class RegTree extends AbstractDoubleLearner<Double> implements Serializab
 	public LearnerArguments arguments() {
 		final LearnerArguments args = new LearnerArguments();
 		args.add("depth", 4.0, 1, 24, 1);
-		args.add("minObs", 10.0, 1, 10000, 10);
+		args.add("minObs", 10.0, 1, 20000, 10);
 		args.add("minImprovement", 0.0, 0, 1000, 0);
 		args.add("nodePred", 1.0, 1, 4, 1);
 		return args;

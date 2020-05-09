@@ -57,7 +57,7 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		final LearnerArguments args = new LearnerArguments();
 		args.add("bags", 10.0, 2, 1000);
 		args.add("isample", 0.8, 0.1, 1.0);
-		args.add("fsample", 0.9, 0.05, 1.0);
+		args.add("fsample", 0.9, 0.025, 1.0);
 		return args;
 	}
 
@@ -91,7 +91,8 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		if (learner instanceof RegTree) {
 			return (IModel<I, Double>) ((RegTree) learner).run(
 					(ISamples) (instancesSample < 1 ? samples.sample(instancesSample, random).getFirst() : samples),
-					GBM.featuresMask(samples.numFeatures(), featureSample, random), labelIndex);
+					GBM.featuresMask(samples.numFeatures(), featureSample, random),
+					labelIndex);
 		}
 		final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, random);
 		return learner.run(sampled, null, null, labelIndex);

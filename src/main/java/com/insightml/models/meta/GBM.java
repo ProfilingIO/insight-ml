@@ -72,7 +72,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		args.add("it", 400.0, 20, 20000);
 		args.add("shrink", 0.01, 0.0001, 0.2);
 		args.add("bag", 0.5, 0.05, 0.9);
-		args.add("fbag", 1.0, 0.1, 1.0);
+		args.add("fbag", 1.0, 0.05, 1.0);
 		return args;
 	}
 
@@ -102,15 +102,23 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		final List<DoublePair<DoubleModel>> steps = new ArrayList<>(iterations);
 		final ILearner<Sample, Double, Double>[] learner = getLearners();
 		for (int i = 0; i < iterations; ++i) {
-			final ISamples<Sample, Double> subset = subset((ISamples<Sample, Double>) samples, preds, expected, random,
+			final ISamples<Sample, Double> subset = subset((ISamples<Sample, Double>) samples,
+					preds,
+					expected,
+					random,
 					labelIndex);
 			if (subset == null) {
 				continue;
 			}
 			try {
-				final TreeModel fit = ((RegTree) learner[i % learner.length]).run(subset,
-						featuresMask(subset.numFeatures(), random), labelIndex);
-				final Pair<Double, double[]> update = fitGamma(fit, preds, samples, expected, weights, i + 1,
+				final TreeModel fit = ((RegTree) learner[i % learner.length])
+						.run(subset, featuresMask(subset.numFeatures(), random), labelIndex);
+				final Pair<Double, double[]> update = fitGamma(fit,
+						preds,
+						samples,
+						expected,
+						weights,
+						i + 1,
 						labelIndex);
 				steps.add(new DoublePair<>(fit, shrinkage * update.getFirst()));
 				preds = update.getSecond();
