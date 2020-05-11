@@ -15,6 +15,7 @@
  */
 package com.insightml.models.meta;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +33,8 @@ import com.insightml.models.trees.RegTree.FullStatisticsSupplier;
 import com.insightml.models.trees.RegTree.StatsSupplier;
 import com.insightml.utils.IArguments;
 
-public class RandomForest extends Bagging<Sample> {
+public class RandomForest extends Bagging<Sample> implements Serializable {
+	private static final long serialVersionUID = -3175593175677762628L;
 
 	public RandomForest(final IArguments arguments) {
 		super(arguments, GBRT.getLearner(arguments,
