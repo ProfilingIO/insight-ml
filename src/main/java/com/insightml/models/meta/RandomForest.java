@@ -15,12 +15,16 @@
  */
 package com.insightml.models.meta;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
+import com.insightml.models.LearnerArguments.Argument;
 import com.insightml.models.meta.VoteModel.VoteStrategy;
 import com.insightml.models.trees.MseSplitCriterion;
 import com.insightml.models.trees.RegTree;
@@ -64,4 +68,26 @@ public class RandomForest extends Bagging<Sample> {
 		return args;
 	}
 
+	private Map<String, Object> usedArguments() {
+		final Map<String, Object> args = new HashMap<>();
+		final IArguments originalArgs = getOriginalArguments();
+		for (final Argument arg : arguments()) {
+			args.put(arg.getName(), originalArgs.get(arg.getName()));
+		}
+		return args;
+	}
+
+	@Override
+	public final int hashCode() {
+		return Objects.hash(usedArguments(), getVoteStrategy());
+	}
+
+	@Override
+	public boolean equals(final Object oth) {
+		if (!(oth instanceof RandomForest)) {
+			return false;
+		}
+		final RandomForest o = (RandomForest) oth;
+		return o.usedArguments().equals(usedArguments()) && o.getVoteStrategy().equals(getVoteStrategy());
+	}
 }
