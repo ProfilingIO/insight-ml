@@ -36,6 +36,9 @@ import com.insightml.utils.IArguments;
 public class RandomForest extends Bagging<Sample> implements Serializable {
 	private static final long serialVersionUID = -3175593175677762628L;
 
+	RandomForest() {
+	}
+
 	public RandomForest(final IArguments arguments) {
 		super(arguments, GBRT.getLearner(arguments,
 				(Supplier<StatsBuilder<?>>) (arguments.bool("fullStatistics", false) ? new FullStatisticsSupplier()

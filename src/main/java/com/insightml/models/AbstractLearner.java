@@ -32,8 +32,11 @@ public abstract class AbstractLearner<S extends Sample, E, O> extends AbstractMo
 
 	public static final Logger logger = LoggerFactory.getLogger(AbstractLearner.class);
 
-	private final IArguments arguments;
-	private final LearnerArguments args;
+	private IArguments arguments;
+	private LearnerArguments args;
+
+	protected AbstractLearner() {
+	}
 
 	public AbstractLearner(final IArguments arguments) {
 		this.arguments = Check.notNull(arguments);

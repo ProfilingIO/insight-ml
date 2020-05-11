@@ -20,8 +20,11 @@ import com.insightml.utils.IArguments;
 
 public abstract class AbstractDoubleLearner<E> extends AbstractLearner<Sample, E, Double> {
 
-    public AbstractDoubleLearner(final IArguments arguments) {
-        super(arguments);
-    }
+	protected AbstractDoubleLearner() {
+	}
+
+	public AbstractDoubleLearner(final IArguments arguments) {
+		super(arguments);
+	}
 
 }

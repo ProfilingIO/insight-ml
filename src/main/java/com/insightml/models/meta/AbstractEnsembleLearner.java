@@ -32,7 +32,10 @@ import com.insightml.utils.Utils;
 
 public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends AbstractLearner<S, E, O> {
 
-	private final ILearner<S, E, O>[] learners;
+	private ILearner<S, E, O>[] learners;
+
+	AbstractEnsembleLearner() {
+	}
 
 	protected AbstractEnsembleLearner(final IArguments arguments, final ILearner<S, E, O>[] learners) {
 		super(arguments);

@@ -38,9 +38,12 @@ import com.insightml.utils.IArguments;
 public class RegTree extends AbstractDoubleLearner<Double> implements Serializable {
 	private static final long serialVersionUID = 1517682772459402265L;
 
-	private final SplitCriterionFactory splitCriterionFactory;
-	private final boolean parallelize;
-	private final Supplier<? extends StatsBuilder<?>> statisticsFactory;
+	private SplitCriterionFactory splitCriterionFactory;
+	private boolean parallelize;
+	private Supplier<? extends StatsBuilder<?>> statisticsFactory;
+
+	RegTree() {
+	}
 
 	public RegTree(final IArguments arguments) {
 		this(arguments, MseSplitCriterion.factory());

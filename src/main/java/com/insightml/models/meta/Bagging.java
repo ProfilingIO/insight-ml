@@ -39,7 +39,10 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
-	private final VoteStrategy strategy;
+	private VoteStrategy strategy;
+
+	Bagging() {
+	}
 
 	public Bagging(final IArguments arguments, final ILearner<I, Double, Double>... learner) {
 		super(arguments, learner);
