@@ -24,26 +24,19 @@ import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.models.AbstractLearner;
-import com.insightml.models.ILearner;
 import com.insightml.models.IModel;
 import com.insightml.models.LearnerInput;
 import com.insightml.utils.IArguments;
 import com.insightml.utils.Utils;
 
 public abstract class AbstractEnsembleLearner<S extends Sample, E, O> extends AbstractLearner<S, E, O> {
-
-	private ILearner<S, E, O>[] learners;
+	private static final long serialVersionUID = 6350500811359151678L;
 
 	AbstractEnsembleLearner() {
 	}
 
-	protected AbstractEnsembleLearner(final IArguments arguments, final ILearner<S, E, O>[] learners) {
+	protected AbstractEnsembleLearner(final IArguments arguments) {
 		super(arguments);
-		this.learners = learners.clone();
-	}
-
-	protected final ILearner<S, E, O>[] getLearners() {
-		return learners;
 	}
 
 	@Override

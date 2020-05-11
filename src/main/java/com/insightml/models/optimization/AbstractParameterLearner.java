@@ -25,6 +25,7 @@ import com.insightml.models.LearnerInput;
 import com.insightml.utils.types.Triple;
 
 abstract class AbstractParameterLearner<I extends Sample, E, T, C> extends AbstractLearner<I, E, Double> {
+	private static final long serialVersionUID = 5305316932807128370L;
 
 	private final double[][] initial;
 	private final ObjectiveFunction<? super E, ? super Double> objective;
@@ -42,7 +43,8 @@ abstract class AbstractParameterLearner<I extends Sample, E, T, C> extends Abstr
 		final ParameterModel<I, T, C> model = new ParameterModel<>(train, initial[index], input.labelIndex, this);
 		final Optimizable trainObjective = objective(model, (ISamples<I, E>) input.getTrain(), train, input.labelIndex);
 		final Optimizable testObjective = input.valid != null
-				? objective(model, (ISamples<I, E>) input.valid, train, input.labelIndex) : null;
+				? objective(model, (ISamples<I, E>) input.valid, train, input.labelIndex)
+				: null;
 		final Triple<double[], Double, Double> params = (testObjective != null ? testObjective : trainObjective)
 				.max(testObjective != null ? trainObjective : testObjective, initial[index]);
 		model.params = params.getFirst();

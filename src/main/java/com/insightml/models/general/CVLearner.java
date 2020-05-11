@@ -33,6 +33,7 @@ import com.insightml.utils.io.AbstractImporter;
 import com.insightml.utils.io.IoUtils;
 
 public final class CVLearner extends AbstractLearner<Sample, Object, Double> {
+	private static final long serialVersionUID = -6582075171762987826L;
 
 	private final String mainFile;
 	final Map<Integer, Double>[] predictions;

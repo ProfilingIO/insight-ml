@@ -15,16 +15,17 @@
  */
 package com.insightml.models;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import com.insightml.models.LearnerArguments.Argument;
 import com.insightml.utils.Check;
 
-public final class LearnerArguments implements Iterable<Argument> {
+public final class LearnerArguments implements Iterable<Argument>, Serializable {
+	private static final long serialVersionUID = -658838407989377780L;
 
-	private final Map<String, Argument> map = new LinkedHashMap<>();
+	private final LinkedHashMap<String, Argument> map = new LinkedHashMap<>();
 
 	public LearnerArguments add(final String arg, final Double def, final double min, final double max) {
 		double parameterSearchStepSize = (max - min) * 1.0 / 15;
@@ -53,7 +54,8 @@ public final class LearnerArguments implements Iterable<Argument> {
 		return map.values().iterator();
 	}
 
-	public static final class Argument {
+	public static final class Argument implements Serializable {
+		private static final long serialVersionUID = 7876434938453598121L;
 
 		private final String arg;
 		private final Double def;

@@ -21,6 +21,8 @@ import com.insightml.models.LearnerInput;
 import com.insightml.utils.Arguments;
 
 public final class ConstantBaseline<E> extends AbstractLearner<Sample, Object, E> {
+	private static final long serialVersionUID = 2458795381163671355L;
+
 	private final E constant;
 
 	public ConstantBaseline(final E constant) {

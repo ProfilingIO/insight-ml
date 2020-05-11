@@ -25,6 +25,7 @@ import com.insightml.utils.Check;
 
 public abstract class AbstractModelBlender<I extends Sample, E>
 		extends AbstractParameterLearner<I, E, IModel<I, Double>[], Double[]> {
+	private static final long serialVersionUID = -6511175782962476575L;
 
 	private final ILearner<I, ? super E, ? super Double>[] learner;
 

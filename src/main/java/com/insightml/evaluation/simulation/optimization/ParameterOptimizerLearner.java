@@ -31,6 +31,8 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.jobs.IClient;
 
 public final class ParameterOptimizerLearner<I extends Sample, E, P> extends AbstractLearner<I, E, P> {
+	private static final long serialVersionUID = -3839917428317608645L;
+
 	private final ILearner<I, E, P> learner;
 	private final LearnerArguments parameters;
 	private final ISimulation<I> simulation;

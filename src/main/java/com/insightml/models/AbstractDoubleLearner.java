@@ -19,6 +19,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.utils.IArguments;
 
 public abstract class AbstractDoubleLearner<E> extends AbstractLearner<Sample, E, Double> {
+	private static final long serialVersionUID = -3202913102384306165L;
 
 	protected AbstractDoubleLearner() {
 	}

@@ -38,15 +38,19 @@ import com.insightml.utils.io.serialization.Serialization;
 import com.insightml.utils.ui.SimpleFormatter;
 
 public class MajorityVoteLearner<I extends Sample> extends AbstractEnsembleLearner<I, Object, Double> {
+	private static final long serialVersionUID = 3931887579996285642L;
+
 	private static final Logger LOG = LoggerFactory.getLogger(MajorityVoteLearner.class);
 
+	private final ILearner<I, Object, Double>[] learners;
 	private final VoteStrategy strategy;
 	private final double[] weights;
 	private final String cacheDir;
 
 	public MajorityVoteLearner(final ILearner<I, Object, Double>[] learners, final VoteStrategy strategy,
 			final double[] weights, final IArguments arguments, final String cacheDir) {
-		super(arguments, learners);
+		super(arguments);
+		this.learners = learners;
 		this.strategy = Check.notNull(strategy);
 		final double weightSum = Vectors.sum(weights);
 		this.weights = weights.clone();
@@ -61,7 +65,7 @@ public class MajorityVoteLearner<I extends Sample> extends AbstractEnsembleLearn
 		final DecimalFormat formatter = SimpleFormatter.createDecimalFormatter(4);
 		return strategy.name().substring(0, 3) + "{"
 				+ Arrays.stream(weights).mapToObj(v -> formatter.format(v)).collect(Collectors.joining(",")) + "}"
-				+ makeLearnersName(getLearners());
+				+ makeLearnersName(learners);
 	}
 
 	public static String makeLearnersName(final ILearner<?, ?, ?>[] learners) {
@@ -77,7 +81,7 @@ public class MajorityVoteLearner<I extends Sample> extends AbstractEnsembleLearn
 	public IModelPipeline<I, Double> run(final Iterable<I> data, final Iterable<I> unlabled,
 			final FeaturesConfig<? extends I, Double> config, final int labelIndex,
 			final ILearnerPipeline<I, Double> learnerPipe) {
-		final IModelPipeline<I, Double>[] models = trainModels(data, unlabled, config, labelIndex, getLearners());
+		final IModelPipeline<I, Double>[] models = trainModels(data, unlabled, config, labelIndex, learners);
 		final double[] weightsFixed = new double[models.length];
 		double weightSum = 0;
 		for (int i = 0; i < weightsFixed.length; ++i) {

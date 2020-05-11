@@ -35,7 +35,7 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.Check;
 import com.insightml.utils.IArguments;
 
-public class RegTree extends AbstractDoubleLearner<Double> implements Serializable {
+public class RegTree extends AbstractDoubleLearner<Double> {
 	private static final long serialVersionUID = 1517682772459402265L;
 
 	private SplitCriterionFactory splitCriterionFactory;

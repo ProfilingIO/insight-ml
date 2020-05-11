@@ -28,6 +28,7 @@ import com.insightml.utils.IArguments;
 import com.insightml.utils.types.collections.DoubleArray;
 
 public abstract class AbstractBasicDoubleLearner extends AbstractDoubleLearner<Double> {
+	private static final long serialVersionUID = -2421809929699620684L;
 
 	public AbstractBasicDoubleLearner(final @Nonnull IArguments arguments) {
 		super(arguments);

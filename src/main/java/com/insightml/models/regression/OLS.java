@@ -25,6 +25,7 @@ import com.insightml.models.IModel;
 import com.insightml.utils.Arguments;
 
 public final class OLS extends AbstractBasicDoubleLearner {
+	private static final long serialVersionUID = 5220480890025818662L;
 
 	public OLS() {
 		super(new Arguments());

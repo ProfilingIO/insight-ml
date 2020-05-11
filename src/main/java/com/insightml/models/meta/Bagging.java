@@ -39,20 +39,25 @@ import com.insightml.utils.Arguments;
 import com.insightml.utils.IArguments;
 
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
+	private static final long serialVersionUID = -259781296518750592L;
+
 	private VoteStrategy strategy;
+	private ILearner<I, Double, Double>[] learners;
 
 	Bagging() {
 	}
 
 	public Bagging(final IArguments arguments, final ILearner<I, Double, Double>... learner) {
-		super(arguments, learner);
+		super(arguments);
 		this.strategy = VoteStrategy.AVERAGE;
+		this.learners = learner;
 	}
 
 	public Bagging(final int bags, final double isample, final double fsample, final VoteStrategy strategy,
 			final ILearner<I, Double, Double>... learner) {
-		super(new Arguments("bags", bags, "isample", isample, "fsample", fsample), learner);
+		super(new Arguments("bags", bags, "isample", isample, "fsample", fsample));
 		this.strategy = strategy;
+		this.learners = learner;
 	}
 
 	@Override
@@ -86,7 +91,6 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 	}
 
 	public IModel<I, Double> computeBag(final int index, final ISamples<I, Double> samples, final int labelIndex) {
-		final ILearner<I, Double, Double>[] learners = getLearners();
 		final ILearner<I, Double, Double> learner = learners[index % learners.length];
 		final double instancesSample = argument("isample");
 		final double featureSample = argument("fsample");

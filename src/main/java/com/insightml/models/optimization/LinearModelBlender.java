@@ -22,6 +22,7 @@ import com.insightml.utils.Check;
 
 public final class LinearModelBlender<I extends Sample, E> extends AbstractModelBlender<I, E>
 		implements IModelBlender<I, E, Double> {
+	private static final long serialVersionUID = 712163607650755823L;
 
 	private final boolean useOffset;
 

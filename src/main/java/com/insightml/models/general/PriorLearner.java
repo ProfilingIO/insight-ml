@@ -24,6 +24,7 @@ import com.insightml.models.AbstractLearner;
 import com.insightml.models.LearnerInput;
 
 final class PriorLearner<E> extends AbstractLearner<Sample, Object, E> {
+	private static final long serialVersionUID = -7781195905598251732L;
 
 	final Map<Integer, E> predictions;
 	final String modelName;

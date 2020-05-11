@@ -48,13 +48,16 @@ import com.insightml.utils.Utils;
 import com.insightml.utils.types.DoublePair;
 
 public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
+	private static final long serialVersionUID = -7613769806155811550L;
 
+	private final ILearner<Sample, Double, Double>[] learners;
 	private final ObjectiveFunction<Object, ? super Double> objective;
 	private final Baseline predefinedBaseline;
 
 	public GBM(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final ILearner<Sample, Double, Double>[] learner, final Baseline predefinedBaseline) {
-		super(arguments, learner);
+		super(arguments);
+		learners = learner;
 		this.objective = (ObjectiveFunction<Object, ? super Double>) objective;
 		this.predefinedBaseline = predefinedBaseline;
 	}
@@ -78,7 +81,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 
 	@Override
 	public final String getName() {
-		return super.getName() + getLearners()[0].getName();
+		return super.getName() + learners[0].getName();
 	}
 
 	@Override
@@ -100,7 +103,6 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		final int iterations = (int) argument("it");
 		final double shrinkage = argument("shrink");
 		final List<DoublePair<DoubleModel>> steps = new ArrayList<>(iterations);
-		final ILearner<Sample, Double, Double>[] learner = getLearners();
 		for (int i = 0; i < iterations; ++i) {
 			final ISamples<Sample, Double> subset = subset((ISamples<Sample, Double>) samples,
 					preds,
@@ -111,7 +113,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 				continue;
 			}
 			try {
-				final TreeModel fit = ((RegTree) learner[i % learner.length])
+				final TreeModel fit = ((RegTree) learners[i % learners.length])
 						.run(subset, featuresMask(subset.numFeatures(), random), labelIndex);
 				final Pair<Double, double[]> update = fitGamma(fit,
 						preds,

@@ -15,6 +15,7 @@
  */
 package com.insightml.models;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.slf4j.Logger;
@@ -28,7 +29,9 @@ import com.insightml.utils.IArguments;
 import com.insightml.utils.types.AbstractModule;
 import com.insightml.utils.ui.UiUtils;
 
-public abstract class AbstractLearner<S extends Sample, E, O> extends AbstractModule implements ILearner<S, E, O> {
+public abstract class AbstractLearner<S extends Sample, E, O> extends AbstractModule
+		implements ILearner<S, E, O>, Serializable {
+	private static final long serialVersionUID = -7136182404582444220L;
 
 	public static final Logger logger = LoggerFactory.getLogger(AbstractLearner.class);
 

@@ -26,6 +26,7 @@ import com.insightml.models.trees.RegTree.SimpleStatisticsSupplier;
 import com.insightml.utils.IArguments;
 
 public class GBRT extends GBM {
+	private static final long serialVersionUID = -1383014150507996177L;
 
 	public static final String DEPTH = "depth";
 	public static final String MIN_OBS = "minObs";
