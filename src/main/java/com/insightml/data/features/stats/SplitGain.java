@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -81,7 +82,8 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 				i -> compute(i, feats[i], instances, labelIndex, maxDepth, minObs, totalError),
 				0,
 				feats.length,
-				1)) {
+				1,
+				Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()))) {
 			map.put(info.featureName, info);
 		}
 
