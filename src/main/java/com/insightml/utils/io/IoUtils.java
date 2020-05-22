@@ -78,10 +78,11 @@ public final class IoUtils {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	public static String readFile(final File file) throws IOException {
 		if (file.getName().endsWith(".gz")) {
-			return readFile(new GZIPInputStream(new FileInputStream(file)), Charsets.UTF_8);
+			try (InputStream is = new GZIPInputStream(new FileInputStream(file))) {
+				return readFile(is, Charsets.UTF_8);
+			}
 		}
 		return Files.toString(file, Charsets.UTF_8);
 	}
