@@ -31,7 +31,6 @@ public final class LearnerInput<S extends Sample, E> {
 	public @Nullable ISamples<S, E> valid;
 	public @Nullable FeaturesConfig<S, ?> config;
 	public int labelIndex;
-	private int hashCode;
 
 	LearnerInput() {
 	}
@@ -51,7 +50,6 @@ public final class LearnerInput<S extends Sample, E> {
 		this.valid = valid;
 		this.config = config;
 		this.labelIndex = labelIndex;
-		this.hashCode = Objects.hash(train, valid, config, labelIndex);
 	}
 
 	public static <S extends Sample, E, O> LearnerInput<S, E> of(final Iterable<S> data,
@@ -68,7 +66,7 @@ public final class LearnerInput<S extends Sample, E> {
 
 	@Override
 	public int hashCode() {
-		return hashCode;
+		return Objects.hash(train, valid, config, labelIndex);
 	}
 
 }

@@ -26,9 +26,10 @@ import com.insightml.data.samples.decorators.FeaturesFilterDecorator;
 import com.insightml.data.samples.decorators.SamplesMapping;
 import com.insightml.math.Vectors;
 import com.insightml.utils.Check;
+import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.types.collections.IntArray;
 
-public abstract class AbstractSamples<S extends Sample, E> implements ISamples<S, E> {
+public abstract class AbstractSamples<S extends Sample, E> extends AbstractClass implements ISamples<S, E> {
 	private static final long serialVersionUID = 7627952745618197898L;
 
 	@Override

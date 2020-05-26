@@ -15,6 +15,8 @@
  */
 package com.insightml.models;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Objects.ToStringHelper;
 import com.insightml.math.statistics.IStats;
 
 public final class DistributionPrediction {
@@ -32,5 +34,14 @@ public final class DistributionPrediction {
 
 	public Object getDebug() {
 		return debug;
+	}
+
+	@Override
+	public String toString() {
+		final ToStringHelper builder = Objects.toStringHelper(this).add("prediction", prediction);
+		if (debug != null) {
+			builder.add("debug", debug);
+		}
+		return builder.toString();
 	}
 }

@@ -17,6 +17,7 @@ package com.insightml.data.samples.decorators;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import com.google.common.base.Preconditions;
@@ -165,6 +166,6 @@ public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E
 
 	@Override
 	public int hashCode() {
-		return Arrays.deepHashCode(features);
+		return Objects.hash(Arrays.deepHashCode(features), expected(0));
 	}
 }

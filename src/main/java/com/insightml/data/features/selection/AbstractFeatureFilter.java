@@ -62,6 +62,10 @@ public abstract class AbstractFeatureFilter extends AbstractClass implements IFe
 
 	protected abstract boolean removeFeature(CharSequence feature);
 
+	protected final int numKept() {
+		return keepFeatures.size();
+	}
+
 	protected final int numIgnored() {
 		return ignoreFeatures.size();
 	}

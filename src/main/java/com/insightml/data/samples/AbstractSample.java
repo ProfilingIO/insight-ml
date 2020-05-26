@@ -15,6 +15,8 @@
  */
 package com.insightml.data.samples;
 
+import java.util.Objects;
+
 import com.insightml.utils.types.AbstractClass;
 
 public abstract class AbstractSample<E> extends AbstractClass implements Sample, Cloneable {
@@ -70,7 +72,7 @@ public abstract class AbstractSample<E> extends AbstractClass implements Sample,
 
 	@Override
 	public int hashCode() {
-		return getId();
+		return Objects.hash(id, Objects.hash(expected), weight);
 	}
 
 	@Override

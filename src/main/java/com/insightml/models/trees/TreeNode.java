@@ -144,8 +144,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		print("", true, builder);
 		for (final boolean bool : new boolean[] { true, false }) {
 			builder.append('\n');
-			builder.append(UiUtils
-					.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING), true, true));
+			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
+					true, true));
 		}
 		return builder.toString();
 	}
@@ -208,6 +208,12 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		public Map<String, Double> getImpactByFeature() {
 			return impactByFeature;
 		}
+
+		@Override
+		public String toString() {
+			return com.google.common.base.Objects.toStringHelper(this).add("appliedRules", appliedRules)
+					.add("impactByFeature", impactByFeature).toString();
+		}
 	}
 
 	public static final class TreeDecisionDebug {
@@ -231,6 +237,11 @@ public final class TreeNode extends AbstractClass implements Serializable {
 
 		public String getPresentation() {
 			return nodeRule.explain(features) + " \u2192 " + presentPrediction(child.stats);
+		}
+
+		@Override
+		public String toString() {
+			return getPresentation();
 		}
 	}
 }

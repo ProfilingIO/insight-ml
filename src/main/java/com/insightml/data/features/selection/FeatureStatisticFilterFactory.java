@@ -70,6 +70,6 @@ public final class FeatureStatisticFilterFactory implements FeatureFilterFactory
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(stats, threshold, threshIsMin);
+		return Objects.hash(stats, threshold, threshIsMin, getTopNFeatures);
 	}
 }
