@@ -77,7 +77,6 @@ public final class SumMap<T> extends AbstractSumMap<T, Double> {
 		}
 
 		public void put(final T key, final double count) {
-			Check.state(isPut && count != 0);
 			Check.state(map.put(key, new AtomicDouble(count)) == null, key);
 		}
 
@@ -98,6 +97,14 @@ public final class SumMap<T> extends AbstractSumMap<T, Double> {
 
 		public boolean isEmpty() {
 			return map.isEmpty();
+		}
+
+		public double sum() {
+			double sum = 0;
+			for (final AtomicDouble value : map.values()) {
+				sum += value.get();
+			}
+			return sum;
 		}
 
 		public SumMap<T> build(final double min) {

@@ -39,6 +39,12 @@ public final class StatsMap<T> extends AbstractClass implements Iterable<Entry<T
 		return stats;
 	}
 
+	public Stats add(final T key, final double value, final double weight) {
+		final Stats stats = cache.getOrLoad(key);
+		stats.add(value, weight);
+		return stats;
+	}
+
 	public Stats add(final T key, final Stats stats) {
 		final Stats local = cache.getOrLoad(key);
 		local.add(stats);
