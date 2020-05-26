@@ -25,17 +25,25 @@ import com.insightml.data.features.IFeatureProvider;
 import com.insightml.data.features.stats.FeatureStatistics;
 import com.insightml.data.features.stats.IFeatureStatistic;
 import com.insightml.data.samples.Sample;
+import com.insightml.utils.Collections;
 
 public final class FeatureStatisticFilterFactory implements FeatureFilterFactory {
 	private final IFeatureStatistic stats;
 	private final double threshold;
 	private final boolean threshIsMin;
+	private final int getTopNFeatures;
 
 	public FeatureStatisticFilterFactory(final IFeatureStatistic stats, final double threshold,
 			final boolean threshIsMin) {
+		this(stats, threshold, threshIsMin, 100_000);
+	}
+
+	public FeatureStatisticFilterFactory(final IFeatureStatistic stats, final double threshold,
+			final boolean threshIsMin, final int getTopNFeatures) {
 		this.stats = stats;
 		this.threshold = threshold;
 		this.threshIsMin = threshIsMin;
+		this.getTopNFeatures = getTopNFeatures;
 	}
 
 	@Override
@@ -45,15 +53,19 @@ public final class FeatureStatisticFilterFactory implements FeatureFilterFactory
 				PreprocessingPipeline.create(provider, new IgnoreFeatureFilter(), null, null).run(instances, true),
 				labelIndex);
 
-		final Set<String> ignoredFeatures = new HashSet<>();
-
-		for (final Entry<String, Double> feature : stats.run(stat).entrySet()) {
-			if (threshIsMin ? feature.getValue() < threshold : feature.getValue() > threshold) {
-				ignoredFeatures.add(feature.getKey());
+		// FIXME: also support the "getTopNFeatures" parameter when "threshIsMin" is
+		// false
+		if (!threshIsMin) {
+			final Set<String> ignoredFeatures = new HashSet<>();
+			for (final Entry<String, Double> feature : stats.run(stat).entrySet()) {
+				if (threshIsMin ? feature.getValue() < threshold : feature.getValue() > threshold) {
+					ignoredFeatures.add(feature.getKey());
+				}
 			}
+			return new ManualSelectionFilter(ignoredFeatures, false);
 		}
-
-		return new ManualSelectionFilter(ignoredFeatures, false);
+		return new ManualSelectionFilter(Collections.getTopN(stats.run(stat), getTopNFeatures, threshold).keySet(),
+				true);
 	}
 
 	@Override
