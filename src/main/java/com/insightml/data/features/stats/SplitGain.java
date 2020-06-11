@@ -112,7 +112,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final boolean[] featuresMask = new boolean[train.numFeatures()];
 		featuresMask[feature] = true;
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, maxDepth, 0, labelIndex);
-		final boolean[] subset = RegTree.makeTrainingSubset(train);
+		final boolean[] subset = RegTree.makeTrainingSubset(train, labelIndex);
 
 		final TreeNode root = RegTree.createTreeRoot(train, labelIndex);
 		final String nodePrediction = "mean";

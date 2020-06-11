@@ -114,7 +114,7 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final int minObs = (int) argument("minObs");
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, (int) argument("depth"),
 				argument("minImprovement"), labelIndex);
-		final boolean[] subset = makeTrainingSubset(train);
+		final boolean[] subset = makeTrainingSubset(train, labelIndex);
 		final String nodePrediction = getNodePredictionMode();
 		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, minObs, statisticsFactory,
 				parallelize).compute();
@@ -134,10 +134,11 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		return root;
 	}
 
-	public static boolean[] makeTrainingSubset(final ISamples<Sample, Double> train) {
+	public static boolean[] makeTrainingSubset(final ISamples<Sample, Double> train, final int labelIndex) {
 		final boolean[] subset = new boolean[train.size()];
+		final double[] weights = train.weights(labelIndex);
 		for (int i = 0; i < subset.length; ++i) {
-			subset[i] = true;
+			subset[i] = weights[i] != 0;
 		}
 		return subset;
 	}

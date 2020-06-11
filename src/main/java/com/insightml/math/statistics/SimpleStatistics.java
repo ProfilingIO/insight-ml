@@ -63,6 +63,9 @@ public class SimpleStatistics implements MutableStatistics, Serializable {
 
 	@Override
 	public double getMean() {
+		if (sumOfWeights == 0) {
+			throw new IllegalStateException();
+		}
 		return weightedSum / sumOfWeights;
 	}
 
