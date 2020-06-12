@@ -23,6 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RecursiveAction;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.insightml.math.statistics.IStats;
@@ -124,6 +126,7 @@ public final class GrowJob extends RecursiveAction {
 		return stats;
 	}
 
+	@Nullable
 	private Split findBestSplit() {
 		int samples = 0;
 		for (int i = 0; i < context.weights.length; ++i) {

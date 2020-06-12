@@ -30,7 +30,9 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	private double sum;
 	private double sumWeighted;
 	private double min = Double.MAX_VALUE;
-	private double max = Double.NEGATIVE_INFINITY;
+	// We don't use a special value like negative infinity here because some serialization libraries have problems with
+	// it
+	private double max = -1999999999;
 
 	private double mean;
 	private double m2;
@@ -71,7 +73,8 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	/**
 	 * Unsynchronized. Only call directly when sure about it!
 	 *
-	 * @param othr Another stats object to add to the current stats.
+	 * @param othr
+	 *            Another stats object to add to the current stats.
 	 */
 	@Override
 	public void add(final IStats othr) {
@@ -81,7 +84,8 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	/**
 	 * Unsynchronized. Only call directly when sure about it!
 	 *
-	 * @param othr Another stats object to add to the current stats.
+	 * @param othr
+	 *            Another stats object to add to the current stats.
 	 */
 	public void add(final IStats othr, final double weight) {
 		final Stats other = (Stats) othr;
