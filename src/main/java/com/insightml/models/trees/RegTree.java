@@ -126,7 +126,7 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final Double[] labels = train.expected(labelIndex);
 		final double[] weights = train.weights(labelIndex);
 		for (int i = 0; i < labels.length; ++i) {
-			if (labels[i] != null) {
+			if (labels[i] != null && weights[i] > 0) {
 				sRoot.add(labels[i], weights[i]);
 			}
 		}

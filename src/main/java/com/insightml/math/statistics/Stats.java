@@ -53,6 +53,7 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 
 	@Override
 	public void add(final double value, final double weight) {
+		Preconditions.checkArgument(weight > 0);
 		++n;
 		sum += value;
 		sumWeighted += value * weight;
@@ -89,6 +90,7 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	 */
 	public void add(final IStats othr, final double weight) {
 		final Stats other = (Stats) othr;
+		Preconditions.checkArgument(sumweight + other.sumweight > 0);
 		final double delta = other.mean - mean;
 		mean = (sumweight * mean + other.sumweight * other.mean * weight) / (sumweight + other.sumweight * weight);
 		m2 = m2 + other.m2 + delta * delta * n * other.n / (n + other.n);

@@ -118,7 +118,7 @@ public final class GrowJob extends RecursiveAction {
 			stats[i] = new DescriptiveStatistics();
 		}
 		for (int i = 0; i < expected.length; ++i) {
-			if (!subset[i]) {
+			if (!subset[i] || context.weights[i] <= 0) {
 				continue;
 			}
 			stats[best.selectChild(context.features[i])].addValue(expected[i]);
@@ -130,7 +130,7 @@ public final class GrowJob extends RecursiveAction {
 	private Split findBestSplit() {
 		int samples = 0;
 		for (int i = 0; i < context.weights.length; ++i) {
-			if (subset[i]) {
+			if (subset[i] && context.weights[i] > 0) {
 				++samples;
 			}
 		}
