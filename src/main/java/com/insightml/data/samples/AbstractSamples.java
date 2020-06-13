@@ -88,6 +88,18 @@ public abstract class AbstractSamples<S extends Sample, E> extends AbstractClass
 		return filterFeatures(keep);
 	}
 
+	public final SamplesMapping<S, E> samplesWithLabelSet(final int labelIndex) {
+		final E[] expected = expected(labelIndex);
+		final double[] weights = weights(labelIndex);
+		final IntArray indexes = new IntArray(weights.length);
+		for (int i = 0; i < weights.length; ++i) {
+			if (expected[i] != null && weights[i] > 0) {
+				indexes.add(i);
+			}
+		}
+		return subset(indexes.toArray());
+	}
+
 	@Override
 	public Iterator<S> iterator() {
 		return new SamplesIterator<>(this);
