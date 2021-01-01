@@ -112,7 +112,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>15.0</version>
+				<version>30.0-android</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
