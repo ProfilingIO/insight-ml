@@ -15,6 +15,8 @@
  */
 package com.insightml.math.distributions;
 
+import java.util.Random;
+
 import org.apache.commons.math3.util.FastMath;
 
 import com.insightml.math.types.Interval;
@@ -106,6 +108,10 @@ public final class GaussianDistribution extends AbstractGaussian {
 	public double klDivergence(final GaussianDistribution other) {
 		return (Math.pow(mean - other.mean, 2) + sigmaSquare - other.sigmaSquare) / (2 * other.sigmaSquare)
 				+ Math.log(Math.sqrt(other.sigmaSquare) / Math.sqrt(sigmaSquare));
+	}
+
+	public double sample(final Random random) {
+		return stddev * random.nextGaussian() + mean;
 	}
 
 	@Override
