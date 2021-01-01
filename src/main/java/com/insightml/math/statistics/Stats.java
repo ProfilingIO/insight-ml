@@ -154,7 +154,7 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 
 	@Override
 	public double getVariance() {
-		throw new UnsupportedOperationException();
+		return variance();
 	}
 
 	@Override

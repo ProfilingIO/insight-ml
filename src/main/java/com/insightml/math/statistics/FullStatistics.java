@@ -17,6 +17,8 @@ package com.insightml.math.statistics;
 
 import java.util.Map;
 
+import com.google.common.base.Objects;
+
 public class FullStatistics implements IStats {
 
 	private final long n;
@@ -102,6 +104,12 @@ public class FullStatistics implements IStats {
 			throw new UnsupportedOperationException();
 		}
 		return value;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("n", n).add("mean", (float) getMean())
+				.add("stdDev", (float) getStandardDeviation()).toString();
 	}
 
 }
