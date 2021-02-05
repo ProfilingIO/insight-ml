@@ -127,29 +127,25 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 
 	@Override
 	public double getMean() {
-		Preconditions.checkState(n > 0);
-		return mean;
+		return n > 0 ? mean : Double.NaN;
 	}
 
 	@Override
 	public double getMin() {
-		Preconditions.checkState(n > 0);
-		return min;
+		return n > 0 ? min : Double.NaN;
 	}
 
 	@Override
 	public double getMax() {
-		Preconditions.checkState(n > 0);
-		return max;
+		return n > 0 ? max : Double.NaN;
 	}
 
 	public double variance() {
-		Preconditions.checkState(n > 0);
 		if (n > 1) {
 			// has bias correction
 			return m2 / sumweight * n / (n - 1);
 		}
-		return 0.0;
+		return n > 0 ? 0.0 : Double.NaN;
 	}
 
 	@Override
@@ -159,12 +155,11 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 
 	@Override
 	public double getStandardDeviation() {
-		Preconditions.checkState(n > 0);
 		if (n > 1) {
 			// doesn't has full bias correction
 			return Math.sqrt(m2 / sumweight * n / (n - 1));
 		}
-		return 0.0;
+		return n > 0 ? 0.0 : Double.NaN;
 	}
 
 	@Override
