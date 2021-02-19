@@ -101,7 +101,9 @@ public class BinomialStatistics implements MutableStatistics {
 
 	@Nullable
 	public ConfidenceInterval getSuccessProbabilityConfidenceInterval() {
-		return successes > 0 && successes < trials ? getSuccessProbabilityConfidenceInterval(0.95) : null;
+		return (int) weightedSuccesses > 0 && (int) weightedSuccesses < (int) weightedTrials
+				? getSuccessProbabilityConfidenceInterval(0.95)
+				: null;
 	}
 
 	public ConfidenceInterval getSuccessProbabilityConfidenceInterval(final double confidenceLevel) {
