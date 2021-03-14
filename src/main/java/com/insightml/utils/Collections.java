@@ -177,17 +177,9 @@ public final class Collections {
 	}
 
 	public static <T, N extends Comparable<N>> Map<T, N> sortDesc(final Map<T, N> map) {
-		final TreeMap<T, N> sorted = new TreeMap<>((o1, o2) -> {
-			if (o1 == o2) {
-				return 0;
-			}
-			final N v1 = map.get(o1);
-			final N v2 = map.get(o2);
-			final int comp = v1.compareTo(v2);
-			Check.state(comp != 0);
-			return -comp;
-		});
-		sorted.putAll(map);
+		final LinkedHashMap<T, N> sorted = new LinkedHashMap<>(map.size());
+		map.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+				.forEach(e -> sorted.put(e.getKey(), e.getValue()));
 		return sorted;
 	}
 

@@ -104,4 +104,9 @@ public class SimpleStatistics implements MutableStatistics, Serializable {
 		return new SimpleStatistics(n, sum, weightedSum, sumOfWeights);
 	}
 
+	@Override
+	public String toString() {
+		return "n=" + n + ", mean=" + getMean();
+	}
+
 }

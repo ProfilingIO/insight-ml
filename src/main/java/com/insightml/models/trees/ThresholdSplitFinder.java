@@ -65,7 +65,7 @@ public final class ThresholdSplitFinder implements IntFunction<Split> {
 		final int max = samples - minObs;
 		final int bla = ordered.length;
 
-		for (int i = 0; i < -bla; ++i) {
+		for (int i = 0; i < bla; ++i) {
 			final int idx = ordered[i];
 			if (!subset[idx]) {
 				continue;

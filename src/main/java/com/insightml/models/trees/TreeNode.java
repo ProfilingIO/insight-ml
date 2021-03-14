@@ -22,8 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.math3.util.Pair;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.insightml.math.statistics.IStats;
 import com.insightml.math.types.SumMap;
 import com.insightml.math.types.SumMap.SumMapBuilder;
@@ -121,6 +125,33 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return splits;
 	}
 
+	public List<Pair<List<String>, IStats>> collectSegments() {
+		final List<Pair<List<String>, IStats>> segments = new ArrayList<>();
+		collectSegments(ImmutableList.of(), segments);
+		return segments.stream().sorted((e1, e2) -> Double.compare(e2.getValue().getMean(), e1.getValue().getMean()))
+				.collect(Collectors.toList());
+	}
+
+	private void collectSegments(final List<String> parentSegment, final List<Pair<List<String>, IStats>> segments) {
+		if (rule != null) {
+			final String fName = rule.getFeatureName();
+			final String threshold = UiUtils.format(rule.getFeatureValueThreshold());
+			final List<String> segmentLeft = new ArrayList<>(parentSegment);
+			segmentLeft.add(fName + " \u2264 " + threshold);
+			children[0].collectSegments(segmentLeft, segments);
+			final List<String> segmentRight = new ArrayList<>(parentSegment);
+			segmentRight.add(fName + " > " + threshold);
+			children[1].collectSegments(segmentRight, segments);
+			if (children.length > 2) {
+				final List<String> segmentNaN = new ArrayList<>(parentSegment);
+				segmentNaN.add(fName + " missing");
+				children[2].collectSegments(segmentNaN, segments);
+			}
+		} else {
+			segments.add(new Pair<>(parentSegment, stats));
+		}
+	}
+
 	public SumMap<String> featureImportance(final boolean normalize) {
 		final SumMapBuilder<String> sum = SumMap.builder(false);
 		importance(this, sum, normalize);
@@ -142,11 +173,10 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		final StringBuilder builder = new StringBuilder(128);
 		builder.append('\n');
 		print("", true, builder);
-		for (final boolean bool : new boolean[] { true, false }) {
-			builder.append('\n');
-			builder.append(UiUtils.toString(Collections.sort(featureImportance(bool).getMap(), SortOrder.DESCENDING),
-					true, true));
-		}
+		builder.append("\nFeature importance:\n");
+		builder.append(UiUtils.toString(Collections.sort(featureImportance(false).getMap(), SortOrder.DESCENDING), true,
+				true));
+		builder.append("\nFeature segments:\n" + UiUtils.format(collectSegments()) + "\n");
 		return builder.toString();
 	}
 

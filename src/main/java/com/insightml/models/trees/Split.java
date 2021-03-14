@@ -66,7 +66,11 @@ public final class Split extends AbstractSplit implements Cloneable {
 		if (features[feature] > thresh) {
 			return children[1];
 		}
-		return lastIndexNaN >= 0 && features[feature] == ThresholdSplitFinder.VALUE_MISSING ? children[2] : children[0];
+		final boolean isNan = lastIndexNaN >= 0 && features[feature] == ThresholdSplitFinder.VALUE_MISSING;
+		if (isNan) {
+			return children.length > 2 ? children[2] : null;
+		}
+		return children[0];
 	}
 
 	@Override
