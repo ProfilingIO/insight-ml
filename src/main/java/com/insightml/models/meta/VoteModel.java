@@ -26,18 +26,24 @@ import java.util.stream.Collectors;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
+import com.insightml.math.distributions.DiscreteDistribution;
 import com.insightml.math.statistics.FullStatistics;
 import com.insightml.math.statistics.FullStatisticsBuilder;
 import com.insightml.math.statistics.IStats;
 import com.insightml.math.statistics.MutableStatsBuilder;
 import com.insightml.math.statistics.Stats;
 import com.insightml.math.statistics.StatsBuilder;
+import com.insightml.math.types.SumMap;
+import com.insightml.math.types.SumMap.SumMapBuilder;
 import com.insightml.models.DistributionModel;
 import com.insightml.models.DistributionPrediction;
 import com.insightml.models.IModel;
+import com.insightml.models.trees.TreeModel;
 import com.insightml.models.trees.TreeNode.TreeDecisionDebug;
 import com.insightml.models.trees.TreeNode.TreePredictionInfo;
 import com.insightml.utils.Arrays;
+import com.insightml.utils.Collections;
+import com.insightml.utils.ui.UiUtils;
 
 public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double>
 		implements DistributionModel<I> {
@@ -126,6 +132,54 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		default:
 			throw new IllegalArgumentException();
 		}
+	}
+
+	public DiscreteDistribution<String> collectPositiveFactors() {
+		if (!allModelsAreTrees()) {
+			return null;
+		}
+		final SumMapBuilder<String> positive = SumMap.builder(false);
+		for (final IModel<I, Double> model : getModels()) {
+			positive.incAll(((TreeModel) model).getRoot().collectPositiveFactors().getMap().entrySet());
+		}
+		return positive.build(0).distribution();
+	}
+
+	public DiscreteDistribution<String> collectNegativeFactors() {
+		if (!allModelsAreTrees()) {
+			return null;
+		}
+		final SumMapBuilder<String> negative = SumMap.builder(false);
+		for (final IModel<I, Double> model : getModels()) {
+			negative.incAll(((TreeModel) model).getRoot().collectNegativeFactors().getMap().entrySet());
+		}
+		return negative.build(0).distribution();
+	}
+
+	private boolean allModelsAreTrees() {
+		for (final IModel<I, Double> model : getModels()) {
+			if (!(model instanceof TreeModel)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public String info() {
+		final StringBuilder builder = new StringBuilder();
+		final SumMap<String> importance = featureImportance();
+		builder.append("Feature importance:\n" + UiUtils.format(importance.distribution(), 0).toString());
+
+		if (allModelsAreTrees()) {
+			final int n = 20;
+			builder.append("\nTop " + n + " positive factors:\n"
+					+ UiUtils.toString(Collections.getTopN(collectPositiveFactors().getMap(), n, 0), true, true));
+			builder.append("\nTop " + n + " negative factors:\n"
+					+ UiUtils.toString(Collections.getTopN(collectNegativeFactors().getMap(), n, 0), true, true));
+		}
+
+		return builder.toString();
 	}
 
 	public static final class VoteModelDebug {

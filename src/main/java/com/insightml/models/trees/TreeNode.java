@@ -169,6 +169,41 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		}
 	}
 
+	public SumMap<String> collectPositiveFactors() {
+		final SumMapBuilder<String> builder = SumMap.builder(false);
+		collectFactors(builder, true);
+		return builder.build(0);
+	}
+
+	public SumMap<String> collectNegativeFactors() {
+		final SumMapBuilder<String> builder = SumMap.builder(false);
+		collectFactors(builder, false);
+		return builder.build(0);
+	}
+
+	private void collectFactors(final SumMapBuilder<String> builder, final boolean positive) {
+		if (children != null) {
+			for (int i = 0; i < children.length; ++i) {
+				final TreeNode child = children[i];
+				if (positive && child.mean > mean) {
+					builder.increment(representSplit(i), child.mean - mean);
+				} else if (!positive && child.mean < mean) {
+					builder.increment(representSplit(i), mean - child.mean);
+				}
+				child.collectFactors(builder, positive);
+			}
+		}
+	}
+
+	private String representSplit(final int child) {
+		final String fName = rule.getFeatureName();
+		if (child == 2) {
+			return fName + " missing";
+		}
+		final String threshold = true ? "X" : UiUtils.format(rule.getFeatureValueThreshold());
+		return fName + (child == 0 ? " \u2264 " : " > ") + threshold;
+	}
+
 	public String info() {
 		final StringBuilder builder = new StringBuilder(128);
 		builder.append('\n');
@@ -177,6 +212,12 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		builder.append(UiUtils.toString(Collections.sort(featureImportance(false).getMap(), SortOrder.DESCENDING), true,
 				true));
 		builder.append("\nFeature segments:\n" + UiUtils.format(collectSegments()) + "\n");
+		builder.append("\nPositive factors:\n"
+				+ UiUtils.toString(Collections.sortDesc(collectPositiveFactors().distribution().getMap()), true, true)
+				+ "\n");
+		builder.append("\nNegative factors:\n"
+				+ UiUtils.toString(Collections.sortDesc(collectNegativeFactors().distribution().getMap()), true, true)
+				+ "\n");
 		return builder.toString();
 	}
 
