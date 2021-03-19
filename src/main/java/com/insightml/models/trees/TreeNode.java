@@ -209,8 +209,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		builder.append('\n');
 		print("", true, builder);
 		builder.append("\nFeature importance:\n");
-		builder.append(UiUtils.toString(Collections.sort(featureImportance(false).getMap(), SortOrder.DESCENDING), true,
-				true));
+		builder.append(UiUtils
+				.toString(Collections.sort(featureImportance(false).getMap(), SortOrder.DESCENDING), true, true));
 		builder.append("\nFeature segments:\n" + UiUtils.format(collectSegments()) + "\n");
 		builder.append("\nPositive factors:\n"
 				+ UiUtils.toString(Collections.sortDesc(collectPositiveFactors().distribution().getMap()), true, true)
@@ -233,7 +233,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		}
 	}
 
-	private static String presentPrediction(final IStats stats) {
+	public static String presentPrediction(final IStats stats) {
 		final Double stddev = getStandardDeviation(stats);
 		return UiUtils.format(stats.getMean()) + (stddev == null ? "" : " +/- " + UiUtils.format(stddev)) + " ("
 				+ UiUtils.format(stats.getSumOfWeights()) + ")";
@@ -304,6 +304,10 @@ public final class TreeNode extends AbstractClass implements Serializable {
 
 		public TreeNode getChild() {
 			return child;
+		}
+
+		public double[] getFeatures() {
+			return features;
 		}
 
 		public String getPresentation() {

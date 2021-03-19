@@ -75,14 +75,18 @@ public final class Split extends AbstractSplit implements Cloneable {
 
 	@Override
 	public String explain(final double[] features) {
+		return explain(fname, features);
+	}
+
+	public String explain(final String featureName, final double[] features) {
 		final int child = selectChild(features);
 		final double featureValue = features[feature];
 		if (child == 1) {
-			return fname + " (" + UiUtils.format(featureValue) + ") > " + UiUtils.format(thresh);
+			return featureName + " (" + UiUtils.format(featureValue) + ") > " + UiUtils.format(thresh);
 		} else if (child == 2) {
-			return fname + " (" + UiUtils.format(featureValue) + ") missing";
+			return featureName + " (" + UiUtils.format(featureValue) + ") missing";
 		}
-		return fname + " (" + UiUtils.format(featureValue) + ") \u2264 " + UiUtils.format(thresh);
+		return featureName + " (" + UiUtils.format(featureValue) + ") \u2264 " + UiUtils.format(thresh);
 	}
 
 	@Override
