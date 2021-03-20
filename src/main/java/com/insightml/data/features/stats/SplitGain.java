@@ -244,6 +244,15 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 			this.predictionRight = predictionRight;
 		}
 
+		public double getVarianceReduction() {
+			return varianceReduction;
+		}
+
+		public String formatRule() {
+			return rule == null ? ""
+					: rule + " -> " + UiUtils.format(predictionLeft) + "; else " + UiUtils.format(predictionRight);
+		}
+
 		@Override
 		public int compareTo(final SplitGainInfo o) {
 			final int comp = Double.compare(varianceReduction, o.varianceReduction);
@@ -256,11 +265,6 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		@Override
 		public String toString() {
 			return UiUtils.fill(UiUtils.format(varianceReduction), 12) + formatRule();
-		}
-
-		private String formatRule() {
-			return rule == null ? ""
-					: rule + " -> " + UiUtils.format(predictionLeft) + "; else " + UiUtils.format(predictionRight);
 		}
 	}
 }
