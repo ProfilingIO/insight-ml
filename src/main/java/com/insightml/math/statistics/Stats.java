@@ -53,6 +53,7 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 
 	@Override
 	public void add(final double value, final double weight) {
+		Preconditions.checkArgument(Double.isFinite(value));
 		Preconditions.checkArgument(weight > 0);
 		++n;
 		sum += value;
