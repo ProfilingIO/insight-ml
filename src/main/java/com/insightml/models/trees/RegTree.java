@@ -124,8 +124,8 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 		final TreeNode root = createTreeRoot(train, labelIndex);
 		final int minObs = (int) argument("minObs");
 		final SplitFinderContext context = new SplitFinderContext(train, featuresMask,
-				getOriginalArguments().get("forceFirstFeature"), (int) argument("depth"), argument("minImprovement"),
-				labelIndex);
+				getOriginalArguments().toString("forceFirstFeature", null), (int) argument("depth"),
+				argument("minImprovement"), labelIndex);
 		final boolean[] subset = makeTrainingSubset(train, labelIndex);
 		final String nodePrediction = getNodePredictionMode();
 		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, minObs, statisticsFactory,
