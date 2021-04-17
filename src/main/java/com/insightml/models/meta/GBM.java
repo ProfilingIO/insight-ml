@@ -114,7 +114,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 			}
 			try {
 				final TreeModel fit = ((RegTree) learners[i % learners.length])
-						.run(subset, featuresMask(subset.numFeatures(), random), labelIndex);
+						.run(subset, featuresMask(subset, getOriginalArguments(), random), labelIndex);
 				final Pair<Double, double[]> update = fitGamma(fit,
 						preds,
 						samples,
@@ -131,19 +131,22 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		return new BoostingModel(first, steps, samples.featureNames());
 	}
 
-	private boolean[] featuresMask(final int dimensionality, final Random random) {
+	private boolean[] featuresMask(final ISamples<?, ?> samples, final IArguments arguments, final Random random) {
 		final double ratio = argument("fbag");
-		return featuresMask(dimensionality, ratio, random);
+		return featuresMask(samples, ratio, arguments, random);
 	}
 
 	@Nullable
-	static boolean[] featuresMask(final int dimensionality, final double ratio, final Random random) {
+	static boolean[] featuresMask(final ISamples<?, ?> samples, final double ratio, final IArguments arguments,
+			final Random random) {
 		if (ratio >= 1) {
 			return null;
 		}
-		final boolean[] keep = new boolean[dimensionality];
+		final String[] featureNames = samples.featureNames();
+		final String forceFirstFeature = arguments.toString("forceFirstFeature", null);
+		final boolean[] keep = new boolean[featureNames.length];
 		for (int i = 0; i < keep.length; ++i) {
-			keep[i] = random.nextDouble() <= ratio;
+			keep[i] = featureNames[i].equals(forceFirstFeature) || random.nextDouble() <= ratio;
 		}
 		return keep;
 	}

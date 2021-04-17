@@ -75,7 +75,7 @@ public class GBRT extends GBM {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
 			learner[i] = new RegTree(i + minDepth, minObs, nodePred, MseSplitCriterion.factory(), statisticsFactory,
-					parallelize);
+					parallelize, null);
 		}
 		return learner;
 	}

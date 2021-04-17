@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import com.insightml.data.samples.Sample;
 import com.insightml.math.statistics.StatsBuilder;
 import com.insightml.models.ILearner;
@@ -47,18 +49,30 @@ public class RandomForest extends Bagging<Sample> {
 
 	public RandomForest(final int trees, final int depth, final int minObs, final double isample, final double fsample,
 			final VoteStrategy strategy) {
-		this(trees, depth, depth, minObs, isample, fsample, strategy);
+		this(trees, depth, minObs, isample, fsample, strategy, null);
+	}
+
+	public RandomForest(final int trees, final int depth, final int minObs, final double isample, final double fsample,
+			final VoteStrategy strategy, @Nullable final IArguments arguments) {
+		this(trees, depth, depth, minObs, isample, fsample, strategy, arguments);
 	}
 
 	public RandomForest(final int trees, final int minDepth, final int maxDepth, final int minObs, final double isample,
 			final double fsample, final VoteStrategy strategy) {
-		super(trees, isample, fsample, strategy, getLearner(minDepth, maxDepth, minObs));
+		this(trees, minDepth, maxDepth, minObs, isample, fsample, strategy, null);
 	}
 
-	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs) {
+	public RandomForest(final int trees, final int minDepth, final int maxDepth, final int minObs, final double isample,
+			final double fsample, final VoteStrategy strategy, @Nullable final IArguments arguments) {
+		super(trees, isample, fsample, strategy, getLearner(minDepth, maxDepth, minObs, arguments));
+	}
+
+	private static ILearner[] getLearner(final int minDepth, final int maxDepth, final int minObs,
+			@Nullable final IArguments arguments) {
 		final RegTree[] learner = new RegTree[maxDepth - minDepth + 1];
 		for (int i = 0; i < learner.length; ++i) {
-			learner[i] = new RegTree(i + minDepth, minObs, 1, MseSplitCriterion.factory(), new StatsSupplier(), false);
+			learner[i] = new RegTree(i + minDepth, minObs, 1, MseSplitCriterion.factory(), new StatsSupplier(), false,
+					arguments);
 		}
 		return learner;
 	}

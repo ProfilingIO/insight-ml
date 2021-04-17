@@ -57,32 +57,43 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 	}
 
 	public RegTree(final int depth, final int minobs, final boolean parallelize) {
-		this(depth, minobs, 1, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize);
+		this(depth, minobs, 1, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize, null);
 	}
 
 	public RegTree(final int depth, final int minobs, final double minImprovement, final boolean parallelize) {
-		this(depth, minobs, minImprovement, 1, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(),
-				parallelize);
+		this(depth, minobs, minImprovement, 1, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize,
+				null);
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred, final boolean parallelize) {
-		this(depth, minobs, nodePred, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize);
+		this(depth, minobs, nodePred, MseSplitCriterion.factory(), new SimpleStatisticsSupplier(), parallelize, null);
 	}
 
 	public RegTree(final int depth, final int minobs, final int nodePred,
 			final SplitCriterionFactory splitCriterionFactory,
-			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize) {
-		this(depth, minobs, 0, nodePred, splitCriterionFactory, statisticsFactory, parallelize);
+			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize,
+			@Nullable final IArguments arguments) {
+		this(depth, minobs, 0, nodePred, splitCriterionFactory, statisticsFactory, parallelize, arguments);
 	}
 
 	public RegTree(final int depth, final int minobs, final double minImprovement, final int nodePred,
 			final SplitCriterionFactory splitCriterionFactory,
-			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize) {
-		super(new Arguments("depth", String.valueOf(depth), "minObs", String.valueOf(minobs), "minImprovement",
-				String.valueOf(minImprovement), "nodePred", String.valueOf(nodePred)));
+			final Supplier<? extends StatsBuilder<?>> statisticsFactory, final boolean parallelize,
+			@Nullable final IArguments arguments) {
+		super(createArguments(depth, minobs, minImprovement, nodePred, arguments));
 		this.parallelize = parallelize;
 		this.splitCriterionFactory = splitCriterionFactory;
 		this.statisticsFactory = statisticsFactory;
+	}
+
+	private static Arguments createArguments(final int depth, final int minobs, final double minImprovement,
+			final int nodePred, @Nullable final IArguments arguments) {
+		final Arguments args = arguments == null ? new Arguments() : Arguments.copy(arguments);
+		args.set("depth", depth, true);
+		args.set("minObs", minobs, true);
+		args.set("minImprovement", minImprovement, true);
+		args.set("nodePred", nodePred, true);
+		return args;
 	}
 
 	@Override
@@ -112,8 +123,9 @@ public class RegTree extends AbstractDoubleLearner<Double> {
 			final int labelIndex) {
 		final TreeNode root = createTreeRoot(train, labelIndex);
 		final int minObs = (int) argument("minObs");
-		final SplitFinderContext context = new SplitFinderContext(train, featuresMask, (int) argument("depth"),
-				argument("minImprovement"), labelIndex);
+		final SplitFinderContext context = new SplitFinderContext(train, featuresMask,
+				getOriginalArguments().get("forceFirstFeature"), (int) argument("depth"), argument("minImprovement"),
+				labelIndex);
 		final boolean[] subset = makeTrainingSubset(train, labelIndex);
 		final String nodePrediction = getNodePredictionMode();
 		new GrowJob(root, context, subset, 1, nodePrediction, splitCriterionFactory, minObs, statisticsFactory,

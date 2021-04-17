@@ -30,13 +30,15 @@ public final class SplitFinderContext {
 
 	@Nullable
 	final boolean[] featuresMask;
+	@Nullable
+	final String forceFirstFeature;
 
 	public final int maxDepth;
 	double minImprovement;
 	final int labelIndex;
 
 	public SplitFinderContext(final ISamples<?, Double> instances, @Nullable final boolean[] featuresMask,
-			final int maxDepth, final double minImprovement, final int labelIndex) {
+			final String forceFirstFeature, final int maxDepth, final double minImprovement, final int labelIndex) {
 		final Object[] exp = instances.expected(labelIndex);
 		expected = new double[exp.length];
 		for (int i = 0; i < exp.length; ++i) {
@@ -48,6 +50,7 @@ public final class SplitFinderContext {
 		orderedInstances = instances.orderedIndexes();
 
 		this.featuresMask = featuresMask;
+		this.forceFirstFeature = forceFirstFeature;
 
 		this.maxDepth = maxDepth;
 		this.minImprovement = minImprovement;

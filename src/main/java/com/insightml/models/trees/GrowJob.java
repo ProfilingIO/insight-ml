@@ -153,6 +153,9 @@ public final class GrowJob extends RecursiveAction {
 			if (split == null) {
 				continue;
 			}
+			if (depth == 1 && context.featureNames[i].equals(context.forceFirstFeature)) {
+				return split;
+			}
 			if (bestSplit == null
 					|| GrowJob.isFirstBetter(split.improve, bestSplit.improve, split.feature, bestSplit.feature)) {
 				bestSplit = split;
@@ -174,6 +177,9 @@ public final class GrowJob extends RecursiveAction {
 		for (final Split split : JobPool.execute(tasks, 1, executor)) {
 			if (split == null) {
 				continue;
+			}
+			if (depth == 1 && context.featureNames[split.feature].equals(context.forceFirstFeature)) {
+				return split;
 			}
 			if (bestSplit == null
 					|| GrowJob.isFirstBetter(split.improve, bestSplit.improve, split.feature, bestSplit.feature)) {
