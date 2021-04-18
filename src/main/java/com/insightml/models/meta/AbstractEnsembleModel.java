@@ -40,11 +40,11 @@ abstract class AbstractEnsembleModel<I extends Sample, E> extends AbstractModel<
 		this.weights = weights;
 	}
 
-	final IModel<I, E>[] getModels() {
+	public final IModel<I, E>[] getModels() {
 		return models;
 	}
 
-	final double[] getWeights() {
+	public final double[] getWeights() {
 		return weights;
 	}
 
