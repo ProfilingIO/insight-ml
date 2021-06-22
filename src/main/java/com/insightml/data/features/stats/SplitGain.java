@@ -50,14 +50,20 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 	private final int maxDepth;
 	private final int minObs;
+	private final double maxCorrelation;
 
 	public SplitGain() {
 		this(1, 10);
 	}
 
 	public SplitGain(final int maxDepth, final int minObs) {
+		this(maxDepth, minObs, 1);
+	}
+
+	public SplitGain(final int maxDepth, final int minObs, final double maxCorrelation) {
 		this.maxDepth = maxDepth;
 		this.minObs = minObs;
+		this.maxCorrelation = maxCorrelation;
 	}
 
 	@Override
@@ -153,6 +159,9 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final double[][] features = instances.features();
 		for (int i = 0; i < sorted.length; ++i) {
 			final FeatureCorrelation bestCor = findStrongestCorrelation(i, sorted, features);
+			if (bestCor.bestCor > maxCorrelation) {
+				continue;
+			}
 			final String featureStr = sorted[i].toString();
 			result.put(sorted[i].featureName,
 					bestCor.bestCor != 0
@@ -193,7 +202,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	private static FeatureCorrelation findStrongestCorrelation(final int i, final SplitGainInfo[] sorted,
 			final double[][] features) {
 		final FeatureCorrelation bestCor = new FeatureCorrelation();
-		if (i < 50) {
+		if (i < 150) {
 			for (int j = 0; j < i; ++j) {
 				try {
 					final double[] fi = new double[features.length];
