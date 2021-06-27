@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.statistics.Correlation;
-import com.insightml.utils.Arrays;
 import com.insightml.utils.Utils;
-import com.insightml.utils.jobs.ParallelFor;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.ui.IChartGui;
 import com.insightml.utils.ui.UiUtils;
@@ -37,25 +35,30 @@ import com.insightml.utils.ui.reports.IUiProvider;
 public final class FeaturesCorrelation extends AbstractClass implements IUiProvider<ISamples<?, Double>> {
 	private static final Logger LOG = LoggerFactory.getLogger(FeaturesCorrelation.class);
 
-	@SuppressWarnings("null")
 	@Nonnull
-	public static FeatureCorrelation[] correlation(final ISamples<?, ?> table, final int labelIndex) {
+	public static FeatureCorrelation[] correlation(final ISamples<?, ?> samples, final int labelIndex) {
 		final long start = System.currentTimeMillis();
-		final FeatureCorrelation[] result = Arrays.of(ParallelFor.run(feature -> {
-			final double[] feats = new double[table.size()];
-			final double[][] features = table.features();
-			for (int i = 0; i < feats.length; ++i) {
-				feats[i] = features[i][feature];
-			}
-			final Object[] exp = table.expected(labelIndex);
-			final double[] expCast = new double[exp.length];
-			for (int i = 0; i < exp.length; ++i) {
-				expCast[i] = Utils.toDouble(exp[i]);
-			}
-			return new FeatureCorrelation(feats, expCast, table.featureNames()[feature]);
-		}, 0, table.numFeatures(), 1));
+		final FeatureCorrelation[] result = new FeatureCorrelation[samples.numFeatures()];
+		for (int feature = 0; feature < result.length; ++feature) {
+			result[feature] = calculateFeatureCorrelation(samples, labelIndex, feature);
+		}
 		LOG.info("Computed correlation in {} ms", Long.valueOf(System.currentTimeMillis() - start));
 		return result;
+	}
+
+	private static FeatureCorrelation calculateFeatureCorrelation(final ISamples<?, ?> samples, final int labelIndex,
+			final int feature) {
+		final double[] feats = new double[samples.size()];
+		final double[][] features = samples.features();
+		for (int i = 0; i < feats.length; ++i) {
+			feats[i] = features[i][feature];
+		}
+		final Object[] exp = samples.expected(labelIndex);
+		final double[] expCast = new double[exp.length];
+		for (int i = 0; i < exp.length; ++i) {
+			expCast[i] = Utils.toDouble(exp[i]);
+		}
+		return new FeatureCorrelation(feats, expCast, samples.featureNames()[feature]);
 	}
 
 	@Override
