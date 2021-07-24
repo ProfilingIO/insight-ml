@@ -17,13 +17,11 @@ package com.insightml.data.features.stats;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import javax.annotation.Nonnull;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.insightml.data.samples.ISamples;
 import com.insightml.math.statistics.Correlation;
 import com.insightml.utils.Utils;
@@ -35,15 +33,14 @@ import com.insightml.utils.ui.reports.IUiProvider;
 public final class FeaturesCorrelation extends AbstractClass implements IUiProvider<ISamples<?, Double>> {
 	private static final Logger LOG = LoggerFactory.getLogger(FeaturesCorrelation.class);
 
-	@Nonnull
-	public static FeatureCorrelation[] correlation(final ISamples<?, ?> samples, final int labelIndex) {
+	public static void correlation(final ISamples<?, ?> samples, final int labelIndex,
+			final Consumer<FeatureCorrelation> consumer) {
 		final long start = System.currentTimeMillis();
-		final FeatureCorrelation[] result = new FeatureCorrelation[samples.numFeatures()];
-		for (int feature = 0; feature < result.length; ++feature) {
-			result[feature] = calculateFeatureCorrelation(samples, labelIndex, feature);
+		final int numFeatures = samples.numFeatures();
+		for (int feature = 0; feature < numFeatures; ++feature) {
+			consumer.accept(calculateFeatureCorrelation(samples, labelIndex, feature));
 		}
 		LOG.info("Computed correlation in {} ms", Long.valueOf(System.currentTimeMillis() - start));
-		return result;
 	}
 
 	private static FeatureCorrelation calculateFeatureCorrelation(final ISamples<?, ?> samples, final int labelIndex,
@@ -63,7 +60,8 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 
 	@Override
 	public String getText(final ISamples<?, Double> instances, final int labelIndex) {
-		final ArrayList<FeatureCorrelation> features = Lists.newArrayList(correlation(instances, labelIndex));
+		final ArrayList<FeatureCorrelation> features = new ArrayList<>();
+		correlation(instances, labelIndex, features::add);
 		Collections.sort(features);
 		final StringBuilder builder = new StringBuilder(512);
 		for (final FeatureCorrelation feature : features) {
@@ -74,7 +72,8 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 	}
 
 	public static String getCsv(final ISamples<?, Double> instances, final int labelIndex) {
-		final ArrayList<FeatureCorrelation> features = Lists.newArrayList(correlation(instances, labelIndex));
+		final ArrayList<FeatureCorrelation> features = new ArrayList<>();
+		correlation(instances, labelIndex, features::add);
 		Collections.sort(features);
 		final StringBuilder builder = new StringBuilder(512);
 		builder.append("Feature,Covariance,Pearson,Spearman\n");
@@ -89,12 +88,8 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 
 	public static void displayGui(final IChartGui gui, final ISamples<?, Double> train, final ISamples<?, Double> test,
 			final int labelIndex) {
-		for (final FeatureCorrelation feature : correlation(train, labelIndex)) {
-			gui.addLineChart(feature.getChart(feature.getFeature()));
-		}
-		for (final FeatureCorrelation feature : correlation(test, labelIndex)) {
-			gui.addLineChart(feature.getChart(feature.getFeature()));
-		}
+		correlation(train, labelIndex, feature -> gui.addLineChart(feature.getChart(feature.getFeature())));
+		correlation(test, labelIndex, feature -> gui.addLineChart(feature.getChart(feature.getFeature())));
 		gui.run();
 	}
 

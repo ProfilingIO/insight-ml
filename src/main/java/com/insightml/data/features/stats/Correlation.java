@@ -15,20 +15,17 @@
  */
 package com.insightml.data.features.stats;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import com.insightml.data.features.stats.FeaturesCorrelation.FeatureCorrelation;
-import com.insightml.utils.Maps;
 
 public final class Correlation implements IFeatureStatistic {
 
 	@Override
 	public Map<String, Double> run(final FeatureStatistics stats) {
-		final FeatureCorrelation[] corr = FeaturesCorrelation.correlation(stats.getInstances(), stats.getLabelIndex());
-		final Map<String, Double> result = Maps.create(corr.length);
-		for (final FeatureCorrelation entry : corr) {
-			result.put(entry.getFeature(), entry.getMean());
-		}
+		final Map<String, Double> result = new HashMap<>();
+		FeaturesCorrelation.correlation(stats.getInstances(),
+				stats.getLabelIndex(),
+				entry -> result.put(entry.getFeature(), entry.getMean()));
 		return result;
 	}
 
