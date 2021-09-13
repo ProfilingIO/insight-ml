@@ -50,7 +50,7 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 	@Override
 	public Double[] apply(final ISamples<? extends Sample, ?> instances) {
 		final double[] preds = first.predictDouble(instances);
-		final double[][] features = instances.features();
+		final float[][] features = instances.features();
 		// We do not expect to have step-level feature filtering as of now
 		Check.isNull(steps.get(0).getKey().constractFeaturesFilter(instances));
 		ParallelFor.run(i -> {

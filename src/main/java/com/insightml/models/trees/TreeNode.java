@@ -70,7 +70,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return mean;
 	}
 
-	public DistributionPrediction predictDistribution(final double[] features, final boolean debug) {
+	public DistributionPrediction predictDistribution(final float[] features, final boolean debug) {
 		if (!debug) {
 			for (TreeNode node = this;; node = node.rule.selectChild(features, node.children)) {
 				if (node.rule == null) {
@@ -290,9 +290,9 @@ public final class TreeNode extends AbstractClass implements Serializable {
 	public static final class TreeDecisionDebug {
 		private final Split nodeRule;
 		private final TreeNode child;
-		private final double[] features;
+		private final float[] features;
 
-		public TreeDecisionDebug(final Split nodeRule, final TreeNode child, final double[] features) {
+		public TreeDecisionDebug(final Split nodeRule, final TreeNode child, final float[] features) {
 			this.nodeRule = nodeRule;
 			this.child = child;
 			this.features = features;
@@ -306,7 +306,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 			return child;
 		}
 
-		public double[] getFeatures() {
+		public float[] getFeatures() {
 			return features;
 		}
 

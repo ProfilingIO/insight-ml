@@ -55,19 +55,19 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	public AnonymousFeaturesConfig(final String[] features, final SimpleFeaturesProvider<S> simpleFeaturesProvider,
-			final double defaultValue, final boolean useDivFeaturesProvider) {
+			final float defaultValue, final boolean useDivFeaturesProvider) {
 		super(null, null);
 		this.provider = provider(features, simpleFeaturesProvider, defaultValue, useDivFeaturesProvider);
 		this.filter = new IgnoreFeatureFilter();
 	}
 
 	public AnonymousFeaturesConfig(final Stream<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
-			final double defaultValue, final boolean useDivFeaturesProvider, final FeatureFilterFactory filter) {
+			final float defaultValue, final boolean useDivFeaturesProvider, final FeatureFilterFactory filter) {
 		this(examples, exampleFeaturesProvider, 1, defaultValue, useDivFeaturesProvider, filter);
 	}
 
 	public AnonymousFeaturesConfig(final Stream<S> examples, final SimpleFeaturesProvider<S> exampleFeaturesProvider,
-			final int minOccurrences, final double defaultValue, final boolean useDivFeaturesProvider,
+			final int minOccurrences, final float defaultValue, final boolean useDivFeaturesProvider,
 			final FeatureFilterFactory filter) {
 		super(null, null);
 		this.provider = fromExamples(examples,
@@ -79,13 +79,13 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Stream<S> examples,
-			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final double defaultValue) {
+			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final float defaultValue) {
 		return of(examples, exampleFeaturesProvider, 1, defaultValue);
 	}
 
 	public static <S extends Sample, O> AnonymousFeaturesConfig<S, O> of(final Stream<S> examples,
 			final SimpleFeaturesProvider<S> exampleFeaturesProvider, final int minOccurrences,
-			final double defaultValue) {
+			final float defaultValue) {
 		return new AnonymousFeaturesConfig<>(examples, exampleFeaturesProvider, minOccurrences, defaultValue, false,
 				new IgnoreFeatureFilter());
 	}
@@ -101,7 +101,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	private static <S extends Sample> IFeatureProvider<S> fromExamples(final Stream<S> examples,
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final float defaultValue,
 			final boolean useDivFeaturesProvider) {
 		final Map<String, Integer> names = new ConcurrentHashMap<>();
 		examples.forEach(s -> simpleFeaturesProvider.apply(s, (k, v) -> names.merge(k, 1, Integer::sum)));
@@ -113,7 +113,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	public static <S extends Sample> IFeatureProvider<S> createFromFrequencies(
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final double defaultValue,
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final int minOccurrences, final float defaultValue,
 			final boolean useDivFeaturesProvider, final Map<String, Integer> names) {
 		final Set<String> selected = new TreeSet<>();
 		for (final Entry<String, Integer> entry : names.entrySet()) {
@@ -128,7 +128,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 	}
 
 	private static <S extends Sample> IFeatureProvider<S> provider(final String[] featureNames,
-			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue,
+			final SimpleFeaturesProvider<S> simpleFeaturesProvider, final float defaultValue,
 			final boolean useDivFeaturesProvider) {
 		final SimpleFeatureProvider<S> prov = new SimpleFeatureProvider<>(featureNames, simpleFeaturesProvider,
 				defaultValue);
@@ -152,7 +152,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 		private final SimpleFeaturesProvider<S> simpleFeaturesProvider;
 
 		public SimpleFeatureProvider(final String[] featureNames,
-				final SimpleFeaturesProvider<S> simpleFeaturesProvider, final double defaultValue) {
+				final SimpleFeaturesProvider<S> simpleFeaturesProvider, final float defaultValue) {
 			super("features", defaultValue);
 			this.featureNames = featureNames;
 			this.simpleFeaturesProvider = simpleFeaturesProvider;

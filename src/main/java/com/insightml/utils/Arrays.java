@@ -80,6 +80,16 @@ public final class Arrays {
 		return fil;
 	}
 
+	public static float[] filter(final float[] orig, final boolean[] filter) {
+		final float[] fil = new float[Vectors.sum(filter)];
+		for (int i = 0, j = -1; i < orig.length; ++i) {
+			if (filter[i]) {
+				fil[++j] = orig[i];
+			}
+		}
+		return fil;
+	}
+
 	public static <T> T[] filter(final T[] orig, final boolean[] filter) {
 		final T[] fil = (T[]) Array.newInstance(orig[0].getClass(), Vectors.sum(filter));
 		for (int i = 0, j = -1; i < orig.length; ++i) {
@@ -137,6 +147,15 @@ public final class Arrays {
 		return arr;
 	}
 
+	@Nonnull
+	public static double[] asDouble(final float[] array) {
+		final double[] arr = new double[array.length];
+		for (int i = 0; i < arr.length; ++i) {
+			arr[i] = array[i];
+		}
+		return arr;
+	}
+
 	public static <T> List<T> merge(final List<? extends T[]> run) {
 		final List<T> list = new LinkedList<>();
 		for (final T[] l : run) {
@@ -171,9 +190,9 @@ public final class Arrays {
 	}
 
 	public static boolean isSubset(final int[] s, final int[] l) {
-		loop: for (int i = 0; i < s.length; ++i) {
-			for (int j = 0; j < l.length; ++j) {
-				if (s[i] == l[j]) {
+		loop: for (final int element : s) {
+			for (final int element2 : l) {
+				if (element == element2) {
 					continue loop;
 				}
 			}

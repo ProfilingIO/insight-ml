@@ -31,15 +31,15 @@ import com.insightml.utils.ui.UiUtils;
 
 public class Correlation implements Comparable<Correlation> {
 
-	private final double[][] arrays;
+	private final float[][] arrays;
 
 	private final Double covariance;
 	private final double pearson;
 	private final double spearman;
 	private final double mean;
 
-	public Correlation(final double[] x, final double[] y) {
-		arrays = new double[2][x.length];
+	public Correlation(final float[] x, final float[] y) {
+		arrays = new float[2][x.length];
 		for (int i = 0; i < x.length; ++i) {
 			arrays[0][i] = x[i];
 			arrays[1][i] = y[i];

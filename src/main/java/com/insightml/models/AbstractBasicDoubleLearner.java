@@ -36,26 +36,26 @@ public abstract class AbstractBasicDoubleLearner extends AbstractDoubleLearner<D
 
 	@Override
 	public final IModel<Sample, Double> run(final LearnerInput<? extends Sample, ? extends Double> input) {
-		final Pair<double[], double[][]> filtered = filter(input);
+		final Pair<double[], float[][]> filtered = filter(input);
 		return train(filtered.getSecond(), filtered.getFirst(), input.getTrain().featureNames());
 	}
 
-	private static Pair<double[], double[][]> filter(final LearnerInput<? extends Sample, ? extends Double> input) {
-		final double[][] features = input.getTrain().features();
+	private static Pair<double[], float[][]> filter(final LearnerInput<? extends Sample, ? extends Double> input) {
+		final float[][] features = input.getTrain().features();
 		final Double[] expected = input.getTrain().expected(input.labelIndex);
 
 		final DoubleArray expFiltered = new DoubleArray(expected.length);
-		final List<double[]> featsFiltered = new LinkedList<>();
+		final List<float[]> featsFiltered = new LinkedList<>();
 		for (int i = 0; i < expected.length; ++i) {
 			if (expected[i] != null) {
 				expFiltered.add(expected[i].doubleValue());
 				featsFiltered.add(features[i]);
 			}
 		}
-		final double[][] featsArray = Arrays.of(featsFiltered, double[].class);
+		final float[][] featsArray = Arrays.of(featsFiltered, float[].class);
 		return new Pair<>(expFiltered.toArray(), featsArray);
 	}
 
-	public abstract IModel<Sample, Double> train(double[][] features, double[] expected, String[] featureNames);
+	public abstract IModel<Sample, Double> train(float[][] features, double[] expected, String[] featureNames);
 
 }

@@ -30,7 +30,7 @@ import com.insightml.utils.IArguments;
 public class AggregateFeatureProvider<I extends Sample> extends AbstractFeatureProvider<I> {
 	private final List<IFeatureProvider<I>> providers;
 
-	public AggregateFeatureProvider(final String name, final double defaultValue,
+	public AggregateFeatureProvider(final String name, final float defaultValue,
 			final List<IFeatureProvider<I>> providers) {
 		super(name, defaultValue);
 		this.providers = Check.size(providers, 2, 99);

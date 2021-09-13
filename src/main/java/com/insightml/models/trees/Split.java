@@ -55,14 +55,14 @@ public final class Split extends AbstractSplit implements Cloneable {
 	}
 
 	@Override
-	public int selectChild(final double[] features) {
+	public int selectChild(final float[] features) {
 		if (features[feature] > thresh) {
 			return 1;
 		}
 		return lastIndexNaN >= 0 && features[feature] == ThresholdSplitFinder.VALUE_MISSING ? 2 : 0;
 	}
 
-	public TreeNode selectChild(final double[] features, final TreeNode[] children) {
+	public TreeNode selectChild(final float[] features, final TreeNode[] children) {
 		if (features[feature] > thresh) {
 			return children[1];
 		}
@@ -74,11 +74,11 @@ public final class Split extends AbstractSplit implements Cloneable {
 	}
 
 	@Override
-	public String explain(final double[] features) {
+	public String explain(final float[] features) {
 		return explain(fname, features);
 	}
 
-	public String explain(final String featureName, final double[] features) {
+	public String explain(final String featureName, final float[] features) {
 		final int child = selectChild(features);
 		final double featureValue = features[feature];
 		if (child == 1) {

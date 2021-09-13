@@ -34,13 +34,13 @@ public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E
 
 	private ISamples<S, E> ref;
 	private String[] featureNames;
-	private double[][] features;
+	private float[][] features;
 	private int[][] orderedByFeatures;
 
 	FeaturesDecorator() {
 	}
 
-	public FeaturesDecorator(final ISamples<S, E> orig, final double[][] features, final String[] featureNames) {
+	public FeaturesDecorator(final ISamples<S, E> orig, final float[][] features, final String[] featureNames) {
 		this.ref = orig;
 		this.features = features;
 		this.featureNames = featureNames;
@@ -52,7 +52,7 @@ public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E
 
 		this.featureNames = featureNames;
 
-		features = new double[orig.size()][];
+		features = new float[orig.size()][];
 		ParallelFor.run(i -> {
 			final S sample = orig.get(i);
 			features[i] = sample == null ? null
@@ -93,7 +93,7 @@ public class FeaturesDecorator<S extends Sample, E> extends AbstractSamples<S, E
 	}
 
 	@Override
-	public double[][] features() {
+	public float[][] features() {
 		return features;
 	}
 

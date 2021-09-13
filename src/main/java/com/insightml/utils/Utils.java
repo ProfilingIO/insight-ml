@@ -19,48 +19,67 @@ import java.util.Random;
 
 public final class Utils {
 
-    private static int seed;
+	private static int seed;
 
-    private Utils() {
-    }
+	private Utils() {
+	}
 
-    public static double toDouble(final Object obj) {
-        if (obj instanceof Number) {
-            return ((Number) obj).doubleValue();
-        }
-        if (obj instanceof Boolean) {
-            return (Boolean) obj ? 1.0 : 0.0;
-        }
-        if (obj instanceof String) {
-            if ("true".equals(obj)) {
-                return 1;
-            }
-            if ("false".equals(obj)) {
-                return 0;
-            }
-            return Double.valueOf((String) obj);
-        }
-        throw new IllegalArgumentException(obj + "");
-    }
+	public static double toDouble(final Object obj) {
+		if (obj instanceof Number) {
+			return ((Number) obj).doubleValue();
+		}
+		if (obj instanceof Boolean) {
+			return (Boolean) obj ? 1.0 : 0.0;
+		}
+		if (obj instanceof String) {
+			if ("true".equals(obj)) {
+				return 1;
+			}
+			if ("false".equals(obj)) {
+				return 0;
+			}
+			return Double.valueOf((String) obj);
+		}
+		throw new IllegalArgumentException(obj + "");
+	}
 
-    public static double[] toDouble(final Object[] obj) {
-        final double[] res = new double[obj.length];
-        for (int i = 0; i < obj.length; ++i) {
-            res[i] = toDouble(obj[i]);
-        }
-        return res;
-    }
+	public static float toFloat(final Object obj) {
+		if (obj instanceof Number) {
+			return ((Number) obj).floatValue();
+		}
+		if (obj instanceof Boolean) {
+			return (Boolean) obj ? 1.0f : 0.0f;
+		}
+		if (obj instanceof String) {
+			if ("true".equals(obj)) {
+				return 1;
+			}
+			if ("false".equals(obj)) {
+				return 0;
+			}
+			return Float.valueOf((String) obj);
+		}
+		throw new IllegalArgumentException(obj + "");
+	}
 
-    public static Random random() {
-        return new Random(seed);
-    }
+	public static double[] toDouble(final Object[] obj) {
+		final double[] res = new double[obj.length];
+		for (int i = 0; i < obj.length; ++i) {
+			res[i] = toDouble(obj[i]);
+		}
+		return res;
+	}
 
-    public static int getRandomSeed() {
-        return seed;
-    }
+	public static Random random() {
+		return new Random(seed);
+	}
 
-    public static void setRandomSeed(final int seeed) {
-        Utils.seed = seeed;
-    }
+	public static int getRandomSeed() {
+		return seed;
+	}
+
+	public static void setRandomSeed(final int seeed) {
+		Utils.seed = seeed;
+	}
 
 }

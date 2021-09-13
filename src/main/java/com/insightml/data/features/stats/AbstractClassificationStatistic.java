@@ -30,7 +30,7 @@ public abstract class AbstractClassificationStatistic extends AbstractIndependen
 		final double min = stats.getMin(featureName);
 		final ClassFeatureMatrix matrix = new ClassFeatureMatrix(
 				(int) Math.floor((stats.getMax(featureName) - min) / binSize + 1));
-		final double[][] features = stats.getInstances().features();
+		final float[][] features = stats.getInstances().features();
 		final Object[] expected = stats.getInstances().expected(stats.getLabelIndex());
 		for (int i = 0; i < stats.getInstances().size(); ++i) {
 			final int bin = calculateBin(features[i][feature], min);

@@ -156,7 +156,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 
 		final SplitGainInfo[] sorted = getRankedSplitGains(instances, labelIndex);
 		final Map<String, String> result = new LinkedHashMap<>(sorted.length);
-		final double[][] features = instances.features();
+		final float[][] features = instances.features();
 		for (int i = 0; i < sorted.length; ++i) {
 			final FeatureCorrelation bestCor = findStrongestCorrelation(i, sorted, features);
 			if (bestCor.bestCor > maxCorrelation) {
@@ -179,7 +179,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 		final SplitGainInfo[] sorted = getRankedSplitGains(instances, labelIndex);
 		final StringBuilder result = new StringBuilder();
 		result.append("Feature,Gain,Top rule,Strongest correlation,Strongest correlation feature\n");
-		final double[][] features = instances.features();
+		final float[][] features = instances.features();
 		for (int i = 0; i < sorted.length; ++i) {
 			final FeatureCorrelation bestCor = findStrongestCorrelation(i, sorted, features);
 			result.append(sorted[i].featureName + ',');
@@ -200,7 +200,7 @@ public final class SplitGain implements IFeatureStatistic, IUiProvider<ISamples<
 	}
 
 	private static FeatureCorrelation findStrongestCorrelation(final int i, final SplitGainInfo[] sorted,
-			final double[][] features) {
+			final float[][] features) {
 		final FeatureCorrelation bestCor = new FeatureCorrelation();
 		if (i < 150) {
 			for (int j = 0; j < i; ++j) {

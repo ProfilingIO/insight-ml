@@ -52,6 +52,14 @@ public final class Matrices {
 		return b;
 	}
 
+	public static float[] column(final float[][] a, final int j) {
+		final float[] b = new float[a.length];
+		for (int i = 0; i < b.length; ++i) {
+			b[i] = a[i][j];
+		}
+		return b;
+	}
+
 	public static double[][] minus(final double[][] a, final double[][] b) {
 		final double[][] w = new double[a.length][a[0].length];
 		for (int i = 0; i < a.length; ++i) {

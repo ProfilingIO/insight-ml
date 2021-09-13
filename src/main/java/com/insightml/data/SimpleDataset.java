@@ -51,7 +51,7 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 
 	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> instances) {
 		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances.stream(),
-				SimpleSample::loadFeatures, -9999999.0, false, new IgnoreFeatureFilter()));
+				SimpleSample::loadFeatures, -9999999.0f, false, new IgnoreFeatureFilter()));
 	}
 
 	@Override

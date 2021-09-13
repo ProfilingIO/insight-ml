@@ -23,6 +23,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractBasicDoubleLearner;
 import com.insightml.models.IModel;
 import com.insightml.utils.Arguments;
+import com.insightml.utils.Arrays;
 
 public final class OLS extends AbstractBasicDoubleLearner {
 	private static final long serialVersionUID = 5220480890025818662L;
@@ -32,10 +33,15 @@ public final class OLS extends AbstractBasicDoubleLearner {
 	}
 
 	@Override
-	public IModel<Sample, Double> train(final double[][] features, final double[] expected,
+	public IModel<Sample, Double> train(final float[][] features, final double[] expected,
 			final String[] featureNames) {
 		final OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-		regression.newSampleData(expected, features);
+		// TODO: can we train it without casting the whole featureset at once?
+		final double[][] featuresAsDouble = new double[features.length][];
+		for (int i = 0; i < features.length; ++i) {
+			featuresAsDouble[i] = Arrays.asDouble(features[i]);
+		}
+		regression.newSampleData(expected, featuresAsDouble);
 		return new LinearRegressionModel(regression.estimateRegressionParameters(), featureNames);
 	}
 

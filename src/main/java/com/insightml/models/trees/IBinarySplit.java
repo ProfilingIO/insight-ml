@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 public interface IBinarySplit extends Serializable {
 
-	int selectChild(double[] features);
+	int selectChild(float[] features);
 
 	double getImprovement();
 }

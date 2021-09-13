@@ -44,7 +44,7 @@ public final class Baseline implements DoubleModel, Serializable {
 	}
 
 	@Override
-	public double predict(final double[] features, final int[] featuresFilter) {
+	public double predict(final float[] features, final int[] featuresFilter) {
 		return value;
 	}
 

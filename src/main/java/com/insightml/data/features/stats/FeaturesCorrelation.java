@@ -45,15 +45,15 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 
 	private static FeatureCorrelation calculateFeatureCorrelation(final ISamples<?, ?> samples, final int labelIndex,
 			final int feature) {
-		final double[] feats = new double[samples.size()];
-		final double[][] features = samples.features();
+		final float[] feats = new float[samples.size()];
+		final float[][] features = samples.features();
 		for (int i = 0; i < feats.length; ++i) {
 			feats[i] = features[i][feature];
 		}
 		final Object[] exp = samples.expected(labelIndex);
-		final double[] expCast = new double[exp.length];
+		final float[] expCast = new float[exp.length];
 		for (int i = 0; i < exp.length; ++i) {
-			expCast[i] = Utils.toDouble(exp[i]);
+			expCast[i] = Utils.toFloat(exp[i]);
 		}
 		return new FeatureCorrelation(feats, expCast, samples.featureNames()[feature]);
 	}
@@ -96,7 +96,7 @@ public final class FeaturesCorrelation extends AbstractClass implements IUiProvi
 	public static final class FeatureCorrelation extends Correlation {
 		private final String feature;
 
-		FeatureCorrelation(final double[] features, final double[] expected, final String featureName) {
+		FeatureCorrelation(final float[] features, final float[] expected, final String featureName) {
 			super(features, expected);
 			feature = featureName;
 		}

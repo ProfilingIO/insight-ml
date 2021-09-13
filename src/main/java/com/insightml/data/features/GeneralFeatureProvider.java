@@ -30,7 +30,7 @@ public abstract class GeneralFeatureProvider<I extends Sample> extends AbstractF
 	protected GeneralFeatureProvider() {
 	}
 
-	public GeneralFeatureProvider(final String name, final double defaultValue) {
+	public GeneralFeatureProvider(final String name, final float defaultValue) {
 		super(name, defaultValue);
 	}
 
