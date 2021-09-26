@@ -24,6 +24,7 @@ import com.insightml.data.samples.Sample;
 import com.insightml.math.Maths;
 import com.insightml.math.distributions.IDiscreteDistribution;
 import com.insightml.utils.Check;
+import com.insightml.utils.ui.SimpleFormatter;
 
 public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Object> {
 
@@ -147,6 +148,11 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		}
 
 		@Override
+		public String getName() {
+			return "Precision@" + thresholdTrue;
+		}
+
+		@Override
 		public DescriptiveStatistics label(final Serializable[] preds, final Object[] expected, final double[] weights,
 				final ISamples<?, ?> samples, final int labelIndex) {
 			int count = 0;
@@ -172,6 +178,11 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 
 		public Recall(final double thresholdTrue) {
 			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.9);
+		}
+
+		@Override
+		public String getName() {
+			return "Recall@" + thresholdTrue;
 		}
 
 		@Override
@@ -205,11 +216,17 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		}
 
 		@Override
+		public String getName() {
+			return "F" + new SimpleFormatter(2, false).format(beta) + "@" + thresholdTrue;
+		}
+
+		@Override
 		public DescriptiveStatistics label(final Serializable[] preds, final Object[] expected, final double[] weights,
 				final ISamples<?, ?> samples, final int labelIndex) {
 			return new DescriptiveStatistics(new double[] { Maths.fScore(
 					new Precision(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
-					new Recall(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(), beta), });
+					new Recall(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
+					beta), });
 		}
 	}
 }
