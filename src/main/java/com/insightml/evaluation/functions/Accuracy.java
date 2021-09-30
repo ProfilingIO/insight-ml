@@ -66,6 +66,11 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		}
 
 		@Override
+		public String getName() {
+			return getClass().getSimpleName() + "@" + thresholdTrue;
+		}
+
+		@Override
 		public final DescriptiveStatistics label(final Serializable[] preds, final Object[] expected,
 				final double[] weights, final ISamples<?, ?> samples, final int labelIndex) {
 			int count = 0;
@@ -142,14 +147,20 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		private static final long serialVersionUID = -653970887798242216L;
 
 		final double thresholdTrue;
+		private final boolean evaluatePositiveClass;
 
 		public Precision(final double thresholdTrue) {
+			this(thresholdTrue, true);
+		}
+
+		public Precision(final double thresholdTrue, final boolean evaluatePositiveClass) {
 			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.9);
+			this.evaluatePositiveClass = evaluatePositiveClass;
 		}
 
 		@Override
 		public String getName() {
-			return "Precision@" + thresholdTrue;
+			return "Precision_" + evaluatePositiveClass + "@" + thresholdTrue;
 		}
 
 		@Override
@@ -159,10 +170,19 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 			int correct = 0;
 			for (int i = 0; i < preds.length; ++i) {
 				final double[] predAndAct = toDouble(preds[i], expected[i]);
-				if (predAndAct[0] >= thresholdTrue) {
-					++count;
-					if (predAndAct[1] >= thresholdTrue) {
-						++correct;
+				if (evaluatePositiveClass) {
+					if (predAndAct[0] >= thresholdTrue) {
+						++count;
+						if (predAndAct[1] >= thresholdTrue) {
+							++correct;
+						}
+					}
+				} else {
+					if (predAndAct[0] < thresholdTrue) {
+						++count;
+						if (predAndAct[1] < thresholdTrue) {
+							++correct;
+						}
 					}
 				}
 			}
@@ -175,14 +195,20 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		private static final long serialVersionUID = -653970887798242216L;
 
 		final double thresholdTrue;
+		private final boolean evaluatePositiveClass;
 
 		public Recall(final double thresholdTrue) {
+			this(thresholdTrue, true);
+		}
+
+		public Recall(final double thresholdTrue, final boolean evaluatePositiveClass) {
 			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.9);
+			this.evaluatePositiveClass = evaluatePositiveClass;
 		}
 
 		@Override
 		public String getName() {
-			return "Recall@" + thresholdTrue;
+			return "Recall_" + evaluatePositiveClass + "@" + thresholdTrue;
 		}
 
 		@Override
@@ -192,11 +218,20 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 			int correct = 0;
 			for (int i = 0; i < preds.length; ++i) {
 				final double[] predAndAct = toDouble(preds[i], expected[i]);
-				if (predAndAct[0] >= thresholdTrue && predAndAct[1] >= thresholdTrue) {
-					++correct;
-				}
-				if (predAndAct[1] >= thresholdTrue) {
-					++count;
+				if (evaluatePositiveClass) {
+					if (predAndAct[1] >= thresholdTrue) {
+						++count;
+						if (predAndAct[0] >= thresholdTrue) {
+							++correct;
+						}
+					}
+				} else {
+					if (predAndAct[1] < thresholdTrue) {
+						++count;
+						if (predAndAct[0] < thresholdTrue) {
+							++correct;
+						}
+					}
 				}
 			}
 			return new DescriptiveStatistics(new double[] { correct * 1.0 / count });
@@ -209,23 +244,31 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 
 		final double thresholdTrue;
 		private final double beta;
+		private final boolean evaluatePositiveClass;
 
 		public FScore(final double thresholdTrue, final double beta) {
+			this(thresholdTrue, beta, true);
+		}
+
+		public FScore(final double thresholdTrue, final double beta, final boolean evaluatePositiveClass) {
 			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.9);
 			this.beta = beta;
+			this.evaluatePositiveClass = evaluatePositiveClass;
 		}
 
 		@Override
 		public String getName() {
-			return "F" + new SimpleFormatter(2, false).format(beta) + "@" + thresholdTrue;
+			return "F" + new SimpleFormatter(2, false).format(beta) + "_" + evaluatePositiveClass + "@" + thresholdTrue;
 		}
 
 		@Override
 		public DescriptiveStatistics label(final Serializable[] preds, final Object[] expected, final double[] weights,
 				final ISamples<?, ?> samples, final int labelIndex) {
 			return new DescriptiveStatistics(new double[] { Maths.fScore(
-					new Precision(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
-					new Recall(thresholdTrue).label(preds, expected, weights, samples, labelIndex).getMean(),
+					new Precision(thresholdTrue, evaluatePositiveClass)
+							.label(preds, expected, weights, samples, labelIndex).getMean(),
+					new Recall(thresholdTrue, evaluatePositiveClass)
+							.label(preds, expected, weights, samples, labelIndex).getMean(),
 					beta), });
 		}
 	}
