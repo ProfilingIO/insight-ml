@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import com.insightml.data.features.FeaturesConsumer;
 import com.insightml.data.features.SimpleFeaturesProvider;
 import com.insightml.data.features.selection.FeatureFilterFactory;
 import com.insightml.data.features.selection.IgnoreFeatureFilter;
@@ -51,7 +52,7 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 
 	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> instances) {
 		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances.stream(),
-				SimpleSample::loadFeatures, -9999999.0f, false, new IgnoreFeatureFilter()));
+				new SimpleSamplesFeatureProvider<>(), -9999999.0f, false, new IgnoreFeatureFilter()));
 	}
 
 	@Override
@@ -68,5 +69,19 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 	@Override
 	public Collection<I> loadAll() {
 		return training;
+	}
+
+	static final class SimpleSamplesFeatureProvider<S extends SimpleSample> implements SimpleFeaturesProvider<S> {
+
+		@Override
+		public String getName() {
+			return "SimpleSamplesFeatureProvider";
+		}
+
+		@Override
+		public void apply(final S sample, final FeaturesConsumer consumer) {
+			sample.loadFeatures(consumer);
+		}
+
 	}
 }

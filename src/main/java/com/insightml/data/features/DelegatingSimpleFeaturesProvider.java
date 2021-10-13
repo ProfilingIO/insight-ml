@@ -15,6 +15,9 @@
  */
 package com.insightml.data.features;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import com.insightml.data.samples.Sample;
 
 public class DelegatingSimpleFeaturesProvider<S extends Sample> implements SimpleFeaturesProvider<S> {
@@ -24,6 +27,11 @@ public class DelegatingSimpleFeaturesProvider<S extends Sample> implements Simpl
 	@SafeVarargs
 	public DelegatingSimpleFeaturesProvider(final SimpleFeaturesProvider<? super S>... providers) {
 		this.providers = providers;
+	}
+
+	@Override
+	public String getName() {
+		return Arrays.stream(providers).map(p -> p.getName()).collect(Collectors.joining("+"));
 	}
 
 	@Override

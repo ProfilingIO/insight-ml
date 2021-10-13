@@ -19,5 +19,7 @@ import com.insightml.data.samples.Sample;
 
 public interface SimpleFeaturesProvider<S extends Sample> {
 
+	String getName();
+
 	void apply(S sample, FeaturesConsumer consumer);
 }

@@ -153,7 +153,7 @@ public final class AnonymousFeaturesConfig<S extends Sample, O> extends Features
 
 		public SimpleFeatureProvider(final String[] featureNames,
 				final SimpleFeaturesProvider<S> simpleFeaturesProvider, final float defaultValue) {
-			super("features", defaultValue);
+			super(simpleFeaturesProvider.getName(), defaultValue);
 			this.featureNames = featureNames;
 			this.simpleFeaturesProvider = simpleFeaturesProvider;
 		}
