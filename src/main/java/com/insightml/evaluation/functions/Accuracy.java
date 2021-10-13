@@ -154,7 +154,7 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		}
 
 		public Precision(final double thresholdTrue, final boolean evaluatePositiveClass) {
-			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.9);
+			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.975);
 			this.evaluatePositiveClass = evaluatePositiveClass;
 		}
 
@@ -202,7 +202,7 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 		}
 
 		public Recall(final double thresholdTrue, final boolean evaluatePositiveClass) {
-			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.9);
+			this.thresholdTrue = Check.num(thresholdTrue, 0.025, 0.975);
 			this.evaluatePositiveClass = evaluatePositiveClass;
 		}
 
@@ -270,6 +270,47 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 					new Recall(thresholdTrue, evaluatePositiveClass)
 							.label(preds, expected, weights, samples, labelIndex).getMean(),
 					beta), });
+		}
+	}
+
+	public static final class FScoreMax extends AbstractIndependentLabelsObjectiveFunction<Object, Serializable> {
+
+		private static final long serialVersionUID = -653970887798242216L;
+
+		private final double beta;
+		private final boolean evaluatePositiveClass;
+
+		public FScoreMax(final double beta) {
+			this(beta, true);
+		}
+
+		public FScoreMax(final double beta, final boolean evaluatePositiveClass) {
+			this.beta = beta;
+			this.evaluatePositiveClass = evaluatePositiveClass;
+		}
+
+		@Override
+		public String getName() {
+			return "F" + new SimpleFormatter(2, false).format(beta) + "_" + evaluatePositiveClass + "_max";
+		}
+
+		@Override
+		public DescriptiveStatistics label(final Serializable[] preds, final Object[] expected, final double[] weights,
+				final ISamples<?, ?> samples, final int labelIndex) {
+			double max = -1;
+			for (double t = 0.025; t <= 0.975; t += 0.025) {
+				final double fscore = Maths.fScore(
+						new Precision(t, evaluatePositiveClass).label(preds, expected, weights, samples, labelIndex)
+								.getMean(),
+						new Recall(t, evaluatePositiveClass).label(preds, expected, weights, samples, labelIndex)
+								.getMean(),
+						beta);
+				if (fscore > max) {
+					max = fscore;
+				}
+			}
+
+			return new DescriptiveStatistics(new double[] { max });
 		}
 	}
 }

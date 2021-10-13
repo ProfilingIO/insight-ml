@@ -210,7 +210,8 @@ public final class Stats extends AbstractClass implements MutableStatistics, Ser
 	public String toString() {
 		final SimpleFormatter formatter = new SimpleFormatter();
 		if (getN() == 1) {
-			return "{" + formatter.format(getSum()) + "," + formatter.format(getWeightedSum()) + "}";
+			return sum == sumWeighted ? formatter.format(sum)
+					: "{" + formatter.format(sum) + "," + formatter.format(sumWeighted) + "}";
 		}
 		return getN()
 				+ (getN() > 0

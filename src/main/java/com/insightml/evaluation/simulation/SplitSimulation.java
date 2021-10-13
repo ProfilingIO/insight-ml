@@ -43,7 +43,7 @@ public final class SplitSimulation<I extends Sample> extends AbstractSimulation<
 	@Override
 	public <E, P> ISimulationResults<E, P>[] run(final Iterable<I> train, final SimulationSetup<I, E, P> setup) {
 		final Pair<Iterable<I>, List<I>> split = split(train, trainFraction, Utils.random());
-		return run(split.getFirst(), split.getSecond(), setup);
+		return run(() -> split.getFirst(), () -> split.getSecond(), setup);
 	}
 
 	public static <S extends Sample> Pair<Iterable<S>, List<S>> split(final Iterable<S> instances,

@@ -23,7 +23,6 @@ import com.insightml.math.statistics.Stats;
 import com.insightml.models.Predictions;
 import com.insightml.utils.types.AbstractClass;
 import com.insightml.utils.types.collections.PairList;
-import com.insightml.utils.ui.SimpleFormatter;
 import com.insightml.utils.ui.UiUtils;
 
 public final class SimulationResults<E, P> extends AbstractClass implements Serializable, ISimulationResults<E, P> {
@@ -104,16 +103,12 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 	@Override
 	public String getReport() {
 		getResults();
-		final SimpleFormatter formatter = new SimpleFormatter(5, true);
 		final PairList<String, String> info = new PairList<>();
 		info.add("Model", learner);
 		info.add("Training time", trainingIimeInMillis + " ms");
 		info.add("Prediction time", predictionIimeInMillis + " ms");
 		for (int i = 0; i < objectives.length; ++i) {
-			info.add(objectives[i].getName(),
-					formatter.format(stats[i].getMean()) + " \u00B1" + formatter.format(stats[i].getStandardDeviation())
-							+ " [" + formatter.format(stats[i].getMin()) + "," + formatter.format(stats[i].getMax())
-							+ "]");
+			info.add(objectives[i].getName(), stats[i].toString());
 		}
 		// builder.addValue(UiUtils.format(getFeatures()));
 		return UiUtils.format(info);

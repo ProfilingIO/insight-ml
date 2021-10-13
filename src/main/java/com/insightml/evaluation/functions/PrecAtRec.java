@@ -60,8 +60,6 @@ public final class PrecAtRec extends AbstractIndependentLabelsObjectiveFunction<
 			final double[] predAndAct = toDouble(preds[i], expected[i]);
 			if (predAndAct[1] >= 0.5) {
 				if (++correct * 1.0 / totalTrue >= minRecall) {
-					System.err.println("Stop at " + correct + "/" + totalTrue + " after " + totalPreds + ": " + preds[i]
-							+ ", " + expected[i]);
 					break;
 				}
 			}

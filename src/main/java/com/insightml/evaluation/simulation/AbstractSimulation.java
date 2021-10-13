@@ -16,6 +16,7 @@
 package com.insightml.evaluation.simulation;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +75,8 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 				task.getSimulationSetup(learner, dataset, arguments, report, null));
 	}
 
-	protected final <E, P> ISimulationResults<E, P>[] run(final Iterable<I> train, final Iterable<I> test,
-			final SimulationSetup<I, E, P> setup) {
+	public final <E, P> ISimulationResults<E, P>[] run(final Supplier<? extends Iterable<I>> train,
+			final Supplier<? extends Iterable<I>> test, final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learners = setup.getLearner();
 		final SimulationResults<E, P>[] results = new SimulationResults[learners.length];
 		final int numLabels = 1;
@@ -85,9 +86,9 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			for (int i = 0; i < numLabels; ++i) {
 				logger.debug("Training model...");
 				final long start = System.currentTimeMillis();
-				final ModelPipeline<I, P> model = learners[l].run(train, test, setup.getConfig(), i);
+				final ModelPipeline<I, P> model = learners[l].run(train.get(), null, setup.getConfig(), i);
 				logger.debug("Making predictions...");
-				builder.add(Predictions.create(1, model, test, (int) (System.currentTimeMillis() - start)));
+				builder.add(Predictions.create(1, model, test.get(), (int) (System.currentTimeMillis() - start)));
 				if (setup.doReport()) {
 					logger.info(model.info());
 				}

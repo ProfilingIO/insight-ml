@@ -16,6 +16,8 @@
 package com.insightml.utils.ui;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
@@ -26,7 +28,7 @@ public final class SimpleFormatter extends AbstractNumberPrinter {
 	private final DecimalFormat format;
 
 	public SimpleFormatter() {
-		this(5, true);
+		this(5, false);
 	}
 
 	public SimpleFormatter(final int precision, final boolean removeFirstZero) {
@@ -40,7 +42,8 @@ public final class SimpleFormatter extends AbstractNumberPrinter {
 
 	@Nonnull
 	public static DecimalFormat createDecimalFormatter(final int precision, final boolean removeFirstZero) {
-		return new DecimalFormat((removeFirstZero ? "" : "0") + "." + Strings.repeat("0", precision));
+		return new DecimalFormat((removeFirstZero ? "" : "0") + "." + Strings.repeat("0", precision),
+				DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 	}
 
 	@Override
