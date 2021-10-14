@@ -313,4 +313,42 @@ public final class Accuracy extends AbstractObjectiveFunctionFrame<Object, Objec
 			return new DescriptiveStatistics(new double[] { max });
 		}
 	}
+
+	public static final class FScoreMacroMax extends AbstractIndependentLabelsObjectiveFunction<Object, Serializable> {
+
+		private static final long serialVersionUID = -653970887798242216L;
+
+		private final double beta;
+
+		public FScoreMacroMax(final double beta) {
+			this.beta = beta;
+		}
+
+		@Override
+		public String getName() {
+			return "F" + new SimpleFormatter(2, false).format(beta) + "_macro_max";
+		}
+
+		@Override
+		public DescriptiveStatistics label(final Serializable[] preds, final Object[] expected, final double[] weights,
+				final ISamples<?, ?> samples, final int labelIndex) {
+			double max = -1;
+			for (double t = 0.025; t <= 0.975; t += 0.025) {
+				final double fscore = (Maths.fScore(
+						new Precision(t, true).label(preds, expected, weights, samples, labelIndex).getMean(),
+						new Recall(t, true).label(preds, expected, weights, samples, labelIndex).getMean(),
+						beta)
+						+ Maths.fScore(
+								new Precision(t, false).label(preds, expected, weights, samples, labelIndex).getMean(),
+								new Recall(t, false).label(preds, expected, weights, samples, labelIndex).getMean(),
+								beta))
+						* 0.5;
+				if (fscore > max) {
+					max = fscore;
+				}
+			}
+
+			return new DescriptiveStatistics(new double[] { max });
+		}
+	}
 }
