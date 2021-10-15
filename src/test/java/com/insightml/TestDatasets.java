@@ -45,9 +45,8 @@ public final class TestDatasets {
 
 	public static SimpleDataset<SimpleSample, Double> createNumeric() {
 		try {
-			return createNumeric(
-					IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/winequality-white.csv.gz")), ';',
-					12, 11);
+			return createNumeric(IoUtils
+					.gzipReader(TestDatasets.class.getResourceAsStream("/data/winequality-white.csv.gz")), ';', 12, 11);
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -55,9 +54,8 @@ public final class TestDatasets {
 
 	public static SimpleDataset<SimpleSample, Double> numericCommunities() {
 		try {
-			return createNumeric(
-					IoUtils.gzipReader(TestDatasets.class.getResourceAsStream("/data/communities.data.gz")), ';', 102,
-					101);
+			return createNumeric(IoUtils
+					.gzipReader(TestDatasets.class.getResourceAsStream("/data/communities.data.gz")), ';', 102, 101);
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -79,9 +77,9 @@ public final class TestDatasets {
 		}
 		for (int i = 0; i < numSamples; ++i) {
 			final Double[] label = new Double[] { rnd.nextDouble() };
-			final double[] f = new double[numFeatures];
+			final float[] f = new float[numFeatures];
 			for (int j = 0; j < numFeatures; ++j) {
-				f[j] = rnd.nextDouble();
+				f[j] = rnd.nextFloat();
 			}
 			list.add(new TestInstance(label, f, names));
 		}
@@ -94,7 +92,8 @@ public final class TestDatasets {
 		for (int i = 0; i < 400; ++i) {
 			final int random = rnd.nextInt(3);
 			list.add(createInstance(
-					new Double[] { random == 0 ? 1.0 : 0.0, random == 1 ? 1.0 : 0.0, random == 2 ? 1.0 : 0.0, }, random,
+					new Double[] { random == 0 ? 1.0 : 0.0, random == 1 ? 1.0 : 0.0, random == 2 ? 1.0 : 0.0, },
+					random,
 					rnd));
 		}
 		return SimpleDataset.create(list);
@@ -104,18 +103,22 @@ public final class TestDatasets {
 		final List<SimpleSample> list = new LinkedList<>();
 		final Random rnd = new Random(0);
 		for (int i = 0; i < 2000; ++i) {
-			final double random = rnd.nextDouble();
+			final float random = rnd.nextFloat();
 			list.add(createInstance(new Double[] { random <= 0.5 ? 1.0 : 0.0 }, random * 10, rnd));
 		}
 		return SimpleDataset.create(list);
 	}
 
-	private static SimpleSample createInstance(final Object[] label, final double offset, final Random random) {
-		return createInstance(label, offset + 7 + random.nextDouble(), offset + 3 + random.nextDouble(),
-				offset + 5 + random.nextDouble(), offset + 1 + random.nextDouble(), offset + 9 + random.nextDouble());
+	private static SimpleSample createInstance(final Object[] label, final float offset, final Random random) {
+		return createInstance(label,
+				offset + 7 + random.nextFloat(),
+				offset + 3 + random.nextFloat(),
+				offset + 5 + random.nextFloat(),
+				offset + 1 + random.nextFloat(),
+				offset + 9 + random.nextFloat());
 	}
 
-	private static SimpleSample createInstance(final Object[] label, final double... f) {
+	private static SimpleSample createInstance(final Object[] label, final float... f) {
 		final String[] names = new String[5];
 		for (int i = 0; i < 5; ++i) {
 			names[i] = "f" + (i + 1);

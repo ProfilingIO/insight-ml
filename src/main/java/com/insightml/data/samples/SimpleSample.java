@@ -23,10 +23,10 @@ public class SimpleSample implements Sample, Cloneable {
 
 	private final int id;
 	private final Object[] labels;
-	private final double[] features;
+	private final float[] features;
 	private final String[] featureNames;
 
-	public SimpleSample(final int id, final Object[] label, final double[] features, final String[] featureNames) {
+	public SimpleSample(final int id, final Object[] label, final float[] features, final String[] featureNames) {
 		Check.equals(features.length, featureNames.length, "features");
 		this.id = id;
 		labels = label;

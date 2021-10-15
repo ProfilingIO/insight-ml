@@ -26,34 +26,32 @@ import com.insightml.data.samples.SimpleSample;
 
 public class TestInstance extends SimpleSample {
 
-    private static final long serialVersionUID = -4381058641738370505L;
+	private static final long serialVersionUID = -4381058641738370505L;
 
-    private static int ids = 1;
+	private static int ids = 1;
 
-    public TestInstance(final Object[] label, final double[] features, final String[] names) {
-        super(++ids, label, features, names);
-    }
+	public TestInstance(final Object[] label, final float[] features, final String[] names) {
+		super(++ids, label, features, names);
+	}
 
-    public static TestInstance creat(final Serializable label) {
-        return new TestInstance(new Serializable[] {label }, new double[] {0.5 },
-                new String[] {"dummy" });
-    }
+	public static TestInstance creat(final Serializable label) {
+		return new TestInstance(new Serializable[] { label }, new float[] { 0.5f }, new String[] { "dummy" });
+	}
 
-    public static Iterable<TestInstance> create(final String... labels) {
-        final Set<String> labelz = new HashSet<>();
-        labelz.add("dummyLabel");
-        final List<TestInstance> instances = new LinkedList<>();
-        for (final String label : labels) {
-            instances.add(new TestInstance(new String[] {label }, new double[] {0.5 },
-                    new String[] {"dummy" }));
-            labelz.add(label);
-        }
-        return SimpleDataset.create(instances).loadAll();
-    }
+	public static Iterable<TestInstance> create(final String... labels) {
+		final Set<String> labelz = new HashSet<>();
+		labelz.add("dummyLabel");
+		final List<TestInstance> instances = new LinkedList<>();
+		for (final String label : labels) {
+			instances.add(new TestInstance(new String[] { label }, new float[] { 0.5f }, new String[] { "dummy" }));
+			labelz.add(label);
+		}
+		return SimpleDataset.create(instances).loadAll();
+	}
 
-    @Override
-    public final String toString() {
-        return "TestInstance{" + getId() + "}";
-    }
+	@Override
+	public final String toString() {
+		return "TestInstance{" + getId() + "}";
+	}
 
 }
