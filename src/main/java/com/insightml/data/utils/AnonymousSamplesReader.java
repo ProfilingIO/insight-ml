@@ -23,7 +23,7 @@ import com.insightml.data.samples.SimpleSample;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.io.AbstractImporter;
-import com.insightml.utils.types.collections.DoubleArray;
+import com.insightml.utils.types.collections.FloatArray;
 import com.insightml.utils.types.collections.IList;
 
 public final class AnonymousSamplesReader<S extends SimpleSample> extends AbstractImporter<S, Double> {
@@ -47,12 +47,12 @@ public final class AnonymousSamplesReader<S extends SimpleSample> extends Abstra
 	@SuppressWarnings("null")
 	@Override
 	protected List<S> importLine(final int lineNum, final String[] line, final String[] columnNames) {
-		final DoubleArray features = new DoubleArray(columnNames.length);
+		final FloatArray features = new FloatArray(columnNames.length);
 		final List<String> names = new LinkedList<>();
 		for (int i = 0; i < line.length; ++i) {
 			if ((idIndex == null || i != idIndex) && (labelIndex == null || i != labelIndex)) {
 				Check.notNull(line[i], columnNames[i] + " not set in line " + lineNum + ".");
-				features.add(Double.parseDouble(line[i]));
+				features.add(Float.parseFloat(line[i]));
 				names.add(columnNames[i]);
 			}
 		}
