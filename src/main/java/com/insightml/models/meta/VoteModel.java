@@ -102,10 +102,14 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 					// are full statistics
 					map[j] = prediction instanceof FullStatistics ? new FullStatisticsBuilder()
 							: new MutableStatsBuilder<>(new Stats());
-					debg[j] = new VoteModelDebug();
+					if (debug) {
+						debg[j] = new VoteModelDebug();
+					}
 				}
 				map[j].add(prediction);
-				debg[j].add(preds[j].getDebug());
+				if (debug) {
+					debg[j].add(preds[j].getDebug());
+				}
 			}
 		}
 		final DistributionPrediction[] result = new DistributionPrediction[map.length];
