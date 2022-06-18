@@ -17,7 +17,7 @@ package com.insightml.math.statistics;
 
 import java.util.Map;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 public class FullStatistics implements IStats {
 
@@ -108,8 +108,8 @@ public class FullStatistics implements IStats {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("n", n).add("mean", (float) getMean())
-				.add("stdDev", (float) getStandardDeviation()).toString();
+		return MoreObjects.toStringHelper(this).add("n", n).add("mean", (float) getMean())
+				.add("stdDev", (float) standardDeviation).toString();
 	}
 
 }

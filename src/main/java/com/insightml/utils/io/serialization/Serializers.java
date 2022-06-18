@@ -44,7 +44,7 @@ class Serializers {
 		}
 
 		@Override
-		public IList read(final Kryo kryo, final Input input, final Class<IList> type) {
+		public IList read(final Kryo kryo, final Input input, final Class<? extends IList> type) {
 			return new IList<>(kryo.readObject(input, LinkedList.class, listSerializer));
 		}
 	}

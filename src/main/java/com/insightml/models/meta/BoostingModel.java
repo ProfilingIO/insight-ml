@@ -18,6 +18,7 @@ package com.insightml.models.meta;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
@@ -92,7 +93,7 @@ public final class BoostingModel extends AbstractModel<Sample, Double> {
 
 	@Override
 	public String getName() {
-		return Objects.toStringHelper(this).add("first", first).add("steps", steps.size()).toString();
+		return MoreObjects.toStringHelper(this).add("first", first).add("steps", steps.size()).toString();
 	}
 
 	@Override

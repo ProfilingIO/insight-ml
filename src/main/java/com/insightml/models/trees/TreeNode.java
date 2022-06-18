@@ -282,7 +282,7 @@ public final class TreeNode extends AbstractClass implements Serializable {
 
 		@Override
 		public String toString() {
-			return com.google.common.base.Objects.toStringHelper(this).add("appliedRules", appliedRules)
+			return com.google.common.base.MoreObjects.toStringHelper(this).add("appliedRules", appliedRules)
 					.add("impactByFeature", impactByFeature).toString();
 		}
 	}

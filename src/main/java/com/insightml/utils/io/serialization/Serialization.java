@@ -36,11 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Kryo.DefaultInstantiatorStrategy;
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers.KryoSerializableSerializer;
+import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
 import com.insightml.utils.Check;
 import com.insightml.utils.io.serialization.Serializers.IListSerializer;
 import com.insightml.utils.types.collections.IList;
@@ -61,7 +61,7 @@ public final class Serialization implements ISerializer {
 
 	private static Kryo kryo() {
 		final Kryo kryo = new Kryo();
-		kryo.setRegistrationRequired(!true);
+		kryo.setRegistrationRequired(false);
 		kryo.register(IList.class, new IListSerializer());
 		kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
 		kryo.addDefaultSerializer(ListFacade.class, KryoSerializableSerializer.class);
@@ -99,7 +99,7 @@ public final class Serialization implements ISerializer {
 		if (false) {
 			logger.info("Unserializing " + file);
 		}
-		try (FileInputStream stream = new FileInputStream(file)) {
+		try (final FileInputStream stream = new FileInputStream(file)) {
 			return unserialize(stream, clazz);
 		}
 	}

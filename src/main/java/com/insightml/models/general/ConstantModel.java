@@ -15,7 +15,9 @@
  */
 package com.insightml.models.general;
 
-import com.google.common.base.Objects;
+import javax.annotation.Nonnull;
+
+import com.google.common.base.MoreObjects;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.models.AbstractModel;
@@ -34,6 +36,7 @@ public final class ConstantModel<E> extends AbstractModel<Sample, E> {
 		this.constant = constant;
 	}
 
+	@Nonnull
 	@Override
 	public E[] apply(final ISamples<? extends Sample, ?> input) {
 		return Arrays.fill(input.size(), constant);
@@ -46,6 +49,6 @@ public final class ConstantModel<E> extends AbstractModel<Sample, E> {
 
 	@Override
 	public String getName() {
-		return Objects.toStringHelper(this).addValue(constant).toString();
+		return MoreObjects.toStringHelper(this).addValue(constant).toString();
 	}
 }
