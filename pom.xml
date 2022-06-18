@@ -148,6 +148,7 @@
 						<exclude>**/pom.xml</exclude>
 						<exclude>**/header.xml</exclude>
 						<exclude>**/README</exclude>
+						<exclude>.github/**</exclude>
 						<exclude>*.properties</exclude>
 						<exclude>src/test/resources/**</exclude>
 						<exclude>src/main/resources/**</exclude>
