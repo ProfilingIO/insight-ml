@@ -120,10 +120,10 @@ public class BinomialStatistics implements MutableStatistics {
 		++trials;
 		weightedTrials += weight;
 
-		if ((float) value == 1) {
+		if (Math.abs(value - 1) < 0.0001) {
 			++successes;
 			weightedSuccesses += weight;
-		} else if ((float) value != 0) {
+		} else if (Math.abs(value) > 0.0001) {
 			throw new IllegalArgumentException("Can only handle values '0' and '1'");
 		}
 	}
@@ -147,12 +147,12 @@ public class BinomialStatistics implements MutableStatistics {
 
 	private static void checkIfBinomial(final IStats stats) {
 		final double min = stats.getMin();
-		if (min != 0 && min != 1) {
-			throw new IllegalArgumentException("Binomial distribution expects only values of 0 and 1");
+		if (Math.abs(min) > 0.0001 && Math.abs(min - 1) > 0.0001) {
+			throw new IllegalArgumentException("Binomial distribution expects only values of 0 and 1, but got minimum value of " + min);
 		}
 		final double max = stats.getMax();
-		if (max != 0 && max != 1) {
-			throw new IllegalArgumentException("Binomial distribution expects only values of 0 and 1");
+		if (Math.abs(max) > 0.0001 && Math.abs(max - 1) > 0.0001) {
+			throw new IllegalArgumentException("Binomial distribution expects only values of 0 and 1, but got maximum value of " + max);
 		}
 	}
 
