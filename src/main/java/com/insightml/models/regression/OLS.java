@@ -45,7 +45,7 @@ public final class OLS extends AbstractBasicDoubleLearner {
 		return new LinearRegressionModel(regression.estimateRegressionParameters(), featureNames);
 	}
 
-	public static double[][] addIntercept(final double[][] x) {
+	public static double[][] addIntercept(final float[][] x) {
 		final int nVars = x[0].length;
 		final double[][] xAug = new double[x.length][nVars + 1];
 		for (int i = 0; i < x.length; ++i) {
@@ -58,7 +58,7 @@ public final class OLS extends AbstractBasicDoubleLearner {
 		return xAug;
 	}
 
-	public static Array2DRowRealMatrix addIntercept2(final double[][] x) {
+	public static Array2DRowRealMatrix addIntercept2(final float[][] x) {
 		return new Array2DRowRealMatrix(addIntercept(x), false);
 	}
 

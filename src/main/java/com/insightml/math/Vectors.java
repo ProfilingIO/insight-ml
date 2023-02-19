@@ -211,7 +211,7 @@ public final class Vectors {
 
 	public static double[] normalize(final double[] vec) {
 		final double[] norm = new double[vec.length];
-		final double sum = Vectors.sum(vec);
+		final double sum = sum(vec);
 		for (int i = 0; i < vec.length; ++i) {
 			norm[i] = vec[i] / sum;
 		}
@@ -238,4 +238,11 @@ public final class Vectors {
 		return result;
 	}
 
+	public static double[] toDouble(final float[] floats) {
+		final double[] result = new double[floats.length];
+		for (int i = 0; i < floats.length; ++i) {
+			result[i] = floats[i];
+		}
+		return result;
+	}
 }

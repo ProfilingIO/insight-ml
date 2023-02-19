@@ -30,29 +30,36 @@ import com.insightml.utils.IArguments;
 
 public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I, O> {
 
-	private final @Nonnull Collection<I> training;
+	@Nonnull
+	private final Collection<I> training;
 	private final FeaturesConfig<I, O> config;
 
-	public SimpleDataset(final String name, final @Nonnull Collection<I> training, final FeaturesConfig<I, O> config) {
+	public SimpleDataset(final String name, @Nonnull final Collection<I> training, final FeaturesConfig<I, O> config) {
 		super(name);
 		this.training = training;
 		this.config = config;
 	}
 
-	public static <S extends Sample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> samples,
+	public static <S extends Sample, O> SimpleDataset<S, O> create(@Nonnull final Collection<S> samples,
 			final SimpleFeaturesProvider<S> featuresProvider) {
 		return create(samples, featuresProvider, new IgnoreFeatureFilter());
 	}
 
-	public static <S extends Sample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> samples,
+	public static <S extends Sample, O> SimpleDataset<S, O> create(@Nonnull final Collection<S> samples,
 			final SimpleFeaturesProvider<S> featuresProvider, final FeatureFilterFactory featureFilter) {
-		return new SimpleDataset<>("SimpleDataset", samples,
+		return new SimpleDataset<>("SimpleDataset",
+				samples,
 				new AnonymousFeaturesConfig<>(samples.stream(), featuresProvider, 1, 0, false, featureFilter));
 	}
 
-	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(final @Nonnull Collection<S> instances) {
-		return new SimpleDataset<>("SimpleDataset", instances, new AnonymousFeaturesConfig<>(instances.stream(),
-				new SimpleSamplesFeatureProvider<>(), -9999999.0f, false, new IgnoreFeatureFilter()));
+	public static <S extends SimpleSample, O> SimpleDataset<S, O> create(@Nonnull final Collection<S> instances) {
+		return new SimpleDataset<>("SimpleDataset",
+				instances,
+				new AnonymousFeaturesConfig<>(instances.stream(),
+						new SimpleSamplesFeatureProvider<>(),
+						-9999999.0f,
+						false,
+						new IgnoreFeatureFilter()));
 	}
 
 	@Override
@@ -71,7 +78,8 @@ public final class SimpleDataset<I extends Sample, O> extends AbstractDataset<I,
 		return training;
 	}
 
-	static final class SimpleSamplesFeatureProvider<S extends SimpleSample> implements SimpleFeaturesProvider<S> {
+	public static final class SimpleSamplesFeatureProvider<S extends SimpleSample>
+			implements SimpleFeaturesProvider<S> {
 
 		@Override
 		public String getName() {

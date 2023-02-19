@@ -102,4 +102,12 @@ public final class Matrices {
 		return copy;
 	}
 
+	public static double[][] toDouble(final float[][] a) {
+		final double[][] copy = new double[a.length][];
+		for (int i = 0; i < a.length; ++i) {
+			copy[i] = Vectors.toDouble(a[i]);
+		}
+		return copy;
+	}
+
 }
