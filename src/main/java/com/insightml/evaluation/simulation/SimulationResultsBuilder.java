@@ -15,15 +15,15 @@
  */
 package com.insightml.evaluation.simulation;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationSetup.PERFORMANCE_SELECTOR;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class SimulationResultsBuilder<E, P> {
 	private final String learner;
@@ -36,9 +36,9 @@ public class SimulationResultsBuilder<E, P> {
 	private final Predictions<E, P>[][] predictions;
 
 	public SimulationResultsBuilder(final String modelName, final int numSets, final int numLabels,
-			final SimulationSetup<?, E, P> setup) {
+									final SimulationSetup<?, E, P> setup) {
 		learner = modelName;
-		this.objectives = setup.getObjectives();
+		objectives = setup.getObjectives();
 		criteria = setup.getCriteria();
 		predictions = new Predictions[Check.num(numSets, 1, 9999)][Check.num(numLabels, 1, 99)];
 	}
@@ -47,8 +47,8 @@ public class SimulationResultsBuilder<E, P> {
 		final int set = Check.num(preds.getSet() - 1, 0, predictions.length - 1);
 		Check.isNull(predictions[set][preds.getLabelIndex()]);
 		predictions[set][preds.getLabelIndex()] = preds;
-		this.trainingIimeInMillis += preds.getModelTrainingTimeInMillis();
-		this.predictionIimeInMillis += preds.getTimeInMillis();
+		trainingIimeInMillis += preds.getModelTrainingTimeInMillis();
+		predictionIimeInMillis += preds.getTimeInMillis();
 	}
 
 	public SimulationResults<E, P> build() {
@@ -65,7 +65,7 @@ public class SimulationResultsBuilder<E, P> {
 		for (int m = 0; m < objectives.length; ++m) {
 			for (final double value : Check.size(objectives[m].acrossLabels(preds).getValues(),
 					1,
-					999999,
+					9999999,
 					objectives[m])) {
 				stats[m].add(value);
 			}
