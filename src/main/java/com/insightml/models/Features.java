@@ -15,15 +15,17 @@
  */
 package com.insightml.models;
 
-import java.util.Map;
-
 import com.insightml.utils.types.DoublePair;
+
+import java.util.Map;
 
 public interface Features extends Iterable<DoublePair<String>> {
 
 	Map<String, Double> asMap();
 
 	double[] toDoubleArray();
+
+	float[] toFloatArray();
 
 	Features copy();
 
