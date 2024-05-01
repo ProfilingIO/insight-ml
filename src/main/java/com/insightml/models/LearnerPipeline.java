@@ -98,7 +98,8 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 				learner.getOriginalArguments());
 		final Iterable<S> samples = modelAndPipe.getFirst();
 		final PreprocessingPipeline<S> pipe = modelAndPipe.getSecond();
-		final File cacheFile = new File("cache/samples_" + samples.hashCode() + "_" + pipe.hashCode());
+		final File cacheFile = new File(
+				"cache/samples_" + samples.hashCode() + (pipe == null ? "" : "_" + pipe.hashCode()));
 		final IModel<S, O> model = (IModel<S, O>) learner
 				.run(createSamples(samples, pipe, cacheFile), null, config, labelIndex);
 		return new ModelPipeline<>(model, pipe, config == null ? null : config.getPostProcessor(), labelIndex);
@@ -110,7 +111,7 @@ public final class LearnerPipeline<S extends Sample, E, O> extends AbstractModul
 	}
 
 	public Pair<Iterable<S>, PreprocessingPipeline<S>> modelAndPipe(final Iterable<S> data,
-			final FeaturesConfig<? extends S, O> origConfig, final @Nonnull IArguments arguments) {
+			final FeaturesConfig<? extends S, O> origConfig, @Nonnull final IArguments arguments) {
 		final Pair<Iterable<S>, List<S>> split = SplitSimulation.split(data, trainRatio, null);
 		final Iterable<S> train = split.getFirst();
 		List<S> valid = split.getSecond();
