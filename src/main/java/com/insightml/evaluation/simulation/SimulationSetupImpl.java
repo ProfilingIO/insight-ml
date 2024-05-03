@@ -44,7 +44,7 @@ public final class SimulationSetupImpl<I extends Sample, E, P> extends AbstractC
 		this.config = config;
 		this.labelIndex = labelIndex;
 		this.learner = Check.size(learner, 1, 100);
-		this.objectives = Check.size(objectives, 1, 30);
+		this.objectives = Check.size(objectives, 1, 100);
 		this.report = report;
 		this.client = Preconditions.checkNotNull(client);
 	}
