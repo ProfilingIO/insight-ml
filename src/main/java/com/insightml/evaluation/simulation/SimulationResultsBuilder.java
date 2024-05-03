@@ -15,15 +15,15 @@
  */
 package com.insightml.evaluation.simulation;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationSetup.PERFORMANCE_SELECTOR;
 import com.insightml.math.statistics.Stats;
 import com.insightml.models.Predictions;
 import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class SimulationResultsBuilder<E, P> {
 	private final String learner;
@@ -36,7 +36,7 @@ public class SimulationResultsBuilder<E, P> {
 	private final Predictions<E, P>[][] predictions;
 
 	public SimulationResultsBuilder(final String modelName, final int numSets, final int numLabels,
-									final SimulationSetup<?, E, P> setup) {
+			final SimulationSetup<?, E, P> setup) {
 		learner = modelName;
 		objectives = setup.getObjectives();
 		criteria = setup.getCriteria();
@@ -63,10 +63,8 @@ public class SimulationResultsBuilder<E, P> {
 			}
 		}
 		for (int m = 0; m < objectives.length; ++m) {
-			for (final double value : Check.size(objectives[m].acrossLabels(preds).getValues(),
-					1,
-					9999999,
-					objectives[m])) {
+			for (final double value : Check
+					.size(objectives[m].acrossLabels(preds).getValues(), 1, 99999999, objectives[m])) {
 				stats[m].add(value);
 			}
 		}
