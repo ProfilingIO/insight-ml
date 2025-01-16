@@ -18,6 +18,9 @@ package com.insightml.evaluation.simulation;
 import java.io.File;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,52 +56,6 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 		this.serializer = serializer;
 	}
 
-	@Override
-	public final <E, P> ISimulationResults<E, P> simulate(final IDataset<I, P> dataset, final IArguments arguments,
-			final double[][] blendingParams, final boolean delayInit, final boolean report,
-			final IModelTask<I, E, P> task) {
-		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
-		final ISimulationResults<E, P> result = run(
-				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit, serializer), },
-				dataset,
-				arguments,
-				report,
-				task)[0];
-		dataset.close();
-		return result;
-	}
-
-	@Override
-	public <E, P> ISimulationResults<E, P>[] run(final ILearnerPipeline<I, P>[] learner, final IDataset<I, P> dataset,
-			final IArguments arguments, final boolean report, final IModelTask<I, E, P> task) {
-		return run(Preconditions.checkNotNull(dataset.loadTraining(null)),
-				task.getSimulationSetup(learner, dataset, arguments, report, null));
-	}
-
-	public final <E, P> ISimulationResults<E, P>[] run(final Supplier<? extends Iterable<I>> train,
-			final Supplier<? extends Iterable<I>> test, final SimulationSetup<I, E, P> setup) {
-		final ILearnerPipeline<I, P>[] learners = setup.getLearner();
-		final SimulationResults<E, P>[] results = new SimulationResults[learners.length];
-		final int numLabels = 1;
-		for (int l = 0; l < learners.length; ++l) {
-			final SimulationResultsBuilder<E, P> builder = new SimulationResultsBuilder<>(learners[l].getName(), 1,
-					numLabels, setup);
-			for (int i = 0; i < numLabels; ++i) {
-				logger.debug("Training model...");
-				final long start = System.currentTimeMillis();
-				final ModelPipeline<I, P> model = learners[l].run(train.get(), null, setup.getConfig(), i);
-				logger.debug("Making predictions...");
-				builder.add(Predictions.create(1, model, test.get(), (int) (System.currentTimeMillis() - start)));
-				if (setup.doReport()) {
-					logger.info(model.info());
-				}
-			}
-			results[l] = builder.build();
-			notify(results[l], setup, null);
-		}
-		return results;
-	}
-
 	public <E, P> SimulationResults<E, P>[] makeResults(final IJobBatch<Predictions<E, P>[]> batch,
 			final SimulationSetup<I, E, P> setup) {
 		final ILearnerPipeline<I, P>[] learner = setup.getLearner();
@@ -116,6 +73,41 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 			result[i] = builders[i].build();
 		}
 		return result;
+	}
+
+	public final <E, P> ISimulationResults<E, P>[] run(final Supplier<? extends Iterable<I>> train,
+			final Supplier<? extends Iterable<I>> test, final SimulationSetup<I, E, P> setup) {
+		final ILearnerPipeline<I, P>[] learners = setup.getLearner();
+		final Pair<ModelPipeline<I, P>, Long>[] modelsAndTrainingTime = trainModels(train, setup, learners);
+		final SimulationResults<E, P>[] results = new SimulationResults[learners.length];
+		final Iterable<I> testData = test.get();
+		for (int l = 0; l < modelsAndTrainingTime.length; ++l) {
+			final SimulationResultsBuilder<E, P> builder = new SimulationResultsBuilder<>(learners[l].getName(), 1, 1,
+					setup);
+			final ModelPipeline<I, P> model = modelsAndTrainingTime[l].getKey();
+			logger.debug("Making predictions for {} ...", model.getName());
+			builder.add(Predictions.create(1, model, testData, modelsAndTrainingTime[l].getValue().intValue()));
+			if (setup.doReport()) {
+				logger.info(model.info());
+			}
+			results[l] = builder.build();
+			notify(results[l], setup, null);
+		}
+		return results;
+	}
+
+	@Nonnull
+	private <E, P> Pair<ModelPipeline<I, P>, Long>[] trainModels(final Supplier<? extends Iterable<I>> train,
+			final SimulationSetup<I, E, P> setup, final ILearnerPipeline<I, P>[] learners) {
+		final Pair<ModelPipeline<I, P>, Long>[] modelsAndTrainingTime = new Pair[learners.length];
+		final Iterable<I> trainingData = train.get();
+		for (int l = 0; l < learners.length; ++l) {
+			logger.debug("Training model {} ...", learners[l].getName());
+			final long start = System.currentTimeMillis();
+			final ModelPipeline<I, P> model = learners[l].run(trainingData, null, setup.getConfig(), 0);
+			modelsAndTrainingTime[l] = new Pair<>(model, System.currentTimeMillis() - start);
+		}
+		return modelsAndTrainingTime;
 	}
 
 	protected final <E, P> void notify(final ISimulationResults<E, P> performance, final SimulationSetup<I, E, P> setup,
@@ -137,6 +129,28 @@ public abstract class AbstractSimulation<I extends Sample> extends AbstractModul
 		new File(folder).mkdirs();
 		final ObjectiveFunction<? super E, ? super P>[] metrics = performance.getObjectives();
 		SimulationResultsDumper.dump(folder + filename, performance.getPredictions(), metrics[0]);
+	}
+
+	@Override
+	public final <E, P> ISimulationResults<E, P> simulate(final IDataset<I, P> dataset, final IArguments arguments,
+			final double[][] blendingParams, final boolean delayInit, final boolean report,
+			final IModelTask<I, E, P> task) {
+		final ILearner<Sample, Object, Object> learnerr = task.getLearner(arguments, blendingParams);
+		final ISimulationResults<E, P> result = run(
+				new ILearnerPipeline[] { new LearnerPipeline<>(learnerr, 1.0, !delayInit, serializer), },
+				dataset,
+				arguments,
+				report,
+				task)[0];
+		dataset.close();
+		return result;
+	}
+
+	@Override
+	public <E, P> ISimulationResults<E, P>[] run(final ILearnerPipeline<I, P>[] learner, final IDataset<I, P> dataset,
+			final IArguments arguments, final boolean report, final IModelTask<I, E, P> task) {
+		return run(Preconditions.checkNotNull(dataset.loadTraining(null)),
+				task.getSimulationSetup(learner, dataset, arguments, report, null));
 	}
 
 }
