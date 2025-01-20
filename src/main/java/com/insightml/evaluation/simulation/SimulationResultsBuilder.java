@@ -15,8 +15,13 @@
  */
 package com.insightml.evaluation.simulation;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationSetup.PERFORMANCE_SELECTOR;
@@ -29,11 +34,10 @@ public class SimulationResultsBuilder<E, P> {
 	private final String learner;
 	private final ObjectiveFunction<? super E, ? super P>[] objectives;
 	private final PERFORMANCE_SELECTOR criteria;
-
+	private final Predictions<E, P>[][] predictions;
+	private Set<String>[] slices;
 	private int trainingIimeInMillis;
 	private int predictionIimeInMillis;
-
-	private final Predictions<E, P>[][] predictions;
 
 	public SimulationResultsBuilder(final String modelName, final int numSets, final int numLabels,
 			final SimulationSetup<?, E, P> setup) {
@@ -43,15 +47,33 @@ public class SimulationResultsBuilder<E, P> {
 		predictions = new Predictions[Check.num(numSets, 1, 9999)][Check.num(numLabels, 1, 99)];
 	}
 
-	public void add(final Predictions<E, P> preds) {
+	public void add(final Predictions<E, P> preds, final Set<String>[] slices) {
 		final int set = Check.num(preds.getSet() - 1, 0, predictions.length - 1);
 		Check.isNull(predictions[set][preds.getLabelIndex()]);
 		predictions[set][preds.getLabelIndex()] = preds;
+		this.slices = slices;
 		trainingIimeInMillis += preds.getModelTrainingTimeInMillis();
 		predictionIimeInMillis += preds.getTimeInMillis();
 	}
 
 	public SimulationResults<E, P> build() {
+		final Map<String, Stats[]> statsPerSlice = slices == null ? null : new HashMap<>();
+		if (slices != null) {
+			final Map<String, boolean[]> sliceToFilter = new HashMap<>();
+			for (int i = 0; i < slices.length; ++i) {
+				for (final String slice : slices[i]) {
+					sliceToFilter.computeIfAbsent(slice, $ -> new boolean[slices.length])[i] = true;
+				}
+			}
+			for (final Map.Entry<String, boolean[]> slice : sliceToFilter.entrySet()) {
+				statsPerSlice.put(slice.getKey(), calculateStats(slice.getValue()));
+			}
+		}
+		return new SimulationResults<>(learner, objectives, criteria, predictions, calculateStats(null), statsPerSlice,
+				trainingIimeInMillis, predictionIimeInMillis);
+	}
+
+	private Stats[] calculateStats(@Nullable final boolean[] filter) {
 		final Stats[] stats = Arrays.fill(objectives.length, Stats.class);
 		final List<Predictions<E, P>>[] preds = new List[predictions[0].length];
 		for (final Predictions<E, P>[] run : predictions) {
@@ -59,7 +81,7 @@ public class SimulationResultsBuilder<E, P> {
 				if (preds[i] == null) {
 					preds[i] = new LinkedList<>();
 				}
-				preds[i].add(run[i]);
+				preds[i].add(filter == null ? run[i] : run[i].filter(filter));
 			}
 		}
 		for (int m = 0; m < objectives.length; ++m) {
@@ -68,7 +90,6 @@ public class SimulationResultsBuilder<E, P> {
 				stats[m].add(value);
 			}
 		}
-		return new SimulationResults<>(learner, objectives, criteria, predictions, stats, trainingIimeInMillis,
-				predictionIimeInMillis);
+		return stats;
 	}
 }

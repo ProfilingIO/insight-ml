@@ -22,7 +22,8 @@ import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.ISimulation;
-import com.insightml.evaluation.simulation.SimulationSetupImpl;
+import com.insightml.evaluation.simulation.ImmutableSimulationSetup;
+import com.insightml.evaluation.simulation.SimulationSetup;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerArguments;
 import com.insightml.models.LearnerArguments.Argument;
@@ -118,18 +119,18 @@ public final class ParameterOptimizer<I extends Sample, E, P> {
 		return ar;
 	}
 
+	private double simulate(final ILearner<I, E, P> learner, final Iterable<I> train,
+			final FeaturesConfig<I, P> featuresConfig) {
+		final SimulationSetup<I, E, P> setup = ImmutableSimulationSetup.<I, E, P> builder().config(featuresConfig)
+				.learner(new LearnerPipeline(learner, true)).client(client).objectives(objective).doReport(false)
+				.build();
+		return simulation.run(train, setup)[0].getNormalizedResult();
+	}
+
 	private double run(final ILearner<I, E, P> learner, final Arguments args, final Argument arg, final double value,
 			final Iterable<I> train, final FeaturesConfig<I, P> featuresConfig) {
 		args.set(arg.getName(), arg.validate(value), true);
 		return simulate(learner, train, featuresConfig);
-	}
-
-	private double simulate(final ILearner<I, E, P> learner, final Iterable<I> train,
-			final FeaturesConfig<I, P> featuresConfig) {
-		final SimulationSetupImpl setup = new SimulationSetupImpl<>(null, featuresConfig, null,
-				new LearnerPipeline[] { new LearnerPipeline(learner, true), }, client, false,
-				new ObjectiveFunction[] { objective });
-		return simulation.run(train, setup)[0].getNormalizedResult();
 	}
 
 	private static void log(final double score, final Arguments ar, final boolean isNewBest) {

@@ -27,9 +27,10 @@ import com.insightml.data.samples.SimpleSample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.BasicSimulationResult;
 import com.insightml.evaluation.simulation.CrossValidation;
+import com.insightml.evaluation.simulation.ImmutableSimulationSetup;
 import com.insightml.evaluation.simulation.SimulationResultConsumer;
 import com.insightml.evaluation.simulation.SimulationResults;
-import com.insightml.evaluation.simulation.SimulationSetupImpl;
+import com.insightml.evaluation.simulation.SimulationSetup;
 import com.insightml.models.ILearner;
 import com.insightml.models.LearnerPipeline;
 import com.insightml.utils.Arguments;
@@ -38,25 +39,15 @@ import com.insightml.utils.jobs.ThreadedClient;
 public final class Tests {
 	private static final Logger LOG = LoggerFactory.getLogger(Tests.class);
 
-	private Tests() {
+	public enum TestData {
+		BOOLEAN, NUMERIC
 	}
 
-	public static <I extends Sample, E, P> SimulationSetupImpl<I, E, P> simulationSetup(final IDataset<I, P> dataset,
-			final LearnerPipeline<? super I, E, P> learner, final ObjectiveFunction<? super E, ? super P>... metrics) {
-		return new SimulationSetupImpl<>(dataset.getName(), dataset.getFeaturesConfig(null), null,
-				new LearnerPipeline[] { learner }, new ThreadedClient(), false, metrics);
+	private Tests() {
 	}
 
 	public static <I extends Sample> CrossValidation<I> getCv() {
 		return new CrossValidation<>(5, 1, null);
-	}
-
-	public static <I extends Sample, E, P> SimulationResults<E, P> cv(final IDataset<I, P> instances,
-			final LearnerPipeline learner, final ObjectiveFunction<E, P>[] objective) {
-		final SimulationResultConsumer resultConsumer = (simulation, learn, result, setup) -> LOG
-				.info(BasicSimulationResult.of(learn, result).toString());
-		return new CrossValidation<I>(5, 1, resultConsumer).run(instances.loadTraining(null),
-				simulationSetup(instances, learner, objective))[0];
 	}
 
 	public static Arguments arguments() {
@@ -66,7 +57,7 @@ public final class Tests {
 
 	public static <I extends SimpleSample, E extends Serializable> double testLearner2(final ILearner learner,
 			final TestData testData, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
-		IDataset instances;
+		final IDataset instances;
 		switch (testData) {
 		case BOOLEAN:
 			instances = TestDatasets.createBoolean();
@@ -80,11 +71,6 @@ public final class Tests {
 		return testLearner(new LearnerPipeline<>(learner, 1.0), instances, objective, expected);
 	}
 
-	public static <I extends SimpleSample, E extends Serializable> double testLearner(final ILearner learner,
-			final IDataset instances, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
-		return testLearner(new LearnerPipeline<>(learner, 1.0), instances, objective, expected);
-	}
-
 	public static <I extends SimpleSample, E extends Serializable> double testLearner(final LearnerPipeline learner,
 			final IDataset instances, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
 		final double result = cv(instances, learner, new ObjectiveFunction[] { objective }).getNormalizedResult();
@@ -94,8 +80,24 @@ public final class Tests {
 		return result;
 	}
 
-	public enum TestData {
-		BOOLEAN, NUMERIC
+	public static <I extends Sample, E, P> SimulationResults<E, P> cv(final IDataset<I, P> instances,
+			final LearnerPipeline learner, final ObjectiveFunction<E, P>[] objective) {
+		final SimulationResultConsumer resultConsumer = (simulation, learn, result, setup) -> LOG
+				.info(BasicSimulationResult.of(learn, result).toString());
+		return new CrossValidation<I>(5, 1, resultConsumer).run(instances.loadTraining(null),
+				simulationSetup(instances, learner, objective))[0];
+	}
+
+	public static <I extends Sample, E, P> SimulationSetup<I, E, P> simulationSetup(final IDataset<I, P> dataset,
+			final LearnerPipeline<? super I, E, P> learner, final ObjectiveFunction<? super E, ? super P>... metrics) {
+		return ImmutableSimulationSetup.<I, E, P> builder().datasetName(dataset.getName())
+				.config(dataset.getFeaturesConfig(null)).learner(new LearnerPipeline[] { learner })
+				.client(new ThreadedClient()).objectives(metrics).doReport(false).build();
+	}
+
+	public static <I extends SimpleSample, E extends Serializable> double testLearner(final ILearner learner,
+			final IDataset instances, final ObjectiveFunction<? super I, ? super E> objective, final Double expected) {
+		return testLearner(new LearnerPipeline<>(learner, 1.0), instances, objective, expected);
 	}
 
 }

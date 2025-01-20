@@ -17,6 +17,7 @@ package com.insightml.utils;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,14 +38,6 @@ public final class Arrays {
 		return of(list);
 	}
 
-	public static <T> T[] of(final Iterable<? extends T> collection, final Class<T> clazz) {
-		final List<T> list = new LinkedList<>();
-		for (final T bla : collection) {
-			list.add(bla);
-		}
-		return of(list, clazz);
-	}
-
 	public static <T> T[] of(final Collection<T> collection) {
 		return of(collection, (Class<T>) collection.iterator().next().getClass());
 	}
@@ -59,6 +52,14 @@ public final class Arrays {
 		}
 		final T[] array = (T[]) Array.newInstance(clazz, size);
 		return collection.toArray(array);
+	}
+
+	public static <T> T[] of(final Iterable<? extends T> collection, final Class<T> clazz) {
+		final List<T> list = new LinkedList<>();
+		for (final T bla : collection) {
+			list.add(bla);
+		}
+		return of(list, clazz);
 	}
 
 	public static <T> boolean contains(final T[] array, final T element) {
@@ -91,6 +92,7 @@ public final class Arrays {
 	}
 
 	public static <T> T[] filter(final T[] orig, final boolean[] filter) {
+		Check.equals(orig.length, filter.length, "array and filter mask must have the same length");
 		final T[] fil = (T[]) Array.newInstance(orig[0].getClass(), Vectors.sum(filter));
 		for (int i = 0, j = -1; i < orig.length; ++i) {
 			if (filter[i]) {
@@ -116,7 +118,7 @@ public final class Arrays {
 				array[i] = clazz.newInstance();
 			}
 			return array;
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (final InstantiationException | IllegalAccessException e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -159,9 +161,7 @@ public final class Arrays {
 	public static <T> List<T> merge(final List<? extends T[]> run) {
 		final List<T> list = new LinkedList<>();
 		for (final T[] l : run) {
-			for (final T el : l) {
-				list.add(el);
-			}
+			Collections.addAll(list, l);
 		}
 		return list;
 	}

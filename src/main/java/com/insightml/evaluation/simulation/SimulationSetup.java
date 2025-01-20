@@ -15,29 +15,52 @@
  */
 package com.insightml.evaluation.simulation;
 
+import javax.annotation.Nullable;
+
+import org.immutables.value.Value;
+
 import com.insightml.data.FeaturesConfig;
 import com.insightml.data.samples.Sample;
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.models.ILearnerPipeline;
+import com.insightml.utils.jobs.IClient;
 
+@Value.Immutable
 public interface SimulationSetup<I extends Sample, E, P> {
 
-	public enum PERFORMANCE_SELECTOR {
-		MEANDIAN, MEAN, MEDIAN, WORST, BEST;
+	enum PERFORMANCE_SELECTOR {
+		MEANDIAN, MEAN, MEDIAN, WORST, BEST
 	}
 
-	ILearnerPipeline<I, P>[] getLearner();
+	@Value.Default
+	default boolean doDump() {
+		return false;
+	}
+
+	@Value.Default
+	default boolean doReport() {
+		return true;
+	}
+
+	IClient getClient();
 
 	FeaturesConfig<I, P> getConfig();
 
-	boolean doReport();
+	default PERFORMANCE_SELECTOR getCriteria() {
+		return PERFORMANCE_SELECTOR.MEAN;
+	}
 
+	@Nullable
 	String getDatasetName();
 
-	boolean doDump();
+	@Nullable
+	EvaluationSlicesProvider<I> getEvaluationSlicesProvider();
+
+	@Nullable
+	Integer getLabelIndex();
+
+	ILearnerPipeline<I, P>[] getLearner();
 
 	ObjectiveFunction<? super E, ? super P>[] getObjectives();
-
-	PERFORMANCE_SELECTOR getCriteria();
 
 }

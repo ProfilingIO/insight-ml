@@ -24,6 +24,8 @@ import org.apache.commons.math3.util.Pair;
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 import com.insightml.data.samples.Samples;
+import com.insightml.math.Vectors;
+import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.AbstractClass;
 
@@ -36,9 +38,9 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 	private final P[] predictions;
 	private final E[] expected;
 	private final double[] weights;
-	private transient ISamples<? extends Sample, E> samples;
 	private final int timeInMillis;
 	private final int modelTrainingTimeInMillis;
+	private final transient ISamples<? extends Sample, E> samples;
 
 	public Predictions(final int run, final int labelIndex, final P[] predictions, final E[] expected,
 			final double[] weights, final ISamples<? extends Sample, E> samples, final int timeInMillis,
@@ -68,57 +70,65 @@ public class Predictions<E, P> extends AbstractClass implements Serializable {
 				modelTrainingTimeInMillis);
 	}
 
-	public P[] getPredictions() {
-		return predictions;
-	}
-
-	public ISamples<? extends Sample, E> getSamples() {
-		return samples;
-	}
-
-	public Sample getSample(final int i) {
-		return samples == null ? null : samples.get(i);
-	}
-
-	public E[] getExpected() {
-		return expected;
-	}
-
-	public double[] getWeights() {
-		return weights;
-	}
-
-	public int getSet() {
-		return Check.num(run, 1, 9999);
-	}
-
-	public int getLabelIndex() {
-		return labelIndex;
+	public List<Pair<Sample, P>> asList() {
+		final List<Pair<Sample, P>> list = new LinkedList<>();
+		for (int i = 0; i < size(); ++i) {
+			list.add(new Pair<>(samples.get(i), predictions[i]));
+		}
+		return list;
 	}
 
 	public int size() {
 		return predictions.length;
 	}
 
-	public int getTimeInMillis() {
-		return timeInMillis;
+	public Predictions<E, P> filter(final boolean[] filter) {
+		final P[] filteredPredictions = Arrays.filter(predictions, filter);
+		final E[] filteredExpected = Arrays.filter(expected, filter);
+		final double[] filteredWeights = Vectors.filter(weights, filter);
+		return new Predictions<>(run, labelIndex, filteredPredictions, filteredExpected, filteredWeights, null,
+				timeInMillis, modelTrainingTimeInMillis);
+	}
+
+	public E[] getExpected() {
+		return expected;
+	}
+
+	public int getLabelIndex() {
+		return labelIndex;
 	}
 
 	public int getModelTrainingTimeInMillis() {
 		return modelTrainingTimeInMillis;
 	}
 
-	public List<Pair<Sample, P>> asList() {
-		final List<Pair<Sample, P>> list = new LinkedList<>();
-		for (int i = 0; i < size(); ++i) {
-			list.add(new Pair<Sample, P>(samples.get(i), predictions[i]));
-		}
-		return list;
+	public P[] getPredictions() {
+		return predictions;
+	}
+
+	public Sample getSample(final int i) {
+		return samples == null ? null : samples.get(i);
+	}
+
+	public ISamples<? extends Sample, E> getSamples() {
+		return samples;
+	}
+
+	public int getSet() {
+		return Check.num(run, 1, 9999);
+	}
+
+	public int getTimeInMillis() {
+		return timeInMillis;
+	}
+
+	public double[] getWeights() {
+		return weights;
 	}
 
 	@Override
 	public String toString() {
-		return "Preds{" + run + ", " + getLabelIndex() + ", " + size() + "}";
+		return "Preds{" + run + ", " + labelIndex + ", " + size() + "}";
 	}
 
 }

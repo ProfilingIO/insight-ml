@@ -16,6 +16,9 @@
 package com.insightml.evaluation.simulation;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import com.insightml.evaluation.functions.ObjectiveFunction;
 import com.insightml.evaluation.simulation.SimulationSetup.PERFORMANCE_SELECTOR;
@@ -34,18 +37,22 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 
 	private final Predictions<E, P>[][] predictions;
 	private final Stats[] stats;
+	@Nullable
+	private final Map<String, Stats[]> statsPerSlice;
 
 	private final int trainingIimeInMillis;
 	private final int predictionIimeInMillis;
 
 	public SimulationResults(final String learner, final ObjectiveFunction<? super E, ? super P>[] objectives,
 			final PERFORMANCE_SELECTOR criteria, final Predictions<E, P>[][] predictions, final Stats[] stats,
-			final int trainingIimeInMillis, final int predictionIimeInMillis) {
+			@Nullable final Map<String, Stats[]> statsPerSlice, final int trainingIimeInMillis,
+			final int predictionIimeInMillis) {
 		this.learner = learner;
 		this.objectives = objectives;
 		this.criteria = criteria;
 		this.predictions = predictions;
 		this.stats = stats;
+		this.statsPerSlice = statsPerSlice;
 		this.trainingIimeInMillis = trainingIimeInMillis;
 		this.predictionIimeInMillis = predictionIimeInMillis;
 	}
@@ -53,6 +60,30 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 	@Override
 	public String getModelName() {
 		return learner;
+	}
+
+	@Override
+	public ObjectiveFunction<? super E, ? super P>[] getObjectives() {
+		return objectives;
+	}
+
+	@Override
+	public String getReport() {
+		getResults();
+		final PairList<String, String> info = new PairList<>();
+		info.add("Model", learner);
+		info.add("Training time", trainingIimeInMillis + " ms");
+		info.add("Prediction time", predictionIimeInMillis + " ms");
+		for (int i = 0; i < objectives.length; ++i) {
+			info.add(objectives[i].getName(), stats[i].toString());
+		}
+		// builder.addValue(UiUtils.format(getFeatures()));
+		return UiUtils.format(info);
+	}
+
+	@Override
+	public Stats[] getResults() {
+		return stats;
 	}
 
 	@Override
@@ -67,19 +98,9 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 	}
 
 	@Override
-	public ObjectiveFunction<? super E, ? super P>[] getObjectives() {
-		return objectives;
-	}
-
-	@Override
-	public Stats[] getResults() {
-		return stats;
-	}
-
-	@Override
 	public double getNormalizedResult() {
 		getResults();
-		double result;
+		final double result;
 		switch (criteria) {
 		case BEST:
 			result = objectives[0].normalize(1) > 0.5 ? stats[0].getMax() : stats[0].getMin();
@@ -100,18 +121,9 @@ public final class SimulationResults<E, P> extends AbstractClass implements Seri
 		return predictions;
 	}
 
-	@Override
-	public String getReport() {
-		getResults();
-		final PairList<String, String> info = new PairList<>();
-		info.add("Model", learner);
-		info.add("Training time", trainingIimeInMillis + " ms");
-		info.add("Prediction time", predictionIimeInMillis + " ms");
-		for (int i = 0; i < objectives.length; ++i) {
-			info.add(objectives[i].getName(), stats[i].toString());
-		}
-		// builder.addValue(UiUtils.format(getFeatures()));
-		return UiUtils.format(info);
+	@Nullable
+	public Map<String, Stats[]> getResultsPerSlice() {
+		return statsPerSlice;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Stefan Henß
+ * Copyright (C) 2025 Stefan Henß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,25 @@
  */
 package com.insightml.evaluation.simulation;
 
-@FunctionalInterface
-public interface SimulationResultConsumer {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-	void accept(ISimulation<?> simulation, String learn, SimulationResults<?, ?> performance,
-			SimulationSetup<?, ?, ?> setup);
+import javax.annotation.Nonnull;
+
+import com.insightml.data.samples.Sample;
+
+public interface EvaluationSlicesProvider<I extends Sample> {
+
+	@Nonnull
+	default Set<String>[] getSlices(@Nonnull final Iterable<I> samples) {
+		final List<Set<String>> slices = new ArrayList<>();
+		for (final I sample : samples) {
+			slices.add(getSlices(sample));
+		}
+		return slices.toArray(Set[]::new);
+	}
+
+	@Nonnull
+	Set<String> getSlices(@Nonnull I sample);
 }
