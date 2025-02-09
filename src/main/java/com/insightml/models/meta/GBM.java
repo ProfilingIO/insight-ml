@@ -54,6 +54,13 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 	private final ObjectiveFunction<Object, ? super Double> objective;
 	private final Baseline predefinedBaseline;
 
+	public GBM(final IArguments arguments, final int it, final double shrink, final double bag,
+			final ObjectiveFunction<? extends Object, ? super Double> objective,
+			final ILearner<Sample, Double, Double>[] learner) {
+		this(Arguments.copy(arguments).set("it", it, true).set("shrink", shrink, true).set("bag", bag, true), objective,
+				learner, null);
+	}
+
 	public GBM(final IArguments arguments, final ObjectiveFunction<? extends Object, ? super Double> objective,
 			final ILearner<Sample, Double, Double>[] learner, final Baseline predefinedBaseline) {
 		super(arguments);
@@ -62,11 +69,18 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 		this.predefinedBaseline = predefinedBaseline;
 	}
 
-	public GBM(final IArguments arguments, final int it, final double shrink, final double bag,
-			final ObjectiveFunction<? extends Object, ? super Double> objective,
-			final ILearner<Sample, Double, Double>[] learner) {
-		this(Arguments.copy(arguments).set("it", it, true).set("shrink", shrink, true).set("bag", bag, true), objective,
-				learner, null);
+	@Nullable
+	public static boolean[] featuresMask(final String[] featureNames, final double ratio, final IArguments arguments,
+			final Random random) {
+		if (ratio >= 1) {
+			return null;
+		}
+		final String forceFirstFeature = arguments.toString("forceFirstFeature", null);
+		final boolean[] keep = new boolean[featureNames.length];
+		for (int i = 0; i < keep.length; ++i) {
+			keep[i] = featureNames[i].equals(forceFirstFeature) || random.nextDouble() <= ratio;
+		}
+		return keep;
 	}
 
 	@Override
@@ -133,22 +147,7 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 
 	private boolean[] featuresMask(final ISamples<?, ?> samples, final IArguments arguments, final Random random) {
 		final double ratio = argument("fbag");
-		return featuresMask(samples, ratio, arguments, random);
-	}
-
-	@Nullable
-	static boolean[] featuresMask(final ISamples<?, ?> samples, final double ratio, final IArguments arguments,
-			final Random random) {
-		if (ratio >= 1) {
-			return null;
-		}
-		final String[] featureNames = samples.featureNames();
-		final String forceFirstFeature = arguments.toString("forceFirstFeature", null);
-		final boolean[] keep = new boolean[featureNames.length];
-		for (int i = 0; i < keep.length; ++i) {
-			keep[i] = featureNames[i].equals(forceFirstFeature) || random.nextDouble() <= ratio;
-		}
-		return keep;
+		return featuresMask(samples.featureNames(), ratio, arguments, random);
 	}
 
 	@SuppressWarnings("static-method")
@@ -201,15 +200,6 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 				: fitObjective(exp, weights, preds, optim, prec, labelIndex);
 	}
 
-	private static double fitSquares(final Object[] expected, final double[] weights, final double[] preds,
-			final double[] optim) {
-		final SimpleRegression reg = new SimpleRegression(false);
-		for (int i = 0; i < preds.length; ++i) {
-			reg.addData(optim[i], Utils.toDouble(expected[i]) - preds[i], weights[i]);
-		}
-		return reg.regress()[0];
-	}
-
 	private double fitObjective(final Object[] exp, final double[] weights, final double[] preds, final double[] optim,
 			final double prec, final int labelIndex) {
 		// TODO: add analytical solutions for more objectives
@@ -233,5 +223,14 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 
 	static double updatePrediction(final double lastModel, final double update, final double gamma) {
 		return lastModel + gamma * update;
+	}
+
+	private static double fitSquares(final Object[] expected, final double[] weights, final double[] preds,
+			final double[] optim) {
+		final SimpleRegression reg = new SimpleRegression(false);
+		for (int i = 0; i < preds.length; ++i) {
+			reg.addData(optim[i], Utils.toDouble(expected[i]) - preds[i], weights[i]);
+		}
+		return reg.regress()[0];
 	}
 }

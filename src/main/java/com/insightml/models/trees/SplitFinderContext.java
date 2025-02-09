@@ -27,18 +27,34 @@ public final class SplitFinderContext {
 	public final String[] featureNames;
 	public final float[][] features;
 	public final int[][] orderedInstances;
-
+	public final int maxDepth;
 	@Nullable
-	final boolean[] featuresMask;
+	public final boolean[] featuresMask;
+
 	@Nullable
 	final String forceFirstFeature;
-
-	public final int maxDepth;
-	double minImprovement;
+	final double minImprovement;
 	final int labelIndex;
 
+	public SplitFinderContext(final double[] expected, final double[] weights, final String[] featureNames,
+			final float[][] features, final int[][] orderedInstances, final int maxDepth,
+			@Nullable final boolean[] featuresMask, @Nullable final String forceFirstFeature,
+			final double minImprovement, final int labelIndex) {
+		this.expected = expected;
+		this.weights = weights;
+		this.featureNames = featureNames;
+		this.features = features;
+		this.orderedInstances = orderedInstances;
+		this.maxDepth = maxDepth;
+		this.featuresMask = featuresMask;
+		this.forceFirstFeature = forceFirstFeature;
+		this.minImprovement = minImprovement;
+		this.labelIndex = labelIndex;
+	}
+
 	public SplitFinderContext(final ISamples<?, Double> instances, @Nullable final boolean[] featuresMask,
-			final String forceFirstFeature, final int maxDepth, final double minImprovement, final int labelIndex) {
+			@Nullable final String forceFirstFeature, final int maxDepth, final double minImprovement,
+			final int labelIndex) {
 		final Object[] exp = instances.expected(labelIndex);
 		expected = new double[exp.length];
 		for (int i = 0; i < exp.length; ++i) {
@@ -55,6 +71,11 @@ public final class SplitFinderContext {
 		this.maxDepth = maxDepth;
 		this.minImprovement = minImprovement;
 		this.labelIndex = labelIndex;
+	}
+
+	public SplitFinderContext withFeaturesMask(@Nullable final boolean[] featuresMask) {
+		return new SplitFinderContext(expected, weights, featureNames, features, orderedInstances, maxDepth,
+				featuresMask, forceFirstFeature, minImprovement, labelIndex);
 	}
 
 }

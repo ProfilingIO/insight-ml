@@ -41,6 +41,8 @@ import com.insightml.utils.IArguments;
 public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double, Double> {
 	private static final long serialVersionUID = -259781296518750592L;
 
+	public static final String FSAMPLE = "fsample";
+
 	private VoteStrategy strategy;
 	private ILearner<I, Double, Double>[] learners;
 
@@ -49,15 +51,15 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 
 	public Bagging(final IArguments arguments, final ILearner<I, Double, Double>... learner) {
 		super(arguments);
-		this.strategy = VoteStrategy.AVERAGE;
-		this.learners = learner;
+		strategy = VoteStrategy.AVERAGE;
+		learners = learner;
 	}
 
 	public Bagging(final int bags, final double isample, final double fsample, final VoteStrategy strategy,
 			final ILearner<I, Double, Double>... learner) {
-		super(new Arguments("bags", bags, "isample", isample, "fsample", fsample));
+		super(new Arguments("bags", bags, "isample", isample, FSAMPLE, fsample));
 		this.strategy = strategy;
-		this.learners = learner;
+		learners = learner;
 	}
 
 	@Override
@@ -65,16 +67,13 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		final LearnerArguments args = new LearnerArguments();
 		args.add("bags", 10.0, 2, 1000);
 		args.add("isample", 0.8, 0.1, 1.0);
-		args.add("fsample", 0.9, 0.025, 1.0);
+		args.add(FSAMPLE, 0.9, 0.025, 1.0);
 		return args;
 	}
 
-	public int getNumberOfBags() {
-		return (int) argument("bags");
-	}
-
-	public VoteStrategy getVoteStrategy() {
-		return strategy;
+	@Override
+	public IModel<I, Double> run(final LearnerInput<? extends I, ? extends Double> input) {
+		return run((ISamples<I, Double>) input.getTrain(), input.labelIndex);
 	}
 
 	@Override
@@ -90,15 +89,23 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		return combine(result, strategy, samples.featureNames());
 	}
 
+	public ISamples<I, Double> preprocess(@Nonnull final ISamples<I, Double> instances) {
+		return instances;
+	}
+
+	public int getNumberOfBags() {
+		return (int) argument("bags");
+	}
+
 	public IModel<I, Double> computeBag(final int index, final ISamples<I, Double> samples, final int labelIndex) {
 		final ILearner<I, Double, Double> learner = learners[index % learners.length];
 		final double instancesSample = argument("isample");
-		final double featureSample = argument("fsample");
+		final double featureSample = argument(FSAMPLE);
 		final Random random = new Random((long) Math.pow(index + 2, 2));
 		if (learner instanceof RegTree) {
 			return (IModel<I, Double>) ((RegTree) learner).run(
 					(ISamples) (instancesSample < 1 ? samples.sample(instancesSample, random).getFirst() : samples),
-					GBM.featuresMask(samples, featureSample, getOriginalArguments(), random),
+					GBM.featuresMask(samples.featureNames(), featureSample, getOriginalArguments(), random),
 					labelIndex);
 		}
 		final ISamples<I, Double> sampled = sample(samples, instancesSample, featureSample, random);
@@ -117,15 +124,11 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		return new VoteModel<>(models, weights, strategy, features);
 	}
 
-	public ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,
-			final double featureSample, final int i) {
-		final Random random = new Random((long) Math.pow(i + 2, 2));
-		return sample(samples, instancesSample, featureSample, random);
-	}
-
-	@Override
-	public IModel<I, Double> run(final LearnerInput<? extends I, ? extends Double> input) {
-		return run((ISamples<I, Double>) input.getTrain(), input.labelIndex);
+	protected ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,
+			final double featureSample, final Random random) {
+		final ISamples<I, Double> sub = instancesSample < 1 ? samples.sample(instancesSample, random).getFirst()
+				: samples;
+		return featureSample < 1 ? sub.sampleFeatures(featureSample, random) : sub;
 	}
 
 	@Override
@@ -135,15 +138,14 @@ public class Bagging<I extends Sample> extends AbstractEnsembleLearner<I, Double
 		return run((ISamples<I, Double>) train, labelIndex);
 	}
 
-	protected ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,
-			final double featureSample, final Random random) {
-		final ISamples<I, Double> sub = instancesSample < 1 ? samples.sample(instancesSample, random).getFirst()
-				: samples;
-		return featureSample < 1 ? sub.sampleFeatures(featureSample, random) : sub;
+	public VoteStrategy getVoteStrategy() {
+		return strategy;
 	}
 
-	public ISamples<I, Double> preprocess(final @Nonnull ISamples<I, Double> instances) {
-		return instances;
+	public ISamples<I, Double> sample(final ISamples<I, Double> samples, final double instancesSample,
+			final double featureSample, final int i) {
+		final Random random = new Random((long) Math.pow(i + 2, 2));
+		return sample(samples, instancesSample, featureSample, random);
 	}
 
 	public static final class BagResult<I extends Sample> implements Serializable {
