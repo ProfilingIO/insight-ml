@@ -39,7 +39,10 @@ public final class AUC extends AbstractIndependentLabelsObjectiveFunction<Object
 		for (int i = 0; i < preds.length; ++i) {
 			final Object orig = expected[i];
 			final boolean label = orig instanceof Boolean ? (Boolean) orig
-					: Check.num(((Number) orig).doubleValue(), 0, 2) >= 0.5;
+					// we normally expect to be between 0 (false) and 1 (true). There might be some cases that have a
+					// bit of a different scoring/weighting, so we allow scores to be outside the range. But we can't
+					// allow -1 to 1 or 0 to 2, as it's then unclear whether > 0 is already "true" or only > 1 is "true"
+					: Check.num(((Number) orig).doubleValue(), -0.9, 1.9) >= 0.5;
 			scores[label ? 1 : 0].add((Double) preds[i]);
 		}
 		return new DescriptiveStatistics(new double[] { auc(scores) });
