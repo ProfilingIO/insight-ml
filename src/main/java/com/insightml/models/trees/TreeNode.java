@@ -54,20 +54,68 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		mean = prediction;
 	}
 
-	public Split getRule() {
-		return rule;
+	public static String presentPrediction(final IStats stats) {
+		final Double stddev = getStandardDeviation(stats);
+		return UiUtils.format(stats.getMean()) + (stddev == null ? "" : " +/- " + UiUtils.format(stddev)) + " ("
+				+ UiUtils.format(stats.getSumOfWeights()) + ")";
+	}
+
+	public SumMap<String> collectNegativeFactors() {
+		final SumMapBuilder<String> builder = SumMap.builder(false);
+		collectFactors(builder, false);
+		return builder.build(0);
+	}
+
+	public SumMap<String> collectPositiveFactors() {
+		final SumMapBuilder<String> builder = SumMap.builder(false);
+		collectFactors(builder, true);
+		return builder.build(0);
+	}
+
+	public List<Pair<List<String>, IStats>> collectSegments() {
+		final List<Pair<List<String>, IStats>> segments = new ArrayList<>();
+		collectSegments(ImmutableList.of(), segments);
+		return segments.stream().sorted((e1, e2) -> Double.compare(e2.getValue().getMean(), e1.getValue().getMean()))
+				.collect(Collectors.toList());
+	}
+
+	public SumMap<String> featureImportance(final boolean normalize) {
+		final SumMapBuilder<String> sum = SumMap.builder(false);
+		importance(this, sum, normalize);
+		return sum.build(0);
 	}
 
 	public TreeNode[] getChildren() {
 		return children;
 	}
 
+	public double getMean() {
+		return mean;
+	}
+
+	public Split getRule() {
+		return rule;
+	}
+
 	public IStats getStats() {
 		return stats;
 	}
 
-	public double getMean() {
-		return mean;
+	public String info() {
+		final StringBuilder builder = new StringBuilder(128);
+		builder.append('\n');
+		print("", true, builder);
+		builder.append("\nFeature importance:\n");
+		builder.append(UiUtils
+				.toString(Collections.sort(featureImportance(false).getMap(), SortOrder.DESCENDING), true, true));
+		builder.append("\nFeature segments:\n" + UiUtils.format(collectSegments()) + "\n");
+		builder.append("\nPositive factors:\n"
+				+ UiUtils.toString(Collections.sortDesc(collectPositiveFactors().distribution().getMap()), true, true)
+				+ "\n");
+		builder.append("\nNegative factors:\n"
+				+ UiUtils.toString(Collections.sortDesc(collectNegativeFactors().distribution().getMap()), true, true)
+				+ "\n");
+		return builder.toString();
 	}
 
 	public DistributionPrediction predictDistribution(final float[] features, final boolean debug) {
@@ -87,7 +135,9 @@ public final class TreeNode extends AbstractClass implements Serializable {
 			}
 			final TreeNode child = nodeRule.selectChild(features, node.children);
 			appliedRules.add(new TreeDecisionDebug(nodeRule, child, features));
-			impactByFeature.merge(nodeRule.getFeatureName(), child.mean - node.mean, Double::sum);
+			impactByFeature.merge(nodeRule.getFeatureName() + " (" + features[nodeRule.getFeature()] + ")",
+					child.mean - node.mean,
+					Double::sum);
 			node = child;
 		}
 	}
@@ -125,13 +175,6 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return splits;
 	}
 
-	public List<Pair<List<String>, IStats>> collectSegments() {
-		final List<Pair<List<String>, IStats>> segments = new ArrayList<>();
-		collectSegments(ImmutableList.of(), segments);
-		return segments.stream().sorted((e1, e2) -> Double.compare(e2.getValue().getMean(), e1.getValue().getMean()))
-				.collect(Collectors.toList());
-	}
-
 	private void collectSegments(final List<String> parentSegment, final List<Pair<List<String>, IStats>> segments) {
 		if (rule != null) {
 			final String fName = rule.getFeatureName();
@@ -152,12 +195,6 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		}
 	}
 
-	public SumMap<String> featureImportance(final boolean normalize) {
-		final SumMapBuilder<String> sum = SumMap.builder(false);
-		importance(this, sum, normalize);
-		return sum.build(0);
-	}
-
 	private void importance(final TreeNode node, final SumMapBuilder<String> sum, final boolean normalize) {
 		final ISplit crit = node.rule;
 		if (crit != null) {
@@ -167,18 +204,6 @@ public final class TreeNode extends AbstractClass implements Serializable {
 				importance(child, sum, normalize);
 			}
 		}
-	}
-
-	public SumMap<String> collectPositiveFactors() {
-		final SumMapBuilder<String> builder = SumMap.builder(false);
-		collectFactors(builder, true);
-		return builder.build(0);
-	}
-
-	public SumMap<String> collectNegativeFactors() {
-		final SumMapBuilder<String> builder = SumMap.builder(false);
-		collectFactors(builder, false);
-		return builder.build(0);
 	}
 
 	private void collectFactors(final SumMapBuilder<String> builder, final boolean positive) {
@@ -200,25 +225,8 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		if (child == 2) {
 			return fName + " missing";
 		}
-		final String threshold = true ? "X" : UiUtils.format(rule.getFeatureValueThreshold());
+		final String threshold = "X";
 		return fName + (child == 0 ? " \u2264 " : " > ") + threshold;
-	}
-
-	public String info() {
-		final StringBuilder builder = new StringBuilder(128);
-		builder.append('\n');
-		print("", true, builder);
-		builder.append("\nFeature importance:\n");
-		builder.append(UiUtils
-				.toString(Collections.sort(featureImportance(false).getMap(), SortOrder.DESCENDING), true, true));
-		builder.append("\nFeature segments:\n" + UiUtils.format(collectSegments()) + "\n");
-		builder.append("\nPositive factors:\n"
-				+ UiUtils.toString(Collections.sortDesc(collectPositiveFactors().distribution().getMap()), true, true)
-				+ "\n");
-		builder.append("\nNegative factors:\n"
-				+ UiUtils.toString(Collections.sortDesc(collectNegativeFactors().distribution().getMap()), true, true)
-				+ "\n");
-		return builder.toString();
 	}
 
 	private void print(final String prefix, final boolean isTail, final StringBuilder builder) {
@@ -233,18 +241,9 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		}
 	}
 
-	public static String presentPrediction(final IStats stats) {
-		final Double stddev = getStandardDeviation(stats);
-		return UiUtils.format(stats.getMean()) + (stddev == null ? "" : " +/- " + UiUtils.format(stddev)) + " ("
-				+ UiUtils.format(stats.getSumOfWeights()) + ")";
-	}
-
-	private static Double getStandardDeviation(final IStats stats) {
-		try {
-			return stats.getStandardDeviation();
-		} catch (final UnsupportedOperationException e) {
-			return null;
-		}
+	@Override
+	public int hashCode() {
+		return Objects.hash(rule, Arrays.deepHashCode(children), mean);
 	}
 
 	@Override
@@ -257,66 +256,26 @@ public final class TreeNode extends AbstractClass implements Serializable {
 		return stats.getSumOfWeights() == oth.stats.getSumOfWeights();
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(rule, Arrays.deepHashCode(children), mean);
-	}
-
-	public static final class TreePredictionInfo {
-		private final List<TreeDecisionDebug> appliedRules;
-		private final Map<String, Double> impactByFeature;
-
-		public TreePredictionInfo(final List<TreeDecisionDebug> appliedRules,
-				final Map<String, Double> impactByFeature) {
-			this.appliedRules = appliedRules;
-			this.impactByFeature = impactByFeature;
-		}
-
-		public List<TreeDecisionDebug> getAppliedRules() {
-			return appliedRules;
-		}
-
-		public Map<String, Double> getImpactByFeature() {
-			return impactByFeature;
-		}
-
-		@Override
-		public String toString() {
-			return com.google.common.base.MoreObjects.toStringHelper(this).add("appliedRules", appliedRules)
-					.add("impactByFeature", impactByFeature).toString();
+	private static Double getStandardDeviation(final IStats stats) {
+		try {
+			return stats.getStandardDeviation();
+		} catch (final UnsupportedOperationException e) {
+			return null;
 		}
 	}
 
-	public static final class TreeDecisionDebug {
-		private final Split nodeRule;
-		private final TreeNode child;
-		private final float[] features;
+	public record TreePredictionInfo(List<TreeDecisionDebug> appliedRules, Map<String, Double> impactByFeature) {
+	}
 
-		public TreeDecisionDebug(final Split nodeRule, final TreeNode child, final float[] features) {
-			this.nodeRule = nodeRule;
-			this.child = child;
-			this.features = features;
-		}
-
-		public Split getNodeRule() {
-			return nodeRule;
-		}
-
-		public TreeNode getChild() {
-			return child;
-		}
-
-		public float[] getFeatures() {
-			return features;
-		}
-
-		public String getPresentation() {
-			return nodeRule.explain(features) + " \u2192 " + presentPrediction(child.stats);
-		}
+	public record TreeDecisionDebug(Split nodeRule, TreeNode child, float[] features) {
 
 		@Override
 		public String toString() {
 			return getPresentation();
+		}
+
+		public String getPresentation() {
+			return nodeRule.explain(features) + " \u2192 " + presentPrediction(child.stats);
 		}
 	}
 }

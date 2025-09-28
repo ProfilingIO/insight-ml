@@ -15,6 +15,7 @@
  */
 package com.insightml.models.meta;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,9 +46,11 @@ import com.insightml.utils.Arrays;
 import com.insightml.utils.Collections;
 import com.insightml.utils.ui.UiUtils;
 
+import jakarta.annotation.Nonnull;
+
 public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, Double>
 		implements DistributionModel<I> {
-
+	@Serial
 	private static final long serialVersionUID = -8515840219123634452L;
 
 	public enum VoteStrategy {
@@ -65,6 +68,7 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		this.strategy = strategy;
 	}
 
+	@Nonnull
 	@Override
 	public Double[] apply(final ISamples<? extends I, ?> instnces) {
 		final IModel<I, Double>[] models = getModels();
@@ -87,6 +91,25 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 			preds[i] = resolve(map[i], strategy);
 		}
 		return preds;
+	}
+
+	private static double resolve(final Stats stats, final VoteStrategy strategy) {
+		switch (strategy) {
+		case AVERAGE:
+			return stats.getMean();
+		case MEDIAN:
+			// return stats.getPercentile(50);
+		case GEOMETRIC:
+			// return stats.getGeometricMean();
+		case HARMONIC:
+			// double sum = 0;
+			// for (final double value : stats.getValues()) {
+			// sum += 1 / value;
+			// }
+			// return stats.getN() * 1.0 / sum;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
@@ -119,23 +142,35 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		return result;
 	}
 
-	private static double resolve(final Stats stats, final VoteStrategy strategy) {
-		switch (strategy) {
-		case AVERAGE:
-			return stats.getMean();
-		case MEDIAN:
-			// return stats.getPercentile(50);
-		case GEOMETRIC:
-			// return stats.getGeometricMean();
-		case HARMONIC:
-			// double sum = 0;
-			// for (final double value : stats.getValues()) {
-			// sum += 1 / value;
-			// }
-			// return stats.getN() * 1.0 / sum;
-		default:
-			throw new IllegalArgumentException();
+	@Override
+	public DistributionPrediction predictDistribution(final float[] features, final boolean debug) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String info() {
+		final StringBuilder builder = new StringBuilder();
+		final SumMap<String> importance = featureImportance();
+		builder.append("Feature importance:\n" + UiUtils.format(importance.distribution(), 0));
+
+		if (allModelsAreTrees()) {
+			final int n = 20;
+			builder.append("\nTop " + n + " positive factors:\n"
+					+ UiUtils.toString(Collections.getTopN(collectPositiveFactors().getMap(), n, 0), true, true));
+			builder.append("\nTop " + n + " negative factors:\n"
+					+ UiUtils.toString(Collections.getTopN(collectNegativeFactors().getMap(), n, 0), true, true));
 		}
+
+		return builder.toString();
+	}
+
+	private boolean allModelsAreTrees() {
+		for (final IModel<I, Double> model : getModels()) {
+			if (!(model instanceof TreeModel)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public DiscreteDistribution<String> collectPositiveFactors() {
@@ -160,50 +195,16 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 		return negative.build(0).distribution();
 	}
 
-	private boolean allModelsAreTrees() {
-		for (final IModel<I, Double> model : getModels()) {
-			if (!(model instanceof TreeModel)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public String info() {
-		final StringBuilder builder = new StringBuilder();
-		final SumMap<String> importance = featureImportance();
-		builder.append("Feature importance:\n" + UiUtils.format(importance.distribution(), 0).toString());
-
-		if (allModelsAreTrees()) {
-			final int n = 20;
-			builder.append("\nTop " + n + " positive factors:\n"
-					+ UiUtils.toString(Collections.getTopN(collectPositiveFactors().getMap(), n, 0), true, true));
-			builder.append("\nTop " + n + " negative factors:\n"
-					+ UiUtils.toString(Collections.getTopN(collectNegativeFactors().getMap(), n, 0), true, true));
-		}
-
-		return builder.toString();
-	}
-
 	public static final class VoteModelDebug {
 		private final Map<String, Double> impactByFeature = new HashMap<>();
 		private final List<Object> singleModelDebug = new ArrayList<>();
 
-		public Map<String, Double> getImpactByFeature() {
-			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
-					(k1, k2) -> Double.compare(Math.abs(impactByFeature.get(k2)), Math.abs(impactByFeature.get(k1))));
-			sortedFeatures.putAll(impactByFeature);
-			return sortedFeatures;
-		}
-
 		public void add(final Object debug) {
 			if (debug instanceof TreePredictionInfo) {
-				for (final Entry<String, Double> feature : ((TreePredictionInfo) debug).getImpactByFeature()
-						.entrySet()) {
+				for (final Entry<String, Double> feature : ((TreePredictionInfo) debug).impactByFeature().entrySet()) {
 					impactByFeature.merge(feature.getKey(), feature.getValue(), Double::sum);
 				}
-				singleModelDebug.add(((TreePredictionInfo) debug).getAppliedRules());
+				singleModelDebug.add(((TreePredictionInfo) debug).appliedRules());
 			} else if (debug != null) {
 				singleModelDebug.add(debug);
 			}
@@ -227,6 +228,13 @@ public final class VoteModel<I extends Sample> extends AbstractEnsembleModel<I, 
 				}
 			}
 			return str.toString();
+		}
+
+		public Map<String, Double> getImpactByFeature() {
+			final TreeMap<String, Double> sortedFeatures = new TreeMap<>(
+					(k1, k2) -> Double.compare(Math.abs(impactByFeature.get(k2)), Math.abs(impactByFeature.get(k1))));
+			sortedFeatures.putAll(impactByFeature);
+			return sortedFeatures;
 		}
 	}
 }

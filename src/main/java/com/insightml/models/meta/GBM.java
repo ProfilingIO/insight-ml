@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.util.Pair;
@@ -219,10 +219,6 @@ public class GBM extends AbstractEnsembleLearner<Sample, Double, Double> {
 			preds[i] += gamma * update[i];
 		}
 		return preds;
-	}
-
-	static double updatePrediction(final double lastModel, final double update, final double gamma) {
-		return lastModel + gamma * update;
 	}
 
 	private static double fitSquares(final Object[] expected, final double[] weights, final double[] preds,

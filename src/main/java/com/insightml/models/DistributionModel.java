@@ -22,4 +22,6 @@ public interface DistributionModel<I extends Sample> extends IModel<I, Double> {
 
 	DistributionPrediction[] predictDistribution(ISamples<? extends I, ?> samples, boolean debug);
 
+	DistributionPrediction predictDistribution(float[] features, boolean debug);
+
 }
