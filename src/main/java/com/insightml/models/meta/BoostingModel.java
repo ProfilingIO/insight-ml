@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.insightml.data.samples.ISamples;
@@ -124,73 +122,46 @@ public final class BoostingModel extends AbstractModel<Sample, Double> implement
 
 	@Override
 	public DistributionPrediction predictDistribution(final float[] x, final boolean debug) {
-		final boolean firstIsDist = first instanceof DistributionModel;
-		final DistributionPrediction baseDp = firstIsDist ? ((DistributionModel) first).predictDistribution(x, debug)
-				: null;
-
-		double mu = firstIsDist ? baseDp.getPrediction().getMean() : first.predict(x, null);
-		double var = firstIsDist ? nonneg(varianceOf(baseDp.getPrediction())) : 0.0;
+		double prediction = first instanceof final DistributionModel<?> distributionModel
+				? distributionModel.predictDistribution(x, debug).getPrediction().getMean()
+				: first.predict(x, null);
 
 		final BoostingPredictionInfo dbg = debug ? new BoostingPredictionInfo() : null;
 		if (debug) {
 			dbg.featureImpact = new LinkedHashMap<>();
 		}
 
-		int t = 0;
 		for (final DoublePair<DoubleModel> step : steps) {
-			++t;
-			final double gamma = step.getValue();
-			final DoubleModel m = step.getKey();
+			final DoubleModel model = step.getKey();
+			final double weight = step.getValue();
 
-			final DistributionPrediction dp = (m instanceof DistributionModel)
-					? ((DistributionModel) m).predictDistribution(x, debug)
+			final DistributionPrediction dp = model instanceof final DistributionModel<?> distributionModel
+					? distributionModel.predictDistribution(x, debug)
 					: null;
 
-			final double stepMean = (dp != null) ? dp.getPrediction().getMean() : m.predict(x, null);
-			final double stepVar = (dp != null) ? nonneg(varianceOf(dp.getPrediction())) : 0.0;
-
-			final double contribMean = gamma * stepMean;
-			final double contribVar = gamma * gamma * stepVar;
-
-			mu += contribMean;
-			var += contribVar;
+			final double stepMean = dp != null ? dp.getPrediction().getMean() : model.predict(x, null);
+			prediction += stepMean * weight;
 
 			if (debug) {
-				final Object modelDebug = (dp != null) ? dp.getDebug() : null;
+				final Object modelDebug = dp != null ? dp.getDebug() : null;
 
 				// merge per-feature impacts from trees, scaled by gamma
 				if (modelDebug instanceof final TreeNode.TreePredictionInfo treePredictionInfo) {
 					final Map<String, Double> imp = treePredictionInfo.impactByFeature();
 					for (final Map.Entry<String, Double> featureAndImpact : imp.entrySet()) {
 						dbg.featureImpact
-								.merge(featureAndImpact.getKey(), gamma * featureAndImpact.getValue(), Double::sum);
+								.merge(featureAndImpact.getKey(), weight * featureAndImpact.getValue(), Double::sum);
 					}
 				}
 			}
 		}
 
-		// Encode μ and σ² into SimpleStatistics. With n=1, set sum=μ and sumSq=μ²+σ² so that
-		// variance = E[x²] - E[x]² = (μ²+σ²) - μ² = σ².
-		final double sum = mu;
-		final double sumSq = mu * mu + var;
-		final SimpleStatistics stats = new SimpleStatistics(1, sum, sumSq, 1);
+		final SimpleStatistics stats = new SimpleStatistics(1, prediction, prediction, 1);
 
 		if (debug) {
 			dbg.featureImpact = sortByAbsDesc(dbg.featureImpact);
 		}
 		return new DistributionPrediction(stats, debug ? dbg : null);
-	}
-
-	private static double nonneg(final double v) {
-		return Double.isFinite(v) && v > 0 ? v : 0.0;
-	}
-
-	private static double varianceOf(final StatisticalSummary s) {
-		try {
-			return Math.max(0.0, s.getVariance());
-		} catch (final Throwable ignored) {
-			return 0;
-		}
 	}
 
 	private static LinkedHashMap<String, Double> sortByAbsDesc(final Map<String, Double> m) {
@@ -211,14 +182,12 @@ public final class BoostingModel extends AbstractModel<Sample, Double> implement
 		return first.equals(oth.first) && steps.equals(oth.steps);
 	}
 
-	// ---- Debug payloads ----
 	public static final class BoostingPredictionInfo {
 		LinkedHashMap<String, Double> featureImpact; // aggregated and gamma-scaled
 
 		public Map<String, Double> getFeatureImpact() {
 			return featureImpact;
 		}
-
 	}
 
 }
