@@ -27,6 +27,8 @@ import com.insightml.utils.Arrays;
 import com.insightml.utils.Check;
 import com.insightml.utils.types.collections.ArrayIterator;
 
+import jakarta.annotation.Nonnull;
+
 public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> {
 
 	private static final long serialVersionUID = 3351881040269525917L;
@@ -46,30 +48,48 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> {
 		this.samples = Check.notNull(Arrays.of(samples));
 
 		if (storeLabels) {
-			final E[] labelExample = labelExample(this.samples);
-			this.expected = labelExample == null ? null
-					: (E[][]) Array.newInstance(labelExample[0].getClass(), labelExample.length, this.samples.length);
-			this.weights = new double[expected == null ? 1 : expected.length][this.samples.length];
+			final Class<E> labelClass = labelClass(this.samples);
+			final int numLabels = numLabels(this.samples);
+			expected =
+					labelClass == null ? null : (E[][]) Array.newInstance(labelClass, numLabels, this.samples.length);
+			weights = new double[numLabels == 0 ? 1 : numLabels][this.samples.length];
 
 			for (int i = 0; i < this.samples.length; ++i) {
-				final E[] exp = this.samples[i].getExpected();
-				for (int j = 0; j < weights.length; ++j) {
+				final S sample = this.samples[i];
+				final E[] exp = sample.getExpected();
+				for (int j = 0; j < exp.length; ++j) {
 					if (expected != null) {
 						expected[j][i] = exp[j];
 					}
-					weights[j][i] = this.samples[i].getWeight(j);
+					weights[j][i] = sample.getWeight(j);
 				}
 			}
 		}
 	}
 
-	private E[] labelExample(final S[] instances) {
+	private Class<E> labelClass(final S[] instances) {
 		for (final S inst : instances) {
-			if (inst != null && inst.getExpected(0) != null) {
-				return inst.getExpected();
+			if (inst != null) {
+				final E[] exp = inst.getExpected();
+				if (exp != null && exp.length > 0 && exp[0] != null) {
+					return (Class<E>) exp[0].getClass();
+				}
 			}
 		}
 		return null;
+	}
+
+	private int numLabels(final S[] instances) {
+		int max = 0;
+		for (final S inst : instances) {
+			if (inst != null) {
+				final E[] exp = inst.getExpected();
+				if (exp != null) {
+					max = Math.max(max, exp.length);
+				}
+			}
+		}
+		return max;
 	}
 
 	@Override
@@ -80,6 +100,12 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> {
 	@Override
 	public int getId(final int i) {
 		return samples[i].getId();
+	}
+
+	@Nonnull
+	@Override
+	public Iterator<S> iterator() {
+		return new ArrayIterator<>(samples);
 	}
 
 	@Override
@@ -134,11 +160,6 @@ public final class Samples<S extends Sample, E> extends AbstractSamples<S, E> {
 			indexes[i] = shuffled.get(i);
 		}
 		return new SamplesMapping<>(this, indexes);
-	}
-
-	@Override
-	public Iterator<S> iterator() {
-		return new ArrayIterator<>(samples);
 	}
 
 }
