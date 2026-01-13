@@ -15,67 +15,85 @@
  */
 package com.insightml.data.samples.decorators;
 
+import java.io.Serial;
 import java.lang.reflect.Array;
 
 import com.insightml.data.samples.ISamples;
 import com.insightml.data.samples.Sample;
 
+/**
+ * A decorator that provides a view on a subset or a reordered version of the original samples. It uses an index mapping
+ * to determine which samples from the original data are included and in which order. This can be used for tasks like
+ * train/test splitting, bootstrapping, or oversampling.
+ *
+ * @param <S>
+ * 		The type of the samples.
+ * @param <E>
+ * 		The type of the expected values (labels).
+ */
 public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator<S, E> {
+	@Serial
 	private static final long serialVersionUID = 5410695563675584751L;
 
-	final int[] map;
-	private final float[][] features;
-	private E[][] exp;
-	private final double[][] weights;
-	private int[][] orderedIndexes;
+	/**
+	 * An array where each element is an index into the original samples. indexMapping[i] = originalIndex
+	 */
+	private final int[] indexMapping;
 
-	public SamplesMapping(final ISamples<S, E> orig, final int[] map) {
-		super(orig);
-		this.map = map;
-
-		final float[][] refFeats = ref.features();
-		features = refFeats == null ? null : new float[map.length][];
-		weights = new double[ref.numLabels()][map.length];
-
-		for (int labelIndex = 0; labelIndex < weights.length; ++labelIndex) {
-			final E[] refExpected = ref.expected(labelIndex);
-			final double[] weightsRef = ref.weights(labelIndex);
-
-			if (labelIndex == 0) {
-				exp = refExpected == null ? null
-						: (E[][]) Array.newInstance(refExpected[0].getClass(), weights.length, map.length);
-			}
-
-			for (int i = 0; i < map.length; ++i) {
-				if (features != null && refFeats != null) {
-					features[i] = refFeats[map[i]];
-				}
-				if (exp != null && refExpected != null) {
-					exp[labelIndex][i] = refExpected[map[i]];
-				}
-				weights[labelIndex][i] = weightsRef[map[i]];
-			}
-		}
+	/**
+	 * Creates a new samples mapping.
+	 *
+	 * @param original
+	 * 		The original samples to map from.
+	 * @param indexMapping
+	 * 		The mapping of indices.
+	 */
+	public SamplesMapping(final ISamples<S, E> original, final int[] indexMapping) {
+		super(original);
+		this.indexMapping = indexMapping;
 	}
 
 	@Override
 	protected int getInstance(final int i) {
-		return map[i];
+		return indexMapping[i];
 	}
 
 	@Override
 	public int size() {
-		return map.length;
+		return indexMapping.length;
 	}
 
 	@Override
 	public E[] expected(final int labelIndex) {
-		return exp == null ? null : exp[labelIndex];
+		final E[] refExpected = ref.expected(labelIndex);
+		if (refExpected == null) {
+			return null;
+		}
+
+		final E[] mappedExpected = (E[]) Array.newInstance(refExpected.getClass().getComponentType(),
+				indexMapping.length);
+		for (int i = 0; i < indexMapping.length; ++i) {
+			mappedExpected[i] = refExpected[indexMapping[i]];
+		}
+		return mappedExpected;
 	}
 
 	@Override
 	public double[] weights(final int labelIndex) {
-		return weights[labelIndex];
+		final double[] weightsRef = ref.weights(labelIndex);
+		if (weightsRef == null) {
+			return null;
+		}
+
+		final double[] mappedWeights = new double[indexMapping.length];
+		for (int i = 0; i < indexMapping.length; ++i) {
+			mappedWeights[i] = weightsRef[indexMapping[i]];
+		}
+		return mappedWeights;
+	}
+
+	public int[] getIndexMap() {
+		return indexMapping;
 	}
 
 	@Override
@@ -90,32 +108,61 @@ public final class SamplesMapping<S extends Sample, E> extends AbstractDecorator
 
 	@Override
 	public float[][] features() {
-		return features;
+		final float[][] refFeatures = ref.features();
+		if (refFeatures == null) {
+			return null;
+		}
+
+		final float[][] mappedFeatures = new float[indexMapping.length][];
+		for (int i = 0; i < indexMapping.length; ++i) {
+			mappedFeatures[i] = refFeatures[indexMapping[i]];
+		}
+		return mappedFeatures;
 	}
 
-	public int[] getIndexMap() {
-		return map;
-	}
-
+	/**
+	 * Computes the ordered indexes for each feature. The algorithm maps the original ordered indexes (from the parent)
+	 * to the new indexes in this view. It handles cases where an original index appears multiple times in the mapping
+	 * (oversampling).
+	 */
 	@Override
-	public synchronized int[][] orderedIndexes() {
-		if (orderedIndexes == null) {
-			final int[] reverse = new int[ref.size()];
-			for (int i = 0; i < map.length; ++i) {
-				reverse[map[i]] = i + 1;
-			}
-			final int[][] parent = ref.orderedIndexes();
-			orderedIndexes = new int[numFeatures()][map.length];
-			for (int f = 0; f < orderedIndexes.length; ++f) {
-				int j = -1;
-				for (final int i : parent[f]) {
-					if (reverse[i] != 0) {
-						orderedIndexes[f][++j] = reverse[i] - 1;
-					}
+	public int[][] orderedIndexes() {
+		final int[][] parentOrdered = ref.orderedIndexes();
+		if (parentOrdered == null) {
+			return null;
+		}
+
+		// To efficiently map original indexes to new indexes, we build a linked-list structure.
+		// firstOccurrence[origIndex] stores the first position in indexMapping where origIndex appears.
+		final int[] firstOccurrence = new int[ref.size()];
+		java.util.Arrays.fill(firstOccurrence, -1);
+		// nextOccurrence[mappedIndex] stores the next position in indexMapping where the same origIndex appears.
+		final int[] nextOccurrence = new int[indexMapping.length];
+
+		// Fill the linked-list structure by iterating backwards through the index mapping.
+		for (int i = indexMapping.length - 1; i >= 0; --i) {
+			final int origIndex = indexMapping[i];
+			nextOccurrence[i] = firstOccurrence[origIndex];
+			firstOccurrence[origIndex] = i;
+		}
+
+		final int numFeatures = numFeatures();
+		final int numSamples = indexMapping.length;
+		final int[][] mappedOrdered = new int[numFeatures][numSamples];
+
+		for (int f = 0; f < numFeatures; ++f) {
+			int currentMappedPos = 0;
+			// Iterate through the original sorted order of samples for this feature.
+			for (final int origIndex : parentOrdered[f]) {
+				// For each occurrence of this original sample in our mapping, add it to the new sorted order.
+				int mappedIndex = firstOccurrence[origIndex];
+				while (mappedIndex != -1) {
+					mappedOrdered[f][currentMappedPos++] = mappedIndex;
+					mappedIndex = nextOccurrence[mappedIndex];
 				}
 			}
 		}
-		return orderedIndexes;
+		return mappedOrdered;
 	}
 
 }
