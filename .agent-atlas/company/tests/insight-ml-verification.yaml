@@ -1,0 +1,13 @@
+id: test-scope:insight-ml-verification
+kind: test-scope
+title: insight-ml Verification
+summary: Narrow default verification commands for repo-local changes; prefer more specific tests when the task identifies them.
+status: active
+visibility: internal
+commands:
+  - command: mvn test
+    cwd: .
+    purpose: Repo-local verification candidate.
+relations:
+  - type: verifies
+    target: component:insight-ml-source

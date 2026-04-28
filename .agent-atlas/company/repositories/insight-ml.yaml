@@ -1,0 +1,14 @@
+id: repository:insight-ml
+kind: repository
+title: insight-ml
+summary: final int trees = 30; // number of trees to learn
+status: active
+visibility: internal
+uri: repo://insight-ml
+relations:
+  - type: related-to
+    target: domain:insight-ml-local
+agent:
+  load_when:
+    - Orienting in this repository or building a repo-local context pack.
+  token_budget_hint: 300

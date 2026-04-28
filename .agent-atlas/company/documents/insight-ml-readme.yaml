@@ -1,0 +1,12 @@
+id: document:insight-ml-readme
+kind: document
+title: insight-ml README
+summary: Primary repo entrypoint for setup, usage, architecture, and maintenance notes.
+status: active
+visibility: internal
+document:
+  paths:
+    - README.md
+relations:
+  - type: documents
+    target: component:insight-ml-source

@@ -1,0 +1,22 @@
+id: component:insight-ml-source
+kind: component
+title: insight-ml Source Surface
+summary: Main source, configuration, scripts, docs, and tests agents should inspect before broad repository search.
+status: active
+visibility: internal
+code:
+  paths:
+    - src/**
+    - pom.xml
+    - README.md
+relations:
+  - type: part-of
+    target: domain:insight-ml-local
+  - type: tested-by
+    target: test-scope:insight-ml-verification
+  - type: documented-in
+    target: document:insight-ml-readme
+agent:
+  load_when:
+    - Changing source, scripts, docs, tests, or repo-level configuration.
+  token_budget_hint: 600

@@ -1,0 +1,9 @@
+id: domain:insight-ml-local
+kind: domain
+title: insight-ml Local Surface
+summary: Repo-local architecture, docs, and verification surfaces for insight-ml.
+status: active
+visibility: internal
+relations:
+  - type: contains
+    target: repository:insight-ml
