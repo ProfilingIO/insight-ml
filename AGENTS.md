@@ -12,7 +12,7 @@
 
 1. **Check repo-local rules:** Before beginning any implementation, you **MUST** read and follow all rules in `.junie/rules/`.
 2. **Read active operating surfaces:** Before beginning non-trivial implementation, check fresh repo-local `.smartseer/plans/`, `.smartseer/follow-ups/`, and `.smartseer/unblockers/` artifacts and treat them as the operational source of truth when present.
-3. **Use Atlas when available:** After workspace registry or `agent-bootstrap` orientation, read `docs/agents/atlas.md` when it exists, use Atlas context packs for broad or multi-seam work, and use Atlas path resolution for file-specific work before broad search.
+3. **Use Atlas when available:** After workspace registry or `agent-bootstrap` orientation, use read-only Atlas MCP tools when configured; otherwise use Atlas CLI context packs for broad or multi-seam work, Atlas path resolution for file-specific work, and `docs/agents/atlas.md` as the fallback before broad search.
 4. **Knowledge Capture:** If the task is non-trivial (per `10-knowledge-capture.md`), you **MUST** create or update a repo-local note in `docs/agent-notes/` before finishing. The task is not complete until your final response names that note path explicitly, or states `No note created because: <reason>` when the task was truly trivial.
 5. **Internal docs when relevant:** For documentation-driven, product-behavior, architecture, or process questions, search Confluence or other internal docs before relying only on repository code search.
 6. **API docs repo when relevant:** For client-facing API contracts, OpenAPI behavior, integration examples, or tracking/recommender API guidance, check `apidocs-server` explicitly.

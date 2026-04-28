@@ -31,9 +31,10 @@ Instead of searching individual repositories sequentially, use the `workspace_se
 Use Agent Atlas as the repo-local navigation layer when a repository exposes it.
 
 1. Use the workspace registry or `pnpm agent-bootstrap --repo-path <path>` from `smartseer-agent-platform` for repo selection and cross-repo orientation.
-2. If the target repo has `docs/agents/atlas.md`, read it before broad repository search.
-3. For broad or multi-seam work, run `pnpm atlas:context-pack "<task>" <repo-path> --budget 4000` from `smartseer-agent-platform`.
-4. For file-specific work, run `pnpm atlas resolve-path <repo-relative-path> <repo-path>` from `smartseer-agent-platform`.
+2. When the agent runtime has `agent-atlas-company` MCP configured, prefer its read-only `context_pack` and `resolve_path` tools before broad repository search.
+3. When MCP is unavailable, run `pnpm atlas:context-pack "<task>" <repo-path> --budget 4000` from `smartseer-agent-platform` for broad or multi-seam work.
+4. For file-specific work without MCP, run `pnpm atlas resolve-path <repo-relative-path> <repo-path>` from `smartseer-agent-platform`.
+5. If only generated docs are available, read `docs/agents/atlas.md` before broad repository search.
 
 Do not create or expand `.agent-atlas` metadata speculatively. Add minimal cards only when concrete agent work exposes repeated navigation waste, ambiguous ownership, or recurring test-selection cost.
 
