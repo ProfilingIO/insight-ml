@@ -28,13 +28,20 @@ Instead of searching individual repositories sequentially, use the `workspace_se
 
 ## Agent Atlas
 
-Use Agent Atlas as the repo-local navigation layer when a repository exposes it.
+Use Agent Atlas as the repo-local navigation and rollout-evidence layer. All SMARTSEER repos receive Atlas guidance; detailed `.agent-atlas` cards remain minimal and evidence-driven.
 
 1. Use the workspace registry or `pnpm agent-bootstrap --repo-path <path>` from `smartseer-agent-platform` for repo selection and cross-repo orientation.
 2. When the agent runtime has `agent-atlas-company` MCP configured, prefer its read-only `context_pack` and `resolve_path` tools before broad repository search.
 3. When MCP is unavailable, run `pnpm atlas:context-pack "<task>" <repo-path> --budget 4000` from `smartseer-agent-platform` for broad or multi-seam work.
 4. For file-specific work without MCP, run `pnpm atlas resolve-path <repo-relative-path> <repo-path>` from `smartseer-agent-platform`.
 5. If only generated docs are available, read `docs/agents/atlas.md` before broad repository search.
+6. If Atlas setup looks stale, run `pnpm atlas:doctor` from `smartseer-agent-platform` before guessing at CLI behavior.
+7. After non-trivial work, record Atlas evidence when the CLI is available:
+   - `pnpm atlas usage-note "<task>" --path <repo-path> --command context-pack --entity <entity-id> --file <path> --test "<command>" --out .runtime/agent-atlas/usage/<task-slug>.yaml`
+   - add `--broad-search-fallback` when Atlas did not avoid broad search
+   - add `--missing-card "<gap>"` or `--misleading-card "<gap>"` when the graph was incomplete or wrong
+   - until OPS-2245 is fixed, keep usage receipts outside `.agent-atlas` so Atlas validation does not parse receipts as entity cards
+8. For significant Agent Atlas bugs, repeated missing-card patterns, misleading cards, adoption friction, or feature requests, create a Linear ticket for Agent Atlas when Linear access is available. If Linear is unavailable, create a ticket-ready SMARTSEER follow-up that names the evidence, affected repo, task, and requested Atlas change.
 
 Do not create or expand `.agent-atlas` metadata speculatively. Add minimal cards only when concrete agent work exposes repeated navigation waste, ambiguous ownership, or recurring test-selection cost.
 
