@@ -1,7 +1,4 @@
 # [MANAGED_BY_AGENT_PLATFORM]
-model = "gpt-5.4"
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
 
 [mcp_servers.workspace_registry]
 command = "cmd.exe"
