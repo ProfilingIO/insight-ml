@@ -1,0 +1,42 @@
+# [MANAGED_BY_AGENT_PLATFORM]
+model = "gpt-5.4"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[mcp_servers.workspace_registry]
+command = "cmd.exe"
+args = ["/c","pnpm","run","mcp:workspace-registry"]
+cwd = "../smartseer-agent-platform"
+enabled = true
+enabled_tools = [
+  "workspace_list_repos",
+  "workspace_get_repo",
+  "workspace_search_glossary",
+  "workspace_read_resource",
+  "workspace_search",
+  "workspace_find_file",
+  "workspace_get_file_tree",
+]
+
+[mcp_servers.slack_agent]
+command = "cmd.exe"
+args = ["/c","pnpm","run","mcp:slack-agent"]
+cwd = "../smartseer-agent-platform"
+enabled = true
+
+[mcp_servers.api_toolbox]
+command = "cmd.exe"
+args = ["/c","pnpm","run","mcp:api-toolbox"]
+cwd = "../smartseer-agent-platform"
+enabled = true
+enabled_tools = [
+  "api_toolbox_request",
+  "fetch_dmp_users_table",
+  "fetch_dmp_usage_summary",
+]
+
+[mcp_servers.jira_atlassian]
+command = "cmd.exe"
+args = ["/c","pnpm","run","mcp:jira_atlassian"]
+cwd = "../smartseer-agent-platform"
+enabled = true
